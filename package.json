@@ -1,0 +1,11 @@
+{
+  "name": "puppeteer-demo",
+  "version": "0.1.0",
+  "license": "MIT",
+  "dependencies": {
+    "puppeteer": "^0.10.2"
+  },
+  "devDependencies": {
+    "standard": "^10.0.3"
+  }
+}
