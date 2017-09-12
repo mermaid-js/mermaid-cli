@@ -1,4 +1,5 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer')
+const fs = require('fs');
 
 (async () => {
   const browser = await puppeteer.launch()
@@ -9,6 +10,8 @@ const puppeteer = require('puppeteer');
     const react = svg.getBoundingClientRect()
     return { x: react.left, y: react.top, width: react.width, height: react.height }
   })
+  const svg = await page.$eval('svg', svg => svg.outerHTML)
+  fs.writeFileSync('flowchart.svg', svg)
   await page.screenshot({ path: 'flowchart.png', clip, omitBackground: true })
   browser.close()
 })()
