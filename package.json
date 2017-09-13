@@ -1,8 +1,13 @@
 {
-  "name": "puppeteer-demo",
+  "name": "mermaid-cli",
   "version": "0.1.0",
   "license": "MIT",
+  "scripts": {
+    "test": "node index.js"
+  },
   "dependencies": {
+    "chalk": "^2.1.0",
+    "commander": "^2.11.0",
     "mermaid": "^7.0.18",
     "puppeteer": "^0.10.2"
   },
