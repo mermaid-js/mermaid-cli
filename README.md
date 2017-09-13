@@ -1,4 +1,4 @@
-# mermaid CLI
+# mermaid.cli
 
 Command-line interface for [mermaid](https://mermaidjs.github.io/).
 
@@ -8,13 +8,13 @@ This CLI tool takes a mermaid definition file as input and generates svg/png fil
 ## Installation
 
 ```
-yarn global add mermaid-cli
+yarn global add mermaid.cli
 ```
 
  Or
 
 ```
-npm install -g mermaid-cli
+npm install -g mermaid.cli
 ```
 
 Please install via `npm` instead of `yarn` if you encouner [this issue](https://github.com/yarnpkg/yarn/issues/2224).
