@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "license": "MIT",
   "dependencies": {
-    "mermaid": "^7.0.14",
+    "mermaid": "^7.0.18",
     "puppeteer": "^0.10.2"
   },
   "devDependencies": {

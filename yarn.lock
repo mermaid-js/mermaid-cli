@@ -195,9 +195,9 @@ d@1:
   dependencies:
     es5-ext "^0.10.9"
 
-dagre-d3-renderer@^0.4.23:
-  version "0.4.23"
-  resolved "https://registry.yarnpkg.com/dagre-d3-renderer/-/dagre-d3-renderer-0.4.23.tgz#c0cddbc9b85409e78f4fb3e6ebc45be3b4d29227"
+dagre-d3-renderer@^0.4.24:
+  version "0.4.24"
+  resolved "https://registry.yarnpkg.com/dagre-d3-renderer/-/dagre-d3-renderer-0.4.24.tgz#b36ce2fe4ea20de43e7698627c6ede2a9f15ec45"
   dependencies:
     d3 "3.5.17"
     dagre-layout "^0.8.0"
@@ -847,13 +847,13 @@ lodash@^4.0.0, lodash@^4.11.1, lodash@^4.17.4, lodash@^4.3.0:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
-mermaid@^7.0.14:
-  version "7.0.14"
-  resolved "https://registry.yarnpkg.com/mermaid/-/mermaid-7.0.14.tgz#d23f0250b14e108e8de1708cf1c3ddfdf4e2bd4d"
+mermaid@^7.0.18:
+  version "7.0.18"
+  resolved "https://registry.yarnpkg.com/mermaid/-/mermaid-7.0.18.tgz#7302aafc36c33489f9a1ee8eca92c4398af3d693"
   dependencies:
     chalk "^2.1.0"
     d3 "3.5.17"
-    dagre-d3-renderer "^0.4.23"
+    dagre-d3-renderer "^0.4.24"
     dagre-layout "^0.8.0"
     he "^1.1.1"
     lodash "^4.17.4"
