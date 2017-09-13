@@ -59,7 +59,16 @@ height = parseInt(height)
     window.mermaid.init(undefined, container)
   }, definition, theme)
 
-  const svg = await page.$eval('#container', container => container.innerHTML)
-  fs.writeFileSync(output, svg)
+  if (output.endsWith('svg')) {
+    const svg = await page.$eval('#container', container => container.innerHTML)
+    fs.writeFileSync(output, svg)
+  } else { // png
+    const clip = await page.$eval('svg', svg => {
+      const react = svg.getBoundingClientRect()
+      return { x: react.left, y: react.top, width: react.width, height: react.height }
+    })
+    await page.screenshot({ path: output, clip })
+  }
+
   browser.close()
 })()
