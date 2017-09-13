@@ -1,12 +1,15 @@
 {
   "name": "mermaid.cli",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "description": "Command-line interface for mermaid",
   "license": "MIT",
   "repository": "git@github.com:mermaidjs/mermaid.cli.git",
   "author": "Tyler Long <tyler4long@gmail.com>",
   "bin": {
     "mmd": "./index.js"
+  },
+  "scripts": {
+    "upgrade": "yarn upgrade --latest && cp ./node_modules/mermaid/dist/mermaid.min.js ."
   },
   "dependencies": {
     "chalk": "^2.1.0",
