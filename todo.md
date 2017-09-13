@@ -1,2 +1,2 @@
 - When input is empty string or wrong data(buffer)
-- png as output
+- Write some tests
