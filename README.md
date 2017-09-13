@@ -23,19 +23,19 @@ Please install via `npm` instead of `yarn` if you encouner [this issue](https://
 ## Examples
 
 ```
-mmd -i input.mmd -o output.svg
+mmdc -i input.mmd -o output.svg
 ```
 
 ```
-mmd -i input.mmd -o output.png
+mmdc -i input.mmd -o output.png
 ```
 
 ```
-mmd -i input.mmd -o output.svg -w 1024 -H 768
+mmdc -i input.mmd -o output.svg -w 1024 -H 768
 ```
 
 ```
-mmd -i input.mmd -t forest
+mmdc -i input.mmd -t forest
 ```
 
 
@@ -44,7 +44,7 @@ mmd -i input.mmd -t forest
 Please run the following command to see the latest options:
 
 ```
-mmd -h
+mmdc -h
 ```
 
 The following is for your quick reference (may not be the latest version):
