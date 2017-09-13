@@ -51,9 +51,15 @@ height = parseInt(height)
   const page = await browser.newPage()
   page.setViewport({ width, height })
   await page.goto(`file://${path.join(__dirname, 'index.html')}`)
-  const svg = await page.$eval('svg', svg => svg.outerHTML)
+
+  const definition = fs.readFileSync(input, 'utf-8')
+  await page.$eval('#container', (container, definition, theme) => {
+    container.innerHTML = definition
+    window.mermaid_config = { theme }
+    window.mermaid.init(undefined, container)
+  }, definition, theme)
+
+  const svg = await page.$eval('#container', container => container.innerHTML)
   fs.writeFileSync(output, svg)
   browser.close()
 })()
-
-// todo: take advantages of theme and input
