@@ -17,7 +17,7 @@ yarn global add mermaid.cli
 npm install -g mermaid.cli
 ```
 
-Please install via `npm` instead of `yarn` if you encouner [this issue](https://github.com/yarnpkg/yarn/issues/2224).
+Please install via `npm` instead of `yarn` if you encounter [this issue](https://github.com/yarnpkg/yarn/issues/2224).
 
 
 ## Examples

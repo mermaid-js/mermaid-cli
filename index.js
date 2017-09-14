@@ -14,11 +14,11 @@ const error = (message) => {
 
 commander
   .version(pkg.version)
-  .option('-t, --theme [name]', 'Theme of the chart. Optional. Default: default', /^default|forest|dark|neutral$/, 'default')
+  .option('-t, --theme [name]', 'Theme of the chart, could be default, forest, dark or neutral. Optional. Default: default', /^default|forest|dark|neutral$/, 'default')
   .option('-w, --width [width]', 'Width of the page. Optional. Default: 800', /^\d+$/, '800')
   .option('-H, --height [height]', 'Height of the page. Optional. Default: 600', /^\d+$/, '600')
-  .option('-i, --input <input>', chalk.blue('* Input mermaid file. Required.'))
-  .option('-o, --output [output]', 'Output image file. Optional. Default: input + ".svg"')
+  .option('-i, --input <input>', 'Input mermaid file. Required.')
+  .option('-o, --output [output]', 'Output image file. It should be either svg or png. Optional. Default: input + ".svg"')
   .parse(process.argv)
 
 let { theme, width, height, input, output } = commander
