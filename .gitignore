@@ -2,3 +2,4 @@ node_modules/
 *.svg
 *.png
 *.min.js
+*.bundle.js

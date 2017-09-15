@@ -1,28 +1,37 @@
 {
   "name": "mermaid.cli",
-  "version": "0.1.6",
+  "version": "0.1.8",
   "description": "Command-line interface for mermaid",
   "license": "MIT",
   "repository": "git@github.com:mermaidjs/mermaid.cli.git",
   "author": "Tyler Long <tyler4long@gmail.com>",
   "bin": {
-    "mmdc": "./index.js"
+    "mmdc": "./index.bundle.js"
   },
   "scripts": {
-    "upgrade": "yarn upgrade --latest && cp ./node_modules/mermaid/dist/mermaid.min.js ."
+    "upgrade": "yarn upgrade --latest && cp ./node_modules/mermaid/dist/mermaid.min.js .",
+    "prepublishOnly": "babel ./index.js --out-file ./index.bundle.js"
   },
   "dependencies": {
     "chalk": "^2.1.0",
     "commander": "^2.11.0",
-    "mermaid": "^7.1.0",
     "puppeteer": "^0.10.2"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "mermaid": "^7.1.0",
     "standard": "^10.0.3"
   },
   "files": [
     "index.js",
+    "index.bundle.js",
     "mermaid.min.js",
     "index.html"
-  ]
+  ],
+  "standard": {
+    "ignore": [
+      "index.bundle.js"
+    ]
+  }
 }
