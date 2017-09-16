@@ -50,12 +50,16 @@ mmdc -h
 The following is for your quick reference (may not be the latest version):
 
 ```
+Usage: mmdc [options]
+
+
   Options:
+
     -V, --version          output the version number
-    -t, --theme [name]     Theme of the chart. Optional. Default: default
+    -t, --theme [name]     Theme of the chart, could be default, forest, dark or neutral. Optional. Default: default
     -w, --width [width]    Width of the page. Optional. Default: 800
     -H, --height [height]  Height of the page. Optional. Default: 600
-    -i, --input <input>    * Input mermaid file. Required.
-    -o, --output [output]  Output image file. Optional. Default: input + ".svg"
+    -i, --input <input>    Input mermaid file. Required.
+    -o, --output [output]  Output image file. It should be either svg or png. Optional. Default: input + ".svg"
     -h, --help             output usage information
 ```
