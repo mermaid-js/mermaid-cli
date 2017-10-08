@@ -19,9 +19,10 @@ commander
   .option('-H, --height [height]', 'Height of the page. Optional. Default: 600', /^\d+$/, '600')
   .option('-i, --input <input>', 'Input mermaid file. Required.')
   .option('-o, --output [output]', 'Output file. It should be either svg, png or pdf. Optional. Default: input + ".svg"')
+  .option('-b, --backgroundColor [backgroundColor]', 'Background color. Example: transparent, red, \'#F0F0F0\'. Optional. Default: white')
   .parse(process.argv)
 
-let { theme, width, height, input, output } = commander
+let { theme, width, height, input, output, backgroundColor } = commander
 
 // check input file
 if (!input) {
@@ -46,12 +47,15 @@ if (!fs.existsSync(outputDir)) {
 // normalize args
 width = parseInt(width)
 height = parseInt(height)
+backgroundColor = backgroundColor || 'white'
 
 ;(async () => {
   const browser = await puppeteer.launch()
   const page = await browser.newPage()
   page.setViewport({ width, height })
   await page.goto(`file://${path.join(__dirname, 'index.html')}`)
+
+  await page.evaluate(`document.body.style.background = '${backgroundColor}'`)
 
   const definition = fs.readFileSync(input, 'utf-8')
   await page.$eval('#container', (container, definition, theme) => {
@@ -68,9 +72,9 @@ height = parseInt(height)
       const react = svg.getBoundingClientRect()
       return { x: react.left, y: react.top, width: react.width, height: react.height }
     })
-    await page.screenshot({ path: output, clip })
+    await page.screenshot({ path: output, clip, omitBackground: backgroundColor === 'transparent' })
   } else { // pdf
-    await page.pdf({ path: output })
+    await page.pdf({ path: output, printBackground: backgroundColor !== 'transparent' })
   }
 
   browser.close()

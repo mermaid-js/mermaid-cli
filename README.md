@@ -31,11 +31,23 @@ mmdc -i input.mmd -o output.png
 ```
 
 ```
+mmdc -i input.mmd -o output.pdf
+```
+
+```
 mmdc -i input.mmd -o output.svg -w 1024 -H 768
 ```
 
 ```
 mmdc -i input.mmd -t forest
+```
+
+```
+mmdc -i input.mmd -o output.png -b '#FFF000'
+```
+
+```
+mmdc -i input.mmd -o output.png -b transparent
 ```
 
 
@@ -55,11 +67,12 @@ Usage: mmdc [options]
 
   Options:
 
-    -V, --version          output the version number
-    -t, --theme [name]     Theme of the chart, could be default, forest, dark or neutral. Optional. Default: default
-    -w, --width [width]    Width of the page. Optional. Default: 800
-    -H, --height [height]  Height of the page. Optional. Default: 600
-    -i, --input <input>    Input mermaid file. Required.
-    -o, --output [output]  Output file. It should be either svg, png or pdf. Optional. Default: input + ".svg"
-    -h, --help             output usage information
+    -V, --version                            output the version number
+    -t, --theme [name]                       Theme of the chart, could be default, forest, dark or neutral. Optional. Default: default
+    -w, --width [width]                      Width of the page. Optional. Default: 800
+    -H, --height [height]                    Height of the page. Optional. Default: 600
+    -i, --input <input>                      Input mermaid file. Required.
+    -o, --output [output]                    Output file. It should be either svg, png or pdf. Optional. Default: input + ".svg"
+    -b, --backgroundColor [backgroundColor]  Background color. Example: transparent, red, '#F0F0F0'. Optional. Default: white
+    -h, --help                               output usage information
 ```
