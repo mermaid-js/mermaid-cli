@@ -18,7 +18,7 @@ commander
   .option('-w, --width [width]', 'Width of the page. Optional. Default: 800', /^\d+$/, '800')
   .option('-H, --height [height]', 'Height of the page. Optional. Default: 600', /^\d+$/, '600')
   .option('-i, --input <input>', 'Input mermaid file. Required.')
-  .option('-o, --output [output]', 'Output image file. It should be either svg, png or pdf. Optional. Default: input + ".svg"')
+  .option('-o, --output [output]', 'Output file. It should be either svg, png or pdf. Optional. Default: input + ".svg"')
   .parse(process.argv)
 
 let { theme, width, height, input, output } = commander
@@ -63,17 +63,13 @@ height = parseInt(height)
   if (output.endsWith('svg')) {
     const svg = await page.$eval('#container', container => container.innerHTML)
     fs.writeFileSync(output, svg)
-  } else if (output.endsWith('png')) { // png
+  } else if (output.endsWith('png')) {
     const clip = await page.$eval('svg', svg => {
       const react = svg.getBoundingClientRect()
       return { x: react.left, y: react.top, width: react.width, height: react.height }
     })
     await page.screenshot({ path: output, clip })
-  } else {
-    const clip = await page.$eval('svg', svg => {
-      const react = svg.getBoundingClientRect()
-      return { x: react.left, y: react.top, width: react.width, height: react.height }
-    })
+  } else { // pdf
     await page.pdf({ path: output })
   }
 

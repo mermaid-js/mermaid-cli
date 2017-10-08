@@ -60,6 +60,6 @@ Usage: mmdc [options]
     -w, --width [width]    Width of the page. Optional. Default: 800
     -H, --height [height]  Height of the page. Optional. Default: 600
     -i, --input <input>    Input mermaid file. Required.
-    -o, --output [output]  Output image file. It should be either svg or png. Optional. Default: input + ".svg"
+    -o, --output [output]  Output file. It should be either svg, png or pdf. Optional. Default: input + ".svg"
     -h, --help             output usage information
 ```

@@ -3,3 +3,4 @@ node_modules/
 *.png
 *.min.js
 *.bundle.js
+*.pdf
