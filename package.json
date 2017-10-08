@@ -1,6 +1,6 @@
 {
   "name": "mermaid.cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Command-line interface for mermaid",
   "license": "MIT",
   "repository": "git@github.com:mermaidjs/mermaid.cli.git",
@@ -25,10 +25,10 @@
     "yarn-upgrade-all": "^0.2.0"
   },
   "files": [
-    "index.js",
     "index.bundle.js",
     "mermaid.min.js",
-    "index.html"
+    "index.html",
+    "index.css"
   ],
   "standard": {
     "ignore": [
