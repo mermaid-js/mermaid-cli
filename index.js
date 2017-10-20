@@ -21,9 +21,10 @@ commander
   .option('-o, --output [output]', 'Output file. It should be either svg, png or pdf. Optional. Default: input + ".svg"')
   .option('-b, --backgroundColor [backgroundColor]', 'Background color. Example: transparent, red, \'#F0F0F0\'. Optional. Default: white')
   .option('-c, --configFile [config]', 'Configuration file for mermaid. Optional')
+  .option('-C, --cssFile [cssFile]', 'CSS alternate file for mermaid. Optional')
   .parse(process.argv)
 
-let { theme, width, height, input, output, backgroundColor, configFile } = commander
+let { theme, width, height, input, output, backgroundColor, configFile, cssFile } = commander
 
 // check input file
 if (!input) {
@@ -51,6 +52,14 @@ if (configFile) {
   }
 }
 
+if (cssFile) {
+  if (!fs.existsSync(cssFile)) {
+    error(`CSS file "${cssFile}" doesn't exist`)
+  } else if (!/\.(?:css)$/.test(cssFile)) {
+    error(`CSS file must end with ".css"`)
+  }
+}
+
 // normalize args
 width = parseInt(width)
 height = parseInt(height)
@@ -66,13 +75,17 @@ backgroundColor = backgroundColor || 'white'
 
   const definition = fs.readFileSync(input, 'utf-8')
 
-  var myconfig
+  var myconfig, myCSS
   
   if (configFile) {
     myconfig = JSON.parse(fs.readFileSync(configFile, 'utf-8'))
   }
 
-  await page.$eval('#container', (container, definition, theme, myconfig) => {
+  if (cssFile) {
+    myCSS = fs.readFileSync(cssFile, 'utf-8')
+  }
+
+  await page.$eval('#container', (container, definition, theme, myconfig, myCSS) => {
     container.innerHTML = definition
     window.mermaid_config = { theme }
 
@@ -81,8 +94,22 @@ backgroundColor = backgroundColor || 'white'
       window.mermaid.initialize(myconfig)
     }
 
+    if (myCSS) {
+      var head = window.document.head || window.document.getElementsByTagName('head')[0],
+        style = document.createElement('style');
+
+      style.type = 'text/css';
+      if (style.styleSheet) {
+        style.styleSheet.cssText = myCSS;
+      } else {
+        style.appendChild(document.createTextNode(myCSS));
+      }
+
+      head.appendChild(style);
+    }
+
     window.mermaid.init(undefined, container)
-  }, definition, theme, myconfig)
+  }, definition, theme, myconfig, myCSS)
 
   if (output.endsWith('svg')) {
     const svg = await page.$eval('#container', container => container.innerHTML)
