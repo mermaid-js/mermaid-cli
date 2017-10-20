@@ -20,7 +20,7 @@ commander
   .option('-i, --input <input>', 'Input mermaid file. Required.')
   .option('-o, --output [output]', 'Output file. It should be either svg, png or pdf. Optional. Default: input + ".svg"')
   .option('-b, --backgroundColor [backgroundColor]', 'Background color. Example: transparent, red, \'#F0F0F0\'. Optional. Default: white')
-  .option('-c, --configFile [config]', 'Configuration file for mermaid. Optional')
+  .option('-c, --configFile [config]', 'JSON configuration file for mermaid. Optional')
   .option('-C, --cssFile [cssFile]', 'CSS alternate file for mermaid. Optional')
   .parse(process.argv)
 
@@ -49,6 +49,8 @@ if (!fs.existsSync(outputDir)) {
 if (configFile) {
   if (!fs.existsSync(configFile)) {
     error(`Configuration file "${configFile}" doesn't exist`)
+  } else if (!/\.(?:json)$/.test(configFile)) {
+    error(`Config file must end with ".json"`)
   }
 }
 
