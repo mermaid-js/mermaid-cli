@@ -20,9 +20,10 @@ commander
   .option('-i, --input <input>', 'Input mermaid file. Required.')
   .option('-o, --output [output]', 'Output file. It should be either svg, png or pdf. Optional. Default: input + ".svg"')
   .option('-b, --backgroundColor [backgroundColor]', 'Background color. Example: transparent, red, \'#F0F0F0\'. Optional. Default: white')
+  .option('-c, --configFile [config]', 'Configuration file for mermaid. Optional')
   .parse(process.argv)
 
-let { theme, width, height, input, output, backgroundColor } = commander
+let { theme, width, height, input, output, backgroundColor, configFile } = commander
 
 // check input file
 if (!input) {
@@ -44,6 +45,12 @@ if (!fs.existsSync(outputDir)) {
   error(`Output directory "${outputDir}/" doesn't exist`)
 }
 
+if (configFile) {
+  if (!fs.existsSync(configFile)) {
+    error(`Configuration file "${configFile}" doesn't exist`)
+  }
+}
+
 // normalize args
 width = parseInt(width)
 height = parseInt(height)
@@ -58,11 +65,24 @@ backgroundColor = backgroundColor || 'white'
   await page.evaluate(`document.body.style.background = '${backgroundColor}'`)
 
   const definition = fs.readFileSync(input, 'utf-8')
-  await page.$eval('#container', (container, definition, theme) => {
+
+  var myconfig
+  
+  if (configFile) {
+    myconfig = JSON.parse(fs.readFileSync(configFile, 'utf-8'))
+  }
+
+  await page.$eval('#container', (container, definition, theme, myconfig) => {
     container.innerHTML = definition
     window.mermaid_config = { theme }
+
+    if (myconfig) {
+    // See https://github.com/knsv/mermaid/blob/master/src/mermaidAPI.js
+      window.mermaid.initialize(myconfig)
+    }
+
     window.mermaid.init(undefined, container)
-  }, definition, theme)
+  }, definition, theme, myconfig)
 
   if (output.endsWith('svg')) {
     const svg = await page.$eval('#container', container => container.innerHTML)
