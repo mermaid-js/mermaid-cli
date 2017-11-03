@@ -74,5 +74,7 @@ Usage: mmdc [options]
     -i, --input <input>                      Input mermaid file. Required.
     -o, --output [output]                    Output file. It should be either svg, png or pdf. Optional. Default: input + ".svg"
     -b, --backgroundColor [backgroundColor]  Background color. Example: transparent, red, '#F0F0F0'. Optional. Default: white
+    -c, --configFile [config]                JSON configuration file for mermaid. Optional
+    -C, --cssFile [cssFile]                  CSS alternate file for mermaid. Optional
     -h, --help                               output usage information
 ```
