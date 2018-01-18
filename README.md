@@ -76,5 +76,6 @@ Usage: mmdc [options]
     -b, --backgroundColor [backgroundColor]  Background color. Example: transparent, red, '#F0F0F0'. Optional. Default: white
     -c, --configFile [config]                JSON configuration file for mermaid. Optional
     -C, --cssFile [cssFile]                  CSS alternate file for mermaid. Optional
+    --headlessConfig [config]                JSON configuration file for puppeteer. Optional
     -h, --help                               output usage information
 ```
