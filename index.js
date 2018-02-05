@@ -55,28 +55,33 @@ if (!fs.existsSync(outputDir)) {
   error(`Output directory "${outputDir}/" doesn't exist`)
 }
 
+// check config files
+let mermaidConfig = { theme }
 if (configFile) {
   checkConfig(configFile)
+  mermaidConfig = Object.assign(mermaidConfig, JSON.parse(fs.readFileSync(configFile, 'utf-8')))
 }
-
 if (headlessConfig) {
   checkConfig(headlessConfig)
 }
 
+// check cssFile
+let myCSS
 if (cssFile) {
   if (!fs.existsSync(cssFile)) {
     error(`CSS file "${cssFile}" doesn't exist`)
   } else if (!/\.(?:css)$/.test(cssFile)) {
     error(`CSS file must end with ".css"`)
   }
+  myCSS = fs.readFileSync(cssFile, 'utf-8')
 }
 
 // normalize args
 width = parseInt(width)
 height = parseInt(height)
-backgroundColor = backgroundColor || 'white'
+backgroundColor = backgroundColor || 'white';
 
-;(async () => {
+(async () => {
   const headlessOpts = (headlessConfig)
     ? JSON.parse(fs.readFileSync(headlessConfig, 'utf-8'))
     : {}
@@ -84,45 +89,27 @@ backgroundColor = backgroundColor || 'white'
   const page = await browser.newPage()
   page.setViewport({ width, height })
   await page.goto(`file://${path.join(__dirname, 'index.html')}`)
-
   await page.evaluate(`document.body.style.background = '${backgroundColor}'`)
-
   const definition = fs.readFileSync(input, 'utf-8')
 
-  var myconfig, myCSS
-  if (configFile) {
-    myconfig = JSON.parse(fs.readFileSync(configFile, 'utf-8'))
-  }
-
-  if (cssFile) {
-    myCSS = fs.readFileSync(cssFile, 'utf-8')
-  }
-
-  await page.$eval('#container', (container, definition, theme, myconfig, myCSS) => {
+  await page.$eval('#container', (container, definition, mermaidConfig, myCSS) => {
     container.innerHTML = definition
-    window.mermaid_config = { theme }
-
-    if (myconfig) {
-    // See https://github.com/knsv/mermaid/blob/master/src/mermaidAPI.js
-      window.mermaid.initialize(myconfig)
-    }
+    window.mermaid.initialize(mermaidConfig)
 
     if (myCSS) {
-      var head = window.document.head || window.document.getElementsByTagName('head')[0],
-        style = document.createElement('style');
-
-      style.type = 'text/css';
+      const head = window.document.head || window.document.getElementsByTagName('head')[0]
+      const style = document.createElement('style')
+      style.type = 'text/css'
       if (style.styleSheet) {
-        style.styleSheet.cssText = myCSS;
+        style.styleSheet.cssText = myCSS
       } else {
-        style.appendChild(document.createTextNode(myCSS));
+        style.appendChild(document.createTextNode(myCSS))
       }
-
-      head.appendChild(style);
+      head.appendChild(style)
     }
 
     window.mermaid.init(undefined, container)
-  }, definition, theme, myconfig, myCSS)
+  }, definition, mermaidConfig, myCSS)
 
   if (output.endsWith('svg')) {
     const svg = await page.$eval('#container', container => container.innerHTML)
