@@ -78,3 +78,16 @@ Usage: mmdc [options]
     -C, --cssFile [cssFile]                  CSS alternate file for mermaid. Optional
     -h, --help                               output usage information
 ```
+
+
+## For contributors
+
+### Setup
+
+    yarn install
+    cp ./node_modules/mermaid/dist/mermaid.min.js .
+
+
+### Test
+
+Use the fixtures in `test/` to do manual testing after you change something.
