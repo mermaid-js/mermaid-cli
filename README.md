@@ -24,6 +24,8 @@ npm install mermaid.cli
 
 ## Install globally
 
+❗️ We do **NOT** recommend installing it globally because both YARN and NPM could fail to install a command line tool globally properly due to weird permission issues.
+
 ```
 yarn global add mermaid.cli
 ```
@@ -33,8 +35,6 @@ yarn global add mermaid.cli
 ```
 npm install -g mermaid.cli
 ```
-
-Please install via `npm` instead of `yarn` if you encounter [this issue](https://github.com/yarnpkg/yarn/issues/2224).
 
 
 ## Examples
