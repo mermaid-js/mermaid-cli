@@ -1,6 +1,6 @@
 {
   "name": "mermaid.cli",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Command-line interface for mermaid",
   "license": "MIT",
   "repository": "git@github.com:mermaidjs/mermaid.cli.git",
