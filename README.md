@@ -2,7 +2,7 @@
 
 Command-line interface for [mermaid](https://mermaidjs.github.io/).
 
-This CLI tool takes a mermaid definition file as input and generates svg/png file as output.
+This CLI tool takes a mermaid definition file as input and generates svg/png/pdf file as output.
 
 
 ## Installation
