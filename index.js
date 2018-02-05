@@ -12,6 +12,14 @@ const error = (message) => {
   process.exit(1)
 }
 
+const checkConfig = (file) => {
+  if (!fs.existsSync(file)) {
+    error(`Configuration file "${file}" doesn't exist`)
+  } else if (!/\.(?:json)$/.test(file)) {
+    error(`Config file must end with ".json"`)
+  }
+}
+
 commander
   .version(pkg.version)
   .option('-t, --theme [name]', 'Theme of the chart, could be default, forest, dark or neutral. Optional. Default: default', /^default|forest|dark|neutral$/, 'default')
@@ -22,9 +30,10 @@ commander
   .option('-b, --backgroundColor [backgroundColor]', 'Background color. Example: transparent, red, \'#F0F0F0\'. Optional. Default: white')
   .option('-c, --configFile [config]', 'JSON configuration file for mermaid. Optional')
   .option('-C, --cssFile [cssFile]', 'CSS alternate file for mermaid. Optional')
+  .option('--headlessConfig [config]', 'JSON configuration file for puppeteer. Optional')
   .parse(process.argv)
 
-let { theme, width, height, input, output, backgroundColor, configFile, cssFile } = commander
+let { theme, width, height, input, output, backgroundColor, configFile, cssFile, headlessConfig } = commander
 
 // check input file
 if (!input) {
@@ -46,15 +55,14 @@ if (!fs.existsSync(outputDir)) {
   error(`Output directory "${outputDir}/" doesn't exist`)
 }
 
-// check configFile
+// check config files
 let mermaidConfig = { theme }
 if (configFile) {
-  if (!fs.existsSync(configFile)) {
-    error(`Configuration file "${configFile}" doesn't exist`)
-  } else if (!/\.(?:json)$/.test(configFile)) {
-    error(`Config file must end with ".json"`)
-  }
+  checkConfig(configFile)
   mermaidConfig = Object.assign(mermaidConfig, JSON.parse(fs.readFileSync(configFile, 'utf-8')))
+}
+if (headlessConfig) {
+  checkConfig(headlessConfig)
 }
 
 // check cssFile
@@ -74,7 +82,10 @@ height = parseInt(height)
 backgroundColor = backgroundColor || 'white';
 
 (async () => {
-  const browser = await puppeteer.launch()
+  const headlessOpts = (headlessConfig)
+    ? JSON.parse(fs.readFileSync(headlessConfig, 'utf-8'))
+    : {}
+  const browser = await puppeteer.launch(headlessOpts)
   const page = await browser.newPage()
   page.setViewport({ width, height })
   await page.goto(`file://${path.join(__dirname, 'index.html')}`)
