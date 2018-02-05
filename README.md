@@ -67,17 +67,17 @@ Usage: mmdc [options]
 
   Options:
 
-    -V, --version                            output the version number
-    -t, --theme [name]                       Theme of the chart, could be default, forest, dark or neutral. Optional. Default: default
-    -w, --width [width]                      Width of the page. Optional. Default: 800
-    -H, --height [height]                    Height of the page. Optional. Default: 600
-    -i, --input <input>                      Input mermaid file. Required.
-    -o, --output [output]                    Output file. It should be either svg, png or pdf. Optional. Default: input + ".svg"
-    -b, --backgroundColor [backgroundColor]  Background color. Example: transparent, red, '#F0F0F0'. Optional. Default: white
-    -c, --configFile [config]                JSON configuration file for mermaid. Optional
-    -C, --cssFile [cssFile]                  CSS alternate file for mermaid. Optional
-    --headlessConfig [config]                JSON configuration file for puppeteer. Optional
-    -h, --help                               output usage information
+    -V, --version                                   output the version number
+    -t, --theme [theme]                             Theme of the chart, could be default, forest, dark or neutral. Optional. Default: default (default: default)
+    -w, --width [width]                             Width of the page. Optional. Default: 800 (default: 800)
+    -H, --height [height]                           Height of the page. Optional. Default: 600 (default: 600)
+    -i, --input <input>                             Input mermaid file. Required.
+    -o, --output [output]                           Output file. It should be either svg, png or pdf. Optional. Default: input + ".svg"
+    -b, --backgroundColor [backgroundColor]         Background color. Example: transparent, red, '#F0F0F0'. Optional. Default: white
+    -c, --configFile [configFile]                   JSON configuration file for mermaid. Optional
+    -C, --cssFile [cssFile]                         CSS alternate file for mermaid. Optional
+    -p --puppeteerConfigFile [puppeteerConfigFile]  JSON configuration file for puppeteer. Optional
+    -h, --help                                      output usage information
 ```
 
 

@@ -7,12 +7,12 @@ const puppeteer = require('puppeteer')
 
 const pkg = require('./package.json')
 
-const error = (message) => {
+const error = message => {
   console.log(chalk.red(`\n${message}\n`))
   process.exit(1)
 }
 
-const checkConfig = (file) => {
+const checkConfigFile = file => {
   if (!fs.existsSync(file)) {
     error(`Configuration file "${file}" doesn't exist`)
   } else if (!/\.(?:json)$/.test(file)) {
@@ -22,18 +22,18 @@ const checkConfig = (file) => {
 
 commander
   .version(pkg.version)
-  .option('-t, --theme [name]', 'Theme of the chart, could be default, forest, dark or neutral. Optional. Default: default', /^default|forest|dark|neutral$/, 'default')
+  .option('-t, --theme [theme]', 'Theme of the chart, could be default, forest, dark or neutral. Optional. Default: default', /^default|forest|dark|neutral$/, 'default')
   .option('-w, --width [width]', 'Width of the page. Optional. Default: 800', /^\d+$/, '800')
   .option('-H, --height [height]', 'Height of the page. Optional. Default: 600', /^\d+$/, '600')
   .option('-i, --input <input>', 'Input mermaid file. Required.')
   .option('-o, --output [output]', 'Output file. It should be either svg, png or pdf. Optional. Default: input + ".svg"')
   .option('-b, --backgroundColor [backgroundColor]', 'Background color. Example: transparent, red, \'#F0F0F0\'. Optional. Default: white')
-  .option('-c, --configFile [config]', 'JSON configuration file for mermaid. Optional')
+  .option('-c, --configFile [configFile]', 'JSON configuration file for mermaid. Optional')
   .option('-C, --cssFile [cssFile]', 'CSS alternate file for mermaid. Optional')
-  .option('--headlessConfig [config]', 'JSON configuration file for puppeteer. Optional')
+  .option('-p --puppeteerConfigFile [puppeteerConfigFile]', 'JSON configuration file for puppeteer. Optional')
   .parse(process.argv)
 
-let { theme, width, height, input, output, backgroundColor, configFile, cssFile, headlessConfig } = commander
+let { theme, width, height, input, output, backgroundColor, configFile, cssFile, puppeteerConfigFile } = commander
 
 // check input file
 if (!input) {
@@ -58,11 +58,13 @@ if (!fs.existsSync(outputDir)) {
 // check config files
 let mermaidConfig = { theme }
 if (configFile) {
-  checkConfig(configFile)
+  checkConfigFile(configFile)
   mermaidConfig = Object.assign(mermaidConfig, JSON.parse(fs.readFileSync(configFile, 'utf-8')))
 }
-if (headlessConfig) {
-  checkConfig(headlessConfig)
+let puppeteerConfig = {}
+if (puppeteerConfigFile) {
+  checkConfigFile(puppeteerConfigFile)
+  puppeteerConfig = JSON.parse(fs.readFileSync(puppeteerConfigFile, 'utf-8'))
 }
 
 // check cssFile
@@ -82,10 +84,7 @@ height = parseInt(height)
 backgroundColor = backgroundColor || 'white';
 
 (async () => {
-  const headlessOpts = (headlessConfig)
-    ? JSON.parse(fs.readFileSync(headlessConfig, 'utf-8'))
-    : {}
-  const browser = await puppeteer.launch(headlessOpts)
+  const browser = await puppeteer.launch(puppeteerConfig)
   const page = await browser.newPage()
   page.setViewport({ width, height })
   await page.goto(`file://${path.join(__dirname, 'index.html')}`)
