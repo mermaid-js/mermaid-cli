@@ -10,5 +10,6 @@
     "mirrorActors": false,
     "bottomMarginAdj": 1
   },
-  "theme": "forest"
+  "theme": "forest",
+  "themeCSS": ".node rect { fill: red; }"
 }
