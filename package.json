@@ -20,7 +20,7 @@
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.6.1",
-    "mermaid": "^8.0.0-beta.1",
+    "mermaid": "^8.0.0-beta.2",
     "standard": "^11.0.1",
     "yarn-upgrade-all": "^0.3.0"
   },

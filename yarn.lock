@@ -2073,9 +2073,9 @@ lru-cache@^4.0.1:
     pseudomap "^1.0.2"
     yallist "^2.1.2"
 
-mermaid@^8.0.0-beta.1:
-  version "8.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/mermaid/-/mermaid-8.0.0-beta.1.tgz#d9fed6f1ce8e56f6841be4ba2b2e0c360355074b"
+mermaid@^8.0.0-beta.2:
+  version "8.0.0-beta.2"
+  resolved "https://registry.yarnpkg.com/mermaid/-/mermaid-8.0.0-beta.2.tgz#eddbf8be37d5e1badcda387551caeda2ae246b8a"
   dependencies:
     d3 "^4.13.0"
     dagre-d3-renderer "^0.5.1"
