@@ -22,9 +22,9 @@ const checkConfigFile = file => {
 
 commander
   .version(pkg.version)
-  .option('-t, --theme [theme]', 'Theme of the chart, could be default, forest, dark or neutral. Optional. Default: default', /^default|forest|dark|neutral$/)
-  .option('-w, --width [width]', 'Width of the page. Optional. Default: 800', /^\d+$/)
-  .option('-H, --height [height]', 'Height of the page. Optional. Default: 600', /^\d+$/)
+  .option('-t, --theme [theme]', 'Theme of the chart, could be default, forest, dark or neutral. Optional. Default: default', /^default|forest|dark|neutral$/, 'default')
+  .option('-w, --width [width]', 'Width of the page. Optional. Default: 800', /^\d+$/, 800)
+  .option('-H, --height [height]', 'Height of the page. Optional. Default: 600', /^\d+$/, 600)
   .option('-i, --input <input>', 'Input mermaid file. Required.')
   .option('-o, --output [output]', 'Output file. It should be either svg, png or pdf. Optional. Default: input + ".svg"')
   .option('-b, --backgroundColor [backgroundColor]', 'Background color. Example: transparent, red, \'#F0F0F0\'. Optional. Default: white')
