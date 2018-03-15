@@ -92,7 +92,7 @@ Usage: mmdc [options]
     -o, --output [output]                           Output file. It should be either svg, png or pdf. Optional. Default: input + ".svg"
     -b, --backgroundColor [backgroundColor]         Background color. Example: transparent, red, '#F0F0F0'. Optional. Default: white
     -c, --configFile [configFile]                   JSON configuration file for mermaid. Optional
-    -C, --cssFile [cssFile]                         CSS alternate file for mermaid. Optional
+    -C, --cssFile [cssFile]                         CSS file for the page. Optional
     -p --puppeteerConfigFile [puppeteerConfigFile]  JSON configuration file for puppeteer. Optional
     -h, --help                                      output usage information
 ```

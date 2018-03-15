@@ -29,7 +29,7 @@ commander
   .option('-o, --output [output]', 'Output file. It should be either svg, png or pdf. Optional. Default: input + ".svg"')
   .option('-b, --backgroundColor [backgroundColor]', 'Background color. Example: transparent, red, \'#F0F0F0\'. Optional. Default: white')
   .option('-c, --configFile [configFile]', 'JSON configuration file for mermaid. Optional')
-  .option('-C, --cssFile [cssFile]', 'CSS alternate file for mermaid. Optional')
+  .option('-C, --cssFile [cssFile]', 'CSS file for the page. Optional')
   .option('-p --puppeteerConfigFile [puppeteerConfigFile]', 'JSON configuration file for puppeteer. Optional')
   .parse(process.argv)
 
