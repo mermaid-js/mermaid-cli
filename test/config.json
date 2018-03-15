@@ -4,7 +4,7 @@
     "useMaxWidth": false,
     "htmlLabels": true
   },
-  "sequenceDiagram": {
+  "sequence": {
     "height": 40,
     "actorMargin": 80,
     "mirrorActors": false,
