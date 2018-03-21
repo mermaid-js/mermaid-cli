@@ -795,7 +795,11 @@ combined-stream@^1.0.5, combined-stream@~1.0.5:
   dependencies:
     delayed-stream "~1.0.0"
 
-commander@2, commander@^2.11.0, commander@^2.12.2, commander@^2.15.0:
+commander@2:
+  version "2.15.1"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-2.15.1.tgz#df46e867d0fc2aec66a34662b406a9ccafff5b0f"
+
+commander@^2.11.0, commander@^2.12.2, commander@^2.15.0:
   version "2.15.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.15.0.tgz#ad2a23a1c3b036e392469b8012cec6b33b4c1322"
 
@@ -1071,16 +1075,16 @@ d3@^4.13.0:
     d3-voronoi "1.1.2"
     d3-zoom "1.7.1"
 
-dagre-d3-renderer@^0.5.3:
-  version "0.5.3"
-  resolved "https://registry.yarnpkg.com/dagre-d3-renderer/-/dagre-d3-renderer-0.5.3.tgz#fef1a6c254a2c5945fbeb5257370ec32fe98d980"
+dagre-d3-renderer@^0.5.6:
+  version "0.5.6"
+  resolved "https://registry.yarnpkg.com/dagre-d3-renderer/-/dagre-d3-renderer-0.5.6.tgz#cf85c18e0ee4dba62b69b0697c28d638237bbc89"
   dependencies:
-    dagre-layout "^0.8.6"
+    dagre-layout "^0.8.8"
     lodash "^4.17.5"
 
-dagre-layout@^0.8.6:
-  version "0.8.6"
-  resolved "https://registry.yarnpkg.com/dagre-layout/-/dagre-layout-0.8.6.tgz#2c41ed2ed22db7bcded7fedfe420a63c060187c5"
+dagre-layout@^0.8.8:
+  version "0.8.8"
+  resolved "https://registry.yarnpkg.com/dagre-layout/-/dagre-layout-0.8.8.tgz#9b6792f24229f402441c14162c1049e3f261f6d9"
   dependencies:
     graphlibrary "^2.2.0"
     lodash "^4.17.5"
@@ -2073,13 +2077,13 @@ lru-cache@^4.0.1:
     pseudomap "^1.0.2"
     yallist "^2.1.2"
 
-mermaid@^8.0.0-beta.9:
-  version "8.0.0-beta.9"
-  resolved "https://registry.yarnpkg.com/mermaid/-/mermaid-8.0.0-beta.9.tgz#825f88892d08de6ee5c41c716c532deb81415b6d"
+mermaid@^8.0.0-rc.6:
+  version "8.0.0-rc.6"
+  resolved "https://registry.yarnpkg.com/mermaid/-/mermaid-8.0.0-rc.6.tgz#abc0e6ea27b581bfeb27cd4a5b2e879ee55510b0"
   dependencies:
     d3 "^4.13.0"
-    dagre-d3-renderer "^0.5.3"
-    dagre-layout "^0.8.6"
+    dagre-d3-renderer "^0.5.6"
+    dagre-layout "^0.8.8"
     graphlibrary "^2.2.0"
     he "^1.1.1"
     lodash "^4.17.5"
