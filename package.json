@@ -1,6 +1,6 @@
 {
   "name": "mermaid.cli",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "description": "Command-line interface for mermaid",
   "license": "MIT",
   "repository": "git@github.com:mermaidjs/mermaid.cli.git",
@@ -20,7 +20,7 @@
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.6.1",
-    "mermaid": "^8.0.0-rc.7",
+    "mermaid": "^8.0.0-rc.8",
     "standard": "^11.0.1",
     "yarn-upgrade-all": "^0.3.0"
   },
