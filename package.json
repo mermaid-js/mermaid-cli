@@ -1,6 +1,6 @@
 {
   "name": "mermaid.cli",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "Command-line interface for mermaid",
   "license": "MIT",
   "repository": "git@github.com:mermaidjs/mermaid.cli.git",
@@ -14,13 +14,13 @@
   },
   "dependencies": {
     "chalk": "^2.3.2",
-    "commander": "^2.15.0",
+    "commander": "^2.15.1",
     "puppeteer": "^1.2.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.6.1",
-    "mermaid": "^8.0.0-rc.6",
+    "mermaid": "^8.0.0-rc.7",
     "standard": "^11.0.1",
     "yarn-upgrade-all": "^0.3.0"
   },
