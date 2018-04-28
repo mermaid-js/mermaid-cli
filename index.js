@@ -15,8 +15,6 @@ const error = message => {
 const checkConfigFile = file => {
   if (!fs.existsSync(file)) {
     error(`Configuration file "${file}" doesn't exist`)
-  } else if (!/\.(?:json)$/.test(file)) {
-    error(`Config file must end with ".json"`)
   }
 }
 
@@ -72,8 +70,6 @@ let myCSS
 if (cssFile) {
   if (!fs.existsSync(cssFile)) {
     error(`CSS file "${cssFile}" doesn't exist`)
-  } else if (!/\.(?:css)$/.test(cssFile)) {
-    error(`CSS file must end with ".css"`)
   }
   myCSS = fs.readFileSync(cssFile, 'utf-8')
 }
