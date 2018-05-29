@@ -13,13 +13,13 @@
     "prepublishOnly": "babel ./index.js --out-file ./index.bundle.js"
   },
   "dependencies": {
-    "chalk": "^2.3.2",
+    "chalk": "^2.4.1",
     "commander": "^2.15.1",
-    "puppeteer": "^1.2.0"
+    "puppeteer": "^1.4.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
+    "babel-preset-env": "^1.7.0",
     "mermaid": "^8.0.0-rc.8",
     "standard": "^11.0.1",
     "yarn-upgrade-all": "^0.3.0"
