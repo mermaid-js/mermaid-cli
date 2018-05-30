@@ -1,6 +1,6 @@
 {
   "name": "mermaid.cli",
-  "version": "0.4.6",
+  "version": "0.5.0",
   "description": "Command-line interface for mermaid",
   "license": "MIT",
   "repository": "git@github.com:mermaidjs/mermaid.cli.git",
@@ -28,7 +28,7 @@
     "index.bundle.js",
     "mermaid.min.js",
     "index.html",
-    "index.css"
+    "fontawesome/*"
   ],
   "standard": {
     "ignore": [

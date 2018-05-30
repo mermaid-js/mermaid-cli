@@ -9,6 +9,3 @@ insert_final_newline = true
 
 [*.md]
 indent_size = 4
-
-[*.njk]
-insert_final_newline = false
