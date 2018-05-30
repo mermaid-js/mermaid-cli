@@ -9,7 +9,7 @@
     "mmdc": "./index.bundle.js"
   },
   "scripts": {
-    "upgrade": "yarn-upgrade-all && cp ./node_modules/mermaid/dist/mermaid.min.js .",
+    "upgrade": "yarn-upgrade-all && cp ./node_modules/mermaid/dist/mermaid.min.js . && source downloader.sh",
     "prepublishOnly": "babel ./index.js --out-file ./index.bundle.js"
   },
   "dependencies": {

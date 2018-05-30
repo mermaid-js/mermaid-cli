@@ -104,6 +104,7 @@ Usage: mmdc [options]
 
     yarn install
     cp ./node_modules/mermaid/dist/mermaid.min.js .
+    source downloader.sh
 
 
 ### Test
