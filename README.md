@@ -134,8 +134,7 @@ mmdc -p puppeteer-config.json ...
 ### Setup
 
     yarn install
-    cp ./node_modules/mermaid/dist/mermaid.min.js .
-    source downloader.sh
+    source copy_modules.sh
 
 
 ### Test
