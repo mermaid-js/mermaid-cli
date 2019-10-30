@@ -15,13 +15,13 @@
   "dependencies": {
     "chalk": "^2.4.1",
     "commander": "^2.15.1",
-    "puppeteer": "^1.4.0"
+    "puppeteer": "1.4.0"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free-webfonts": "^1.0.9",
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
-    "mermaid": "^8.0.0-rc.8",
+    "@mermaid-js/mermaid": "^8.4.1",
     "standard": "^11.0.1",
     "yarn-upgrade-all": "^0.3.0"
   },
