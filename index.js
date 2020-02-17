@@ -28,10 +28,11 @@ commander
   .option('-b, --backgroundColor [backgroundColor]', 'Background color. Example: transparent, red, \'#F0F0F0\'. Optional. Default: white')
   .option('-c, --configFile [configFile]', 'JSON configuration file for mermaid. Optional')
   .option('-C, --cssFile [cssFile]', 'CSS file for the page. Optional')
+  .option('-s, --scale [scale]', 'Puppeteer scale factor, default 1. Optional')
   .option('-p --puppeteerConfigFile [puppeteerConfigFile]', 'JSON configuration file for puppeteer. Optional')
   .parse(process.argv)
 
-let { theme, width, height, input, output, backgroundColor, configFile, cssFile, puppeteerConfigFile } = commander
+let { theme, width, height, input, output, backgroundColor, configFile, cssFile, puppeteerConfigFile, scale } = commander
 
 // check input file
 if (!input) {
@@ -78,11 +79,12 @@ if (cssFile) {
 width = parseInt(width)
 height = parseInt(height)
 backgroundColor = backgroundColor || 'white';
+deviceScaleFactor = parseInt(scale || 1, 10);
 
 (async () => {
   const browser = await puppeteer.launch(puppeteerConfig)
   const page = await browser.newPage()
-  page.setViewport({ width, height })
+  page.setViewport({ width, height, deviceScaleFactor: deviceScaleFactor })
   await page.goto(`file://${path.join(__dirname, 'index.html')}`)
   await page.evaluate(`document.body.style.background = '${backgroundColor}'`)
   const definition = fs.readFileSync(input, 'utf-8')
