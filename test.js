@@ -14,11 +14,13 @@ async function compileDiagram(file, format) {
     // eslint-disable-next-line no-console
     console.warn(`Compiling ${file} into ${result}`);
     const child = spawnSync("node", [
-      "index.bundle.js",
+      "index.js",
       "-i",
       workflows + "/" + file,
       "-o",
-      out + "/" + result
+      out + "/" + result,
+      "-c",
+      workflows + "/config.json"
     ], { timeout: 5000 });
 
     const stdout = child.stdout.toString('utf8').trim()
@@ -68,7 +70,7 @@ module.exports = {
 };
 
 if (require.main === module) {
-  compileAll().then(console.info).catch(err => {
+  compileAll().catch(err => {
     console.warn("Compilation failed", err)
     process.exit(1);
   });
