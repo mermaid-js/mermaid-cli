@@ -114,8 +114,9 @@ const deviceScaleFactor = parseInt(scale || 1, 10);
   } else if (output.endsWith('png')) {
     const clip = await page.$eval('svg', svg => {
       const react = svg.getBoundingClientRect()
-      return { x: react.left, y: react.top, width: react.width, height: react.height }
+      return { x: Math.floor(react.left), y: Math.floor(react.top), width: Math.ceil(react.width), height: Math.ceil(react.height) }
     })
+    await page.setViewport({ width: clip.x + clip.width, height: clip.y + clip.height, deviceScaleFactor })
     await page.screenshot({ path: output, clip, omitBackground: backgroundColor === 'transparent' })
   } else { // pdf
     await page.pdf({ path: output, printBackground: backgroundColor !== 'transparent' })
