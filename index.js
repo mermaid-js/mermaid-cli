@@ -28,10 +28,11 @@ commander
   .option('-b, --backgroundColor [backgroundColor]', 'Background color. Example: transparent, red, \'#F0F0F0\'. Optional. Default: white')
   .option('-c, --configFile [configFile]', 'JSON configuration file for mermaid. Optional')
   .option('-C, --cssFile [cssFile]', 'CSS file for the page. Optional')
+  .option('-s, --scale [scale]', 'Puppeteer scale factor, default 1. Optional')
   .option('-p --puppeteerConfigFile [puppeteerConfigFile]', 'JSON configuration file for puppeteer. Optional')
   .parse(process.argv)
 
-let { theme, width, height, input, output, backgroundColor, configFile, cssFile, puppeteerConfigFile } = commander
+let { theme, width, height, input, output, backgroundColor, configFile, cssFile, puppeteerConfigFile, scale } = commander
 
 // check input file
 if (!input) {
@@ -78,11 +79,12 @@ if (cssFile) {
 width = parseInt(width)
 height = parseInt(height)
 backgroundColor = backgroundColor || 'white';
+const deviceScaleFactor = parseInt(scale || 1, 10);
 
 (async () => {
   const browser = await puppeteer.launch(puppeteerConfig)
   const page = await browser.newPage()
-  page.setViewport({ width, height })
+  page.setViewport({ width, height, deviceScaleFactor })
   await page.goto(`file://${path.join(__dirname, 'index.html')}`)
   await page.evaluate(`document.body.style.background = '${backgroundColor}'`)
   const definition = fs.readFileSync(input, 'utf-8')
@@ -112,8 +114,9 @@ backgroundColor = backgroundColor || 'white';
   } else if (output.endsWith('png')) {
     const clip = await page.$eval('svg', svg => {
       const react = svg.getBoundingClientRect()
-      return { x: react.left, y: react.top, width: react.width, height: react.height }
+      return { x: Math.floor(react.left), y: Math.floor(react.top), width: Math.ceil(react.width), height: Math.ceil(react.height) }
     })
+    await page.setViewport({ width: clip.x + clip.width, height: clip.y + clip.height, deviceScaleFactor })
     await page.screenshot({ path: output, clip, omitBackground: backgroundColor === 'transparent' })
   } else { // pdf
     await page.pdf({ path: output, printBackground: backgroundColor !== 'transparent' })
