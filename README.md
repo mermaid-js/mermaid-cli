@@ -10,14 +10,14 @@ This CLI tool takes a mermaid definition file as input and generates svg/png/pdf
 Some people are [having issue](https://github.com/mermaidjs/mermaid.cli/issues/15) installing this tool globally. Installing it locally is an alternative solution:
 
 ```
-yarn add mermaid.cli
+yarn add @mermaid-js/mermaid-cli
 ./node_modules/.bin/mmdc -h
 ```
 
 Or use NPM:
 
 ```
-npm install mermaid.cli
+npm install @mermaid-js/mermaid-cli
 ./node_modules/.bin/mmdc -h
 ```
 
@@ -27,13 +27,13 @@ npm install mermaid.cli
 ❗️ We do **NOT** recommend installing it globally because both YARN and NPM could fail to install a command line tool globally properly due to weird permission issues.
 
 ```
-yarn global add mermaid.cli
+yarn global add @mermaid-js/mermaid-cli
 ```
 
  Or
 
 ```
-npm install -g mermaid.cli
+npm install -g @mermaid-js/mermaid-cli
 ```
 
 
