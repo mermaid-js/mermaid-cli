@@ -90,7 +90,7 @@ const deviceScaleFactor = parseInt(scale || 1, 10);
   const definition = fs.readFileSync(input, 'utf-8')
 
   await page.$eval('#container', (container, definition, mermaidConfig, myCSS) => {
-    container.innerHTML = definition
+    container.textContent = definition
     window.mermaid.initialize(mermaidConfig)
 
     if (myCSS) {

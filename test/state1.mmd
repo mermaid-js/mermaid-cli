@@ -1,8 +1,10 @@
 stateDiagram
+    state Choose <<fork>>
     [*] --> Still
     Still --> [*]
 
     Still --> Moving
-    Moving --> Still
-    Moving --> Crash
+    Moving --> Choose
+    Choose --> Still
+    Choose --> Crash
     Crash --> [*]
