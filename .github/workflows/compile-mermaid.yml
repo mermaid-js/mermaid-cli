@@ -5,7 +5,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env: 
-      IMAGETAG: docker.pkg.github.com/MindaugasLaganeckas/mermaid.cli
+      IMAGETAG: docker.pkg.github.com/mindaugaslaganeckas/mermaid.cli
     steps:
     
     - uses: actions/checkout@v2
