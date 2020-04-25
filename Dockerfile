@@ -8,5 +8,5 @@ RUN apt-get update && \
 
 ADD puppeteer-config.json  /puppeteer-config.json
 
-ENTRYPOINT ["/usr/local/bin/mmdc -p /puppeteer-config.json"]
+ENTRYPOINT ["/usr/local/bin/mmdc", "-p", "/puppeteer-config.json"]
 CMD [ "--help" ]
