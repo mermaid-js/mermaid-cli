@@ -1,0 +1,36 @@
+name: 'Build, test and deploy mermaid.cli Docker image'
+on:
+  push:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env: 
+      IMAGETAG: docker.pkg.github.com/mermaid-js/mermaid.cli
+    steps:
+    
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 2
+
+    - name: Docker build
+      run: docker build -t $IMAGETAG:$GITHUB_SHA .
+ 
+    - name: Test if the CLI actually works
+      run: docker run -v $(pwd):/data $IMAGETAG:$GITHUB_SHA -i ./test/sequence.mmd -o ./test/sequence.svg
+
+      # Push the image to the github packages
+    - name: Docker Login
+      uses: azure/docker-login@v1
+      with:
+        login-server: docker.pkg.github.com
+        username: $GITHUB_ACTOR
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Docker push
+      run: docker push $IMAGETAG:$GITHUB_SHA
+    
+      # For manual inspection of the generated artifacts
+    - uses: actions/upload-artifact@v1
+      with:
+        name: output
+        path: ./test
+  
