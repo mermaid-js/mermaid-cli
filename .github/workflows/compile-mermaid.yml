@@ -32,7 +32,7 @@ jobs:
         USERNAME: ${{ secrets.DOCKER_USERNAME }}
         PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         DOCKERFILE: "Dockerfile"
-        IMAGE_NAME: "minlag/mermaid.cli"
+        IMAGE_NAME: ${{ env.IMAGETAG }}
         TAG_NAME: "v0.0.1"
         LATEST: "true"
     
