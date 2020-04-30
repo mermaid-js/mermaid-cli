@@ -32,7 +32,7 @@ jobs:
         USERNAME: ${{ secrets.DOCKER_USERNAME }}
         PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         DOCKERFILE: "Dockerfile"
-        IMAGE_NAME: ${{ $IMAGETAG }}
-        TAG_NAME: ${{ $GITHUB_SHA }}
+        IMAGE_NAME: ${{ IMAGETAG }}
+        TAG_NAME: ${{ GITHUB_SHA }}
         LATEST: "true"
     
