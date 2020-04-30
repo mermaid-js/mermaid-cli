@@ -6,7 +6,6 @@ jobs:
     runs-on: ubuntu-latest
     env: 
       IMAGETAG: minlag/mermaid.cli
-      GITHUB_SHA: ${{ GITHUB_SHA }}
     steps:
     
     - uses: actions/checkout@v2
