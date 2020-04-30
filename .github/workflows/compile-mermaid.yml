@@ -6,6 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     env: 
       IMAGETAG: minlag/mermaid.cli
+      GITHUB_SHA: ${{ GITHUB_SHA }}
     steps:
     
     - uses: actions/checkout@v2
@@ -33,6 +34,6 @@ jobs:
         PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         DOCKERFILE: "Dockerfile"
         IMAGE_NAME: ${{ env.IMAGETAG }}
-        TAG_NAME: "v0.0.1"
+        TAG_NAME: ${{ env.GITHUB_SHA }}
         LATEST: "true"
     
