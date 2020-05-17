@@ -11,5 +11,5 @@
     "bottomMarginAdj": 1
   },
   "theme": "forest",
-  "themeCSS": ".node rect { fill: red; }"
+  "themeCSS": ".node rect { fill: white; }"
 }
