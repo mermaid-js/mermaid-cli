@@ -124,3 +124,4 @@ const deviceScaleFactor = parseInt(scale || 1, 10);
 
   browser.close()
 })()
+
