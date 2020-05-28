@@ -3,7 +3,7 @@
   "version": "8.5.1-2",
   "description": "Command-line interface for mermaid",
   "license": "MIT",
-  "repository": "git@github.com:mermaid-js/mermaid-cli.git",
+  "repository": "git@github.com:MindaugasLaganeckas/mermaid-cli.git",
   "author": "Tyler Long <tyler4long@gmail.com>",
   "bin": {
     "mmdc": "./index.bundle.js"
