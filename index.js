@@ -30,6 +30,7 @@ commander
   .option('-C, --cssFile [cssFile]', 'CSS file for the page. Optional')
   .option('-s, --scale [scale]', 'Puppeteer scale factor, default 1. Optional')
   .option('-p --puppeteerConfigFile [puppeteerConfigFile]', 'JSON configuration file for puppeteer. Optional')
+  .option('-g --grewr [bla]', 'Bal. Optional')
   .parse(process.argv)
 
 let { theme, width, height, input, output, backgroundColor, configFile, cssFile, puppeteerConfigFile, scale } = commander
