@@ -10,17 +10,13 @@ jobs:
         fetch-depth: 2
 
     - name: Create image tag
-      run: |
-        echo "::set-env name=IMAGETAG::$GITHUB_REPOSITORY:$GITHUB_SHA"
-        echo $env.IMAGETAG
+      run: echo "::set-env name=IMAGETAG::$GITHUB_REPOSITORY:$GITHUB_SHA"
 
     - name: Docker build
-      run: |
-        echo ${{env.IMAGETAG}}
-        docker build -t $IMAGETAG . -f DockerfileBuild
+      run: docker build -t ${{env.IMAGETAG}} . -f DockerfileBuild
  
     - name: Test if the CLI actually works
-      run: for i in $(ls test/*.mmd); do docker run -v $(pwd):/data $IMAGETAG -i /data/$i; done
+      run: for i in $(ls test/*.mmd); do docker run -v $(pwd):/data ${{env.IMAGETAG}} -i /data/$i; done
 
     # For manual inspection of the generated artifacts
     - uses: actions/upload-artifact@v1
@@ -35,5 +31,5 @@ jobs:
         username: $GITHUB_ACTOR
         password: ${{ secrets.GITHUB_TOKEN }}
     - name: Docker push
-      run: docker push $IMAGETAG
+      run: docker push ${{env.IMAGETAG}}
     
