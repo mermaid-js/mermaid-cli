@@ -15,14 +15,16 @@ jobs:
       run: |
         echo $GITHUB_REPOSITORY
         echo $GITHUB_SHA
+
+    - name: Create image tag
+      run: |
         export IMAGETAG=$GITHUB_REPOSITORY:$GITHUB_SHA
         echo $IMAGETAG
 
-    - name: Create image tag
-      run: export IMAGETAG=$GITHUB_REPOSITORY:$GITHUB_SHA
-
     - name: Docker build
-      run: docker build -t $IMAGETAG . -f DockerfileBuild
+      run: |
+        echo $IMAGETAG
+        docker build -t $IMAGETAG . -f DockerfileBuild
  
     - name: Test if the CLI actually works
       run: for i in $(ls test/*.mmd); do docker run -v $(pwd):/data $IMAGETAG -i /data/$i; done
