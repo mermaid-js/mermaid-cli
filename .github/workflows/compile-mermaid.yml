@@ -11,6 +11,12 @@ jobs:
       with:
         fetch-depth: 2
 
+    - name: Delete me
+      run: |
+        echo $GITHUB_REPOSITORY
+        echo $GITHUB_SHA
+        echo "$GITHUB_REPOSITORY:$GITHUB_SHA"
+
     - name: Create image tag
       run: export IMAGETAG="$GITHUB_REPOSITORY:$GITHUB_SHA"
 
