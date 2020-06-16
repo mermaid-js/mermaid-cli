@@ -6,8 +6,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      IMAGETAG
-      
+      IMAGETAG: 
+        
     steps:
     
     - uses: actions/checkout@v2
