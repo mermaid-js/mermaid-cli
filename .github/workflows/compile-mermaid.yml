@@ -5,15 +5,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env: 
-      IMAGETAG: "${{env.GITHUB_REPOSITORY}}:${GITHUB_SHA}"
+      GITHUB_REPOSITORY: $GITHUB_REPOSITORY
+      GITHUB_SHA: $GITHUB_SHA
     steps:
     
     - uses: actions/checkout@v2
       with:
         fetch-depth: 2
 
-    - name: Delete me
-      run: echo $IMAGETAG
+    - name: Create image tag
+      run: export IMAGETAG="$GITHUB_REPOSITORY:$GITHUB_SHA"
 
     - name: Docker build
       run: docker build -t $IMAGETAG . -f DockerfileBuild
