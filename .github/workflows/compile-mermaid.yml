@@ -4,24 +4,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    env:
-      IMAGETAG: 
-        
     steps:
-    
     - uses: actions/checkout@v2
       with:
         fetch-depth: 2
 
-    - name: Delete me
-      run: |
-        echo $GITHUB_REPOSITORY
-        echo $GITHUB_SHA
-
     - name: Create image tag
       run: |
-        export IMAGETAG=$GITHUB_REPOSITORY:$GITHUB_SHA
+        echo ::set-env name=IMAGETAG::"$GITHUB_REPOSITORY:$GITHUB_SHA"
         echo $IMAGETAG
 
     - name: Docker build
