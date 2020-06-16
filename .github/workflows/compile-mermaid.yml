@@ -15,7 +15,8 @@ jobs:
       run: |
         echo $GITHUB_REPOSITORY
         echo $GITHUB_SHA
-        echo "$GITHUB_REPOSITORY:$GITHUB_SHA"
+        export IMAGETAG="$GITHUB_REPOSITORY:$GITHUB_SHA"
+        echo $IMAGETAG
 
     - name: Create image tag
       run: export IMAGETAG="$GITHUB_REPOSITORY:$GITHUB_SHA"
