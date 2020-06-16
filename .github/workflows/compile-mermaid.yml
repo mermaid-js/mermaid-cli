@@ -10,7 +10,7 @@ jobs:
         fetch-depth: 2
 
     - name: Create image tag
-      run: echo "::set-env name=IMAGETAG::$GITHUB_REPOSITORY:$GITHUB_SHA"
+      run: echo "::set-env name=IMAGETAG::$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]'):$GITHUB_SHA"
 
     - name: Docker build
       run: docker build -t ${{env.IMAGETAG}} . -f DockerfileBuild
