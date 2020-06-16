@@ -5,7 +5,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env: 
-      IMAGETAG: "$GITHUB_REPOSITORY:$GITHUB_SHA"
+      IMAGETAG: "${GITHUB_REPOSITORY}:${GITHUB_SHA}"
     steps:
     
     - uses: actions/checkout@v2
