@@ -15,11 +15,11 @@ jobs:
       run: |
         echo $GITHUB_REPOSITORY
         echo $GITHUB_SHA
-        export IMAGETAG="$GITHUB_REPOSITORY:$GITHUB_SHA"
+        export IMAGETAG=$GITHUB_REPOSITORY:$GITHUB_SHA
         echo $IMAGETAG
 
     - name: Create image tag
-      run: export IMAGETAG="$GITHUB_REPOSITORY:$GITHUB_SHA"
+      run: export IMAGETAG=$GITHUB_REPOSITORY:$GITHUB_SHA
 
     - name: Docker build
       run: docker build -t $IMAGETAG . -f DockerfileBuild
