@@ -4,9 +4,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env: 
-      GITHUB_REPOSITORY: $GITHUB_REPOSITORY
-      GITHUB_SHA: $GITHUB_SHA
+
     steps:
     
     - uses: actions/checkout@v2
