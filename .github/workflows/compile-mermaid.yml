@@ -16,7 +16,7 @@ jobs:
       run: docker build -t $IMAGETAG:$GITHUB_SHA . -f DockerfileBuild
  
     - name: Test if the CLI actually works
-      run: for i in $(ls test/*.mmd); do docker run -v $(pwd):/data $IMAGETAG:$GITHUB_SHA -i $i; done
+      run: for i in $(ls test/*.mmd); do docker run -v $(pwd):/data $IMAGETAG:$GITHUB_SHA -i /data/$i; done
 
     # For manual inspection of the generated artifacts
     - uses: actions/upload-artifact@v1
