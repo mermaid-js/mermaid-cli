@@ -11,8 +11,8 @@ jobs:
 
     - name: Create image tag
       run: |
-        echo ::set-env name=IMAGETAG::"$GITHUB_REPOSITORY:$GITHUB_SHA"
-        echo $IMAGETAG
+        echo ::set-env name=IMAGETAG::$GITHUB_REPOSITORY:$GITHUB_SHA
+        echo $env.IMAGETAG
 
     - name: Docker build
       run: |
