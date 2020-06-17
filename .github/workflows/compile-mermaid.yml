@@ -16,8 +16,11 @@ jobs:
     - name: Convert repository name to lower case
       run: echo "::set-env name=GITHUB_REPOSITORY_LOWER_CASE::$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')"
 
+    - name: Get release version
+      run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_SHA:6})
+
     - name: Create image tag
-      run: echo "::set-env name=IMAGETAG::${{env.GITHUB_REPOSITORY_LOWER_CASE}}/$IMAGENAME:$GITHUB_SHA"
+      run: echo "::set-env name=IMAGETAG::${{env.GITHUB_REPOSITORY_LOWER_CASE}}/$IMAGENAME:${{env.RELEASE_VERSION}}"
 
     - name: Docker build
       run: docker build -t ${{env.IMAGETAG}} . -f $DOCKERFILE
@@ -34,11 +37,12 @@ jobs:
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
-        name: ${{env.GITHUB_REPOSITORY_LOWER_CASE}}/$IMAGENAME
+        name: ${{env.GITHUB_REPOSITORY_LOWER_CASE}}/${{env.IMAGENAME}}
         username: $GITHUB_ACTOR
         password: ${{ secrets.GITHUB_TOKEN }}
         registry: docker.pkg.github.com
         dockerfile: $DOCKERFILE
         snapshot: true
+        tags: "latest,${{ env.RELEASE_VERSION }}"
 
     
