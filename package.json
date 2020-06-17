@@ -10,8 +10,8 @@
   },
   "scripts": {
     "upgrade": "yarn-upgrade-all && source copy_modules.sh",
-    "prepublishOnly": "babel ./index.js --out-file ./index.bundle.js",
-    "test": "node test.js"
+    "prepublishOnly": "babel ./src/index.js --out-file ./index.bundle.js",
+    "test": "node ./src-test/test.js"
   },
   "dependencies": {
     "chalk": "^3.0.0",
