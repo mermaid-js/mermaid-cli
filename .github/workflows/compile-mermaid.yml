@@ -1,22 +1,32 @@
-name: 'Build, test and deploy mermaid.cli Docker image'
+name: 'Build, test and deploy mermaid-cli Docker image'
 on:
   push:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env: 
-      IMAGETAG: minlag/mermaid.cli
+
+    env:
+      DOCKERFILE: DockerfileBuild
+      IMAGENAME: mermaid-cli
     steps:
-    
     - uses: actions/checkout@v2
       with:
         fetch-depth: 2
 
+    - name: Convert repository name to lower case
+      run: echo "::set-env name=GITHUB_REPOSITORY_LOWER_CASE::$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')"
+
+    - name: Get release version
+      run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_SHA} | cut -c1-6)
+
+    - name: Create image tag
+      run: echo "::set-env name=IMAGETAG::${{env.GITHUB_REPOSITORY_LOWER_CASE}}/$IMAGENAME:${{env.RELEASE_VERSION}}"
+
     - name: Docker build
-      run: docker build -t $IMAGETAG:$GITHUB_SHA .
+      run: docker build -t ${{env.IMAGETAG}} . -f $DOCKERFILE
  
     - name: Test if the CLI actually works
-      run: docker run -v $(pwd):/data $IMAGETAG:$GITHUB_SHA -i ./test/sequence.mmd -o ./test/sequence.svg
+      run: for i in $(ls test/*.mmd); do docker run -v $(pwd):/data ${{env.IMAGETAG}} -i /data/$i; done
 
     # For manual inspection of the generated artifacts
     - uses: actions/upload-artifact@v1
@@ -24,15 +34,15 @@ jobs:
         name: output
         path: ./test
 
-    - name: Docker Build & Push to Docker Hub
-      uses: opspresso/action-docker@master
+    - name: Publish to Registry
+      uses: elgohr/Publish-Docker-Github-Action@master
       with:
-        args: --docker
-      env:
-        USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        DOCKERFILE: "Dockerfile"
-        IMAGE_NAME: ${{ env.IMAGETAG }}
-        TAG_NAME: ${{ env.GITHUB_SHA }}
-        LATEST: "true"
+        name: ${{env.GITHUB_REPOSITORY_LOWER_CASE}}/${{env.IMAGENAME}}
+        username: $GITHUB_ACTOR
+        password: ${{ secrets.GITHUB_TOKEN }}
+        registry: docker.pkg.github.com
+        dockerfile: ${{env.DOCKERFILE}}
+        snapshot: true
+        tags: "latest,${{ env.RELEASE_VERSION }}"
+
     
