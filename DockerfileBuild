@@ -2,7 +2,7 @@ FROM node:current-slim AS build
 
 WORKDIR /app
 
-COPY * /app/
+COPY . /app/
 
 RUN rm package-lock.json \
     && yarn \
