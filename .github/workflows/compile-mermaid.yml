@@ -10,7 +10,9 @@ jobs:
         fetch-depth: 2
 
     - name: Create image tag
-      run: echo "::set-env name=IMAGETAG::$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]'):$GITHUB_SHA"
+      run: |
+        echo "::set-env name=GITHUB_REPOSITORY_LOWER_CASE::$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')"
+        echo "::set-env name=IMAGETAG::$GITHUB_REPOSITORY_LOWER_CASE:$GITHUB_SHA"
 
     - name: Docker build
       run: docker build -t ${{env.IMAGETAG}} . -f DockerfileBuild
@@ -24,11 +26,13 @@ jobs:
         name: output
         path: ./test
 
-    - name: Docker login
-      run: docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    - name: Publish to Registry
+      uses: elgohr/Publish-Docker-Github-Action@master
+      with:
+        name: $GITHUB_REPOSITORY_LOWER_CASE
+        username: ${{ secrets.GITHUB_ACTOR }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        registry: docker.pkg.github.com
+        snapshot: true
 
-    - name: Docker push
-      run: docker push ${{env.IMAGETAG}}
     
