@@ -4,6 +4,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    env:
+      DOCKERFILE: DockerfileBuild
+      IMAGENAME: mermaid-cli
     steps:
     - uses: actions/checkout@v2
       with:
@@ -13,10 +17,10 @@ jobs:
       run: echo "::set-env name=GITHUB_REPOSITORY_LOWER_CASE::$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')"
 
     - name: Create image tag
-      run: echo "::set-env name=IMAGETAG::${{env.GITHUB_REPOSITORY_LOWER_CASE}}:$GITHUB_SHA"
+      run: echo "::set-env name=IMAGETAG::${{env.GITHUB_REPOSITORY_LOWER_CASE}}/$IMAGENAME:$GITHUB_SHA"
 
     - name: Docker build
-      run: docker build -t ${{env.IMAGETAG}} . -f DockerfileBuild
+      run: docker build -t ${{env.IMAGETAG}} . -f $DOCKERFILE
  
     - name: Test if the CLI actually works
       run: for i in $(ls test/*.mmd); do docker run -v $(pwd):/data ${{env.IMAGETAG}} -i /data/$i; done
@@ -30,10 +34,11 @@ jobs:
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
-        name: ${{env.GITHUB_REPOSITORY_LOWER_CASE}}
+        name: ${{env.GITHUB_REPOSITORY_LOWER_CASE}}/$IMAGENAME
         username: $GITHUB_ACTOR
         password: ${{ secrets.GITHUB_TOKEN }}
         registry: docker.pkg.github.com
+        dockerfile: $DOCKERFILE
         snapshot: true
 
     
