@@ -31,7 +31,7 @@ jobs:
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
         name: ${{env.GITHUB_REPOSITORY_LOWER_CASE}}
-        username: ${{ secrets.GITHUB_ACTOR }}
+        username: $GITHUB_ACTOR
         password: ${{ secrets.GITHUB_TOKEN }}
         registry: docker.pkg.github.com
         snapshot: true
