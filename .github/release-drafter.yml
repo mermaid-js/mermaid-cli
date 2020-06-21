@@ -1,0 +1,29 @@
+# Emoji reference: https://gitmoji.carloscuesta.me/
+categories:
+  - title: 🚀 New features and improvements
+    labels:
+      - enhancement
+  - title: 🐛 Bug Fixes
+    labels:
+      - bug
+      - bugfix
+  - title: 📝 Documentation updates
+    labels: 
+      - documentation
+  - title: 📦 Dependency updates
+    labels:
+      - dependencies
+  - title: 👻 Maintenance
+    labels: 
+      - chore
+  - title: 🚦 Tests
+    labels: 
+      - tests
+exclude-labels:
+  - skip-changelog
+  - invalid
+
+template: |
+  <!-- Optional: add a release summary here -->
+  $CHANGES
+  
