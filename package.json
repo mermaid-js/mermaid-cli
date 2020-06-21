@@ -14,17 +14,17 @@
     "test": "node ./src-test/test.js"
   },
   "dependencies": {
-    "chalk": "^3.0.0",
-    "commander": "^4.0.1",
-    "puppeteer": "^2.0.0"
+    "chalk": "^4.1.0",
+    "commander": "^5.1.0",
+    "puppeteer": "^4.0.0"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free-webfonts": "^1.0.9",
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
-    "mermaid": "^8.5.1",
-    "standard": "^11.0.1",
-    "yarn-upgrade-all": "^0.3.0"
+    "mermaid": "^8.5.2",
+    "standard": "^14.3.4",
+    "yarn-upgrade-all": "^0.5.2"
   },
   "files": [
     "index.bundle.js",
