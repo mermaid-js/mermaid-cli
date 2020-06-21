@@ -1,29 +1,25 @@
-# Emoji reference: https://gitmoji.carloscuesta.me/
+name-template: '$NEXT_PATCH_VERSION'
+tag-template: '$NEXT_PATCH_VERSION'
 categories:
-  - title: 🚀 New features and improvements
+  - title: '🚀 Features'
     labels:
-      - enhancement
-  - title: 🐛 Bug Fixes
+      - 'Type: Enhancement'
+  - title: '🐛 Bug Fixes'
     labels:
-      - bug
-      - bugfix
-  - title: 📝 Documentation updates
-    labels: 
-      - documentation
-  - title: 📦 Dependency updates
-    labels:
-      - dependencies
-  - title: 👻 Maintenance
-    labels: 
-      - chore
-  - title: 🚦 Tests
-    labels: 
-      - tests
+      - 'Type: Bug / Error'
+  - title: '🧰 Maintenance'
+    label: 'Type: Other'
+change-template: '- $TITLE (#$NUMBER) @$AUTHOR'
+sort-by: title
+sort-direction: ascending
+branches:
+  - develop
 exclude-labels:
-  - skip-changelog
-  - invalid
-
+  - 'Skip changelog'
+no-changes-template: 'This release contains minor changes and bugfixes.'
 template: |
-  <!-- Optional: add a release summary here -->
+  # Release Notes
+
   $CHANGES
-  
+
+  🎉 **Thanks to all contributors helping with this release!** 🎉
