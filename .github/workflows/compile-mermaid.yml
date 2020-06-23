@@ -36,7 +36,7 @@ jobs:
         path: ./test
 
     - name: Publish to Github Registry
-      uses: elgohr/Publish-Docker-Github-Action@v1.0.0
+      uses: elgohr/Publish-Docker-Github-Action@2.17
       with:
         name: ${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.IMAGENAME }}
         username: $GITHUB_ACTOR
@@ -47,7 +47,7 @@ jobs:
         tags: "latest,${{ env.RELEASE_VERSION }}"
 
     - name: Publish to Docker.io Registry
-      uses: elgohr/Publish-Docker-Github-Action@v1.0.0
+      uses: elgohr/Publish-Docker-Github-Action@2.17
       with:
         name: ${{ env.DOCKER_IO_REPOSITORY }}
         username: ${{ secrets.DOCKER_USERNAME }}
