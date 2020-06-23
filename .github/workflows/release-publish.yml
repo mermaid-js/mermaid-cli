@@ -28,7 +28,7 @@ jobs:
 
     - name: Prepare release
       run: |
-        VERSION=${GITHUB_REF:10}
+        VERSION=8.5.2
         echo "Preparing release $VERSION"
         npm version --no-git-tag-version --allow-same-version $VERSION
         git add package.json
