@@ -18,16 +18,16 @@ jobs:
       run: echo "::set-env name=GITHUB_REPOSITORY_LOWER_CASE::$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')"
 
     - name: Get release version
-      run: echo ::set-env name=RELEASE_VERSION::$(echo ${ GITHUB_SHA } | cut -c1-6)
+      run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_SHA} | cut -c1-6)
 
     - name: Create image tag
-      run: echo "::set-env name=IMAGETAG::${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/$IMAGENAME:${{ env.RELEASE_VERSION }}"
+      run: echo "::set-env name=IMAGETAG::${{env.GITHUB_REPOSITORY_LOWER_CASE}}/$IMAGENAME:${{env.RELEASE_VERSION}}"
 
     - name: Docker build
       run: docker build -t ${{env.IMAGETAG}} . -f $DOCKERFILE
  
     - name: Test if the CLI actually works
-      run: for i in $(ls test/*.mmd); do docker run -v $(pwd):/data ${{ env.IMAGETAG }} -i /data/$i; done
+      run: for i in $(ls test/*.mmd); do docker run -v $(pwd):/data ${{env.IMAGETAG}} -i /data/$i; done
 
     # For manual inspection of the generated artifacts
     - uses: actions/upload-artifact@v1
@@ -38,22 +38,22 @@ jobs:
     - name: Publish to Github Registry
       uses: elgohr/Publish-Docker-Github-Action@2.17
       with:
-        name: ${{ env.GITHUB_REPOSITORY_LOWER_CASE }}/${{ env.IMAGENAME }}
+        name: ${{env.GITHUB_REPOSITORY_LOWER_CASE}}/${{env.IMAGENAME}}
         username: $GITHUB_ACTOR
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{secrets.GITHUB_TOKEN}}
         registry: docker.pkg.github.com
-        dockerfile: ${{ env.DOCKERFILE }}
+        dockerfile: ${{env.DOCKERFILE}}
         snapshot: true
-        tags: "latest,${{ env.RELEASE_VERSION }}"
+        tags: "latest,${{env.RELEASE_VERSION}}"
 
     - name: Publish to Docker.io Registry
       uses: elgohr/Publish-Docker-Github-Action@2.17
       with:
-        name: ${{ env.DOCKER_IO_REPOSITORY }}
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-        dockerfile: ${{ env.DOCKERFILE }}
+        name: ${{env.DOCKER_IO_REPOSITORY}}
+        username: ${{secrets.DOCKER_USERNAME}}
+        password: ${{secrets.DOCKER_PASSWORD}}
+        dockerfile: ${{env.DOCKERFILE}}
         snapshot: true
-        tags: "latest,${{ env.RELEASE_VERSION }}"
+        tags: "latest,${{env.RELEASE_VERSION}}"
 
     
