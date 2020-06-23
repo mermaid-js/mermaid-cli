@@ -32,6 +32,7 @@ jobs:
         echo "Preparing release $VERSION"
         npm version --no-git-tag-version --allow-same-version $VERSION
         git add package.json
+        git checkout master
         git commit -m "Bump version $VERSION"
         git push --no-verify
 
