@@ -63,10 +63,10 @@ async function compileAll() {
           if (!expectError) return resultP;
           try {
             await resultP;
-            return Promise.reject(new Error(`Expected ${file} to fail, but it succeeded`));
           } catch (err) {
             return Promise.resolve(`compling ${file} produced an error, which is well`);
           }
+          throw new Error(`Expected ${file} to fail, but it succeeded`);
         })
       ));
     });
