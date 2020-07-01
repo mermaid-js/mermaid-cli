@@ -54,10 +54,18 @@ async function compileAll() {
     fs.readdir(workflows, async (err, files) => {
       resolve(Promise.all(
         files.map(async file => {
-          if (file.endsWith(".mmd")) {
-            return compileDiagram(file, "svg").then(code => compileDiagram(file, "png"))
-          } else {
+          if (!file.endsWith(".mmd")) {
             return Promise.resolve();
+          }
+          const expectError = /expect-error/.test(file);
+          const resultP = compileDiagram(file, "svg")
+            .then(() => compileDiagram(file, "png"));
+          if (!expectError) return resultP;
+          try {
+            await resultP;
+            return Promise.reject(new Error(`Expected ${file} to fail, but it succeeded`));
+          } catch (err) {
+            return Promise.resolve(`compling ${file} produced an error, which is well`);
           }
         })
       ));
