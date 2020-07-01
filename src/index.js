@@ -89,7 +89,7 @@ const deviceScaleFactor = parseInt(scale || 1, 10);
   await page.evaluate(`document.body.style.background = '${backgroundColor}'`)
   const definition = fs.readFileSync(input, 'utf-8')
 
-  await page.$eval('#container', (container, definition, mermaidConfig, myCSS) => {
+  const result = await page.$eval('#container', (container, definition, mermaidConfig, myCSS) => {
     container.textContent = definition
     window.mermaid.initialize(mermaidConfig)
 
@@ -105,8 +105,16 @@ const deviceScaleFactor = parseInt(scale || 1, 10);
       head.appendChild(style)
     }
 
-    window.mermaid.init(undefined, container)
+    try {
+      window.mermaid.init(undefined, container)
+      return { status: 'success' };
+    } catch (error) {
+      return { status: 'error', error, message: error.message };
+    }
   }, definition, mermaidConfig, myCSS)
+  if (result.status === 'error') {
+    error(result.error.message);
+  }
 
   if (output.endsWith('svg')) {
     const svg = await page.$eval('#container', container => container.innerHTML)
@@ -121,6 +129,5 @@ const deviceScaleFactor = parseInt(scale || 1, 10);
   } else { // pdf
     await page.pdf({ path: output, printBackground: backgroundColor !== 'transparent' })
   }
-
-  browser.close()
+  await browser.close()
 })()
