@@ -64,7 +64,7 @@ async function compileAll() {
           try {
             await resultP;
           } catch (err) {
-            return Promise.resolve(`compling ${file} produced an error, which is well`);
+            return `compling ${file} produced an error, which is well`;
           }
           throw new Error(`Expected ${file} to fail, but it succeeded`);
         })
