@@ -113,7 +113,7 @@ const deviceScaleFactor = parseInt(scale || 1, 10);
     }
   }, definition, mermaidConfig, myCSS)
   if (result.status === 'error') {
-    error(result.error.message);
+    error(result.message);
   }
 
   if (output.endsWith('svg')) {
