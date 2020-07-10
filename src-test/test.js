@@ -2,8 +2,8 @@
 
 const fs = require("fs");
 const { spawnSync } = require("child_process");
-const workflows = "test";
-const out = "test";
+const workflows = "test-positive";
+const out = "test-positive";
 
 /**
  * Process workflow into specified format file
