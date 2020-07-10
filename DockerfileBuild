@@ -14,7 +14,7 @@ FROM node:current-slim AS mermaid-cli-current
 
 WORKDIR /app
 
-COPY --from=build /app/mermaid-js-mermaid-cli-*.tgz /install/
+COPY --from=build /app/*-mermaid-cli-*.tgz /install/
 COPY --from=build /app/puppeteer-config.json /puppeteer-config.json
 
 RUN yarn add $(ls -d /install/*.tgz) \
