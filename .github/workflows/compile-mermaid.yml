@@ -9,6 +9,7 @@ jobs:
       DOCKERFILE: DockerfileBuild
       IMAGENAME: mermaid-cli
       DOCKER_IO_REPOSITORY: minlag/mermaid-cli
+      INPUT_DATA: test-positive
     steps:
     - uses: actions/checkout@v2
       with:
@@ -27,13 +28,13 @@ jobs:
       run: docker build -t ${{env.IMAGETAG}} . -f $DOCKERFILE
  
     - name: Test if the CLI actually works
-      run: for i in $(ls test/*.mmd); do docker run -v $(pwd):/data ${{env.IMAGETAG}} -i /data/$i; done
+      run: for i in $(ls $INPUT_DATA/*.mmd); do docker run -v $(pwd):/data ${{env.IMAGETAG}} -i /data/$i; done
 
     # For manual inspection of the generated artifacts
     - uses: actions/upload-artifact@v1
       with:
         name: output
-        path: ./test
+        path: ./$INPUT_DATA
 
     - name: Publish to Github Registry
       uses: elgohr/Publish-Docker-Github-Action@2.17
