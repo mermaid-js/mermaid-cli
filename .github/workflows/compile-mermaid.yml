@@ -34,7 +34,7 @@ jobs:
     - uses: actions/upload-artifact@v1
       with:
         name: output
-        path: ./$INPUT_DATA
+        path: ./${{env.INPUT_DATA}}
 
     - name: Publish to Github Registry
       uses: elgohr/Publish-Docker-Github-Action@2.17
