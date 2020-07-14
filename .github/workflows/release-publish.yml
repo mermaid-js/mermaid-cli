@@ -19,10 +19,10 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v1
+    - uses: actions/setup-node@v1
       with:
-        node-version: 10.x
+        node-version: 12
+        registry-url: https://registry.npmjs.org/
     - name: Install Yarn
       run: npm i yarn --global
 
@@ -40,19 +40,17 @@ jobs:
       run: npm version --no-git-tag-version --allow-same-version ${{env.RELEASE_VERSION}}   
      
     - name: Publish to npmjs
-      run: |
-        npm set //registry.npmjs.org/:_authToken $NPM_TOKEN
-        npm publish
+    - run: npm publish --access public
       env:
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        
+        NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+    
     - name: The job has failed
       if: ${{ failure() }}
       uses: actions/upload-artifact@v1
       with:
         name: npm-logs
         path: /home/runner/.npm/_logs
-    
+
     - name: Publish to Docker.io Registry
       uses: elgohr/Publish-Docker-Github-Action@2.17
       with:
