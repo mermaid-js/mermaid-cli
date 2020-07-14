@@ -45,7 +45,14 @@ jobs:
         npm publish
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
+        
+    - name: The job has failed
+      if: ${{ failure() }}
+      uses: actions/upload-artifact@v1
+      with:
+        name: npm-logs
+        path: /home/runner/.npm/_logs
+    
     - name: Publish to Docker.io Registry
       uses: elgohr/Publish-Docker-Github-Action@2.17
       with:
