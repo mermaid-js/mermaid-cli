@@ -7,6 +7,12 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+
+    env:
+      DOCKERFILE: Dockerfile
+      IMAGENAME: mermaid-cli
+      DOCKER_IO_REPOSITORY: minlag/mermaid-cli
+
     steps:
     - uses: actions/checkout@v1
     - uses: fregante/setup-git-token@v1
@@ -27,19 +33,42 @@ jobs:
         ./copy_modules.sh
         yarn prepublishOnly
 
+    - name: Get release version
+      run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
+
     - name: Prepare release
       run: |
-        VERSION=${GITHUB_REF:10}
-        echo "Preparing release $VERSION"
-        npm version --no-git-tag-version --allow-same-version $VERSION
+        echo "Preparing release ${{env.RELEASE_VERSION}}"
+        npm version --no-git-tag-version --allow-same-version ${{env.RELEASE_VERSION}}
         git add package.json
         git checkout master
-        git commit -m "Bump version $VERSION"
+        git commit -m "Bump version ${{env.RELEASE_VERSION}}"
         git push --no-verify
-
-    - name: Publish
+        
+    - name: Publish to npmjs
       run: |
         npm set //registry.npmjs.org/:_authToken $NPM_TOKEN
         npm publish
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+    - name: Publish to Docker.io Registry
+      uses: elgohr/Publish-Docker-Github-Action@2.17
+      with:
+        name: ${{env.DOCKER_IO_REPOSITORY}}
+        username: ${{secrets.DOCKER_USERNAME}}
+        password: ${{secrets.DOCKER_PASSWORD}}
+        dockerfile: ${{env.DOCKERFILE}}
+        buildargs: ${{env.RELEASE_VERSION}}
+        snapshot: false
+        tags: "latest,${{env.RELEASE_VERSION}}"
+
+    - name: Post deployment tests
+      run: for i in $(ls test/*.mmd); do docker run -v $(pwd):/data ${{env.DOCKER_IO_REPOSITORY}}:${{env.RELEASE_VERSION}} -i /data/$i; done  
+      
+    # For manual inspection of the generated artifacts
+    - uses: actions/upload-artifact@v1
+      with:
+        name: output
+        path: ./test
+        
