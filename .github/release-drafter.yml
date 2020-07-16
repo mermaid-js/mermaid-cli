@@ -13,7 +13,7 @@ change-template: '- $TITLE (#$NUMBER) @$AUTHOR'
 sort-by: title
 sort-direction: ascending
 branches:
-  - develop
+  - master
 exclude-labels:
   - 'Skip changelog'
 no-changes-template: 'This release contains minor changes and bugfixes.'
