@@ -42,7 +42,7 @@ jobs:
         path: ./${{env.INPUT_DATA}}
 
     - name: Upload diagrams for automatic inspection
-      run: yarn percy upload ./${{env.INPUT_DATA}} --files **/*.png
+      run: yarn percy upload ./${{env.INPUT_DATA}}/*.png
 
     - name: Publish to Github Registry
       uses: elgohr/Publish-Docker-Github-Action@2.17
