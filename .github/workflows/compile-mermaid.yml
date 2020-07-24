@@ -1,6 +1,5 @@
 name: 'Build, test and deploy mermaid-cli Docker image'
-on:
-  push:
+on: [push,pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -31,11 +30,19 @@ jobs:
     - name: Test if the CLI actually works
       run: for i in $(ls $INPUT_DATA/*.mmd); do docker run -v $(pwd):/data ${{env.IMAGETAG}} -i /data/$i; done
 
-    # For manual inspection of the generated artifacts
-    - uses: actions/upload-artifact@v1
+    - name: Install Percy
+      run: |
+        yarn add -D @percy/agent
+        yarn percy -v
+        
+    - name: Upload diagrams for manual inspection
+      uses: actions/upload-artifact@v1
       with:
         name: output
         path: ./${{env.INPUT_DATA}}
+
+    - name: Upload diagrams for automatic inspection
+      run: yarn percy upload ./${{env.INPUT_DATA}} --files **/*.svg
 
     - name: Publish to Github Registry
       uses: elgohr/Publish-Docker-Github-Action@2.17
@@ -56,11 +63,4 @@ jobs:
         password: ${{secrets.DOCKER_PASSWORD}}
         dockerfile: ${{env.DOCKERFILE}}
         snapshot: true
-        tags: "latest,${{env.RELEASE_VERSION}}"
-        
-    - name: Install Percy
-      run: yarn percy -v
-    - name: Upload diagrams for inspection
-      run: yarn percy upload ./${{env.INPUT_DATA}} --files **/*.svg
-
-    
+        tags: "latest,${{env.RELEASE_VERSION}}"  
