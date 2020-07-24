@@ -10,6 +10,7 @@ jobs:
       IMAGENAME: mermaid-cli
       DOCKER_IO_REPOSITORY: minlag/mermaid-cli
       INPUT_DATA: test-positive
+      PERCY_TOKEN: ${{secrets.PERCY_TOKEN}}
     steps:
     - uses: actions/checkout@v2
       with:
@@ -56,5 +57,10 @@ jobs:
         dockerfile: ${{env.DOCKERFILE}}
         snapshot: true
         tags: "latest,${{env.RELEASE_VERSION}}"
+        
+    - name: Install Percy
+      run: yarn percy -v
+    - name: Upload diagrams for inspection
+      run: yarn percy upload ./${{env.INPUT_DATA}} --files **/*.svg
 
     
