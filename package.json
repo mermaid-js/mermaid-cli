@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "chalk": "^4.1.0",
-    "commander": "^5.1.0",
+    "commander": "^6.0.0",
     "puppeteer": "^5.0.0"
   },
   "devDependencies": {
