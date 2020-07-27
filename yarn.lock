@@ -2586,9 +2586,9 @@ math-random@^1.0.1:
   integrity sha512-rUxjysqif/BZQH2yhd5Aaq7vXMSx9NdEsQcyA07uEzIvxgI7zIr33gGsh+RU0/XjmQpCW7RsVof1vlkvQVCK5A==
 
 mermaid@^8.6.0:
-  version "8.6.0"
-  resolved "https://registry.yarnpkg.com/mermaid/-/mermaid-8.6.0.tgz#570d0e6a156227af6eaf375d989049fba032d53b"
-  integrity sha512-TN3q75sGcdXHHOV5ySh1MnrMoRxhuhzFD7XneHrBR07r+In7Nq4JoHY9nG/dxwwktZyP9f+0r1gNNjLaTHA6Qw==
+  version "8.6.4"
+  resolved "https://registry.yarnpkg.com/mermaid/-/mermaid-8.6.4.tgz#100e32a3e7ef59c659ad41f986ab1738da470bd6"
+  integrity sha512-Qewo/SNV6w16i3VishQ2U+yz3KprHwXMr17b/T0980eAEk5kl4ksMgMID3h68EqsT9GLQe/P6j2G8qwJHD929A==
   dependencies:
     "@braintree/sanitize-url" "^3.1.0"
     crypto-random-string "^3.0.1"
