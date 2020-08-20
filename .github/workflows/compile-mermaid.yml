@@ -29,12 +29,7 @@ jobs:
  
     - name: Test if the CLI actually works
       run: for i in $(ls $INPUT_DATA/*.mmd); do docker run -v $(pwd):/data ${{env.IMAGETAG}} -i /data/$i -o /data/$i.png; done
-
-    - name: Install Percy
-      run: |
-        yarn add -D @percy/agent
-        yarn percy -v
-        
+     
     - name: Upload diagrams for manual inspection
       uses: actions/upload-artifact@v1
       with:
@@ -42,7 +37,7 @@ jobs:
         path: ./${{env.INPUT_DATA}}
 
     - name: Upload diagrams for automatic inspection
-      run: yarn percy upload ./${{env.INPUT_DATA}}/state1.mmd.png
+      run: docker run -v ${{env.INPUT_DATA}}:/app -e PERCY_TOKEN=${{env.PERCY_TOKEN}} percyio/agent percy upload /app
 
     - name: Publish to Github Registry
       uses: elgohr/Publish-Docker-Github-Action@2.17
