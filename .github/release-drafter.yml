@@ -1,25 +1,18 @@
-name-template: '$NEXT_PATCH_VERSION'
-tag-template: '$NEXT_PATCH_VERSION'
 categories:
   - title: '🚀 Features'
     labels:
-      - 'Type: Enhancement'
+      - 'feature'
+      - 'enhancement'
+      - 'feat'
   - title: '🐛 Bug Fixes'
     labels:
-      - 'Type: Bug / Error'
+      - 'fix'
+      - 'bugfix'
+      - 'bug'
   - title: '🧰 Maintenance'
-    label: 'Type: Other'
-change-template: '- $TITLE (#$NUMBER) @$AUTHOR'
-sort-by: title
-sort-direction: ascending
-branches:
-  - master
-exclude-labels:
-  - 'Skip changelog'
-no-changes-template: 'This release contains minor changes and bugfixes.'
+    label: 'chore'
+change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
 template: |
-  # Release Notes
+  ## Changes
 
   $CHANGES
-
-  🎉 **Thanks to all contributors helping with this release!** 🎉
