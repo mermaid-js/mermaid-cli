@@ -37,7 +37,7 @@ jobs:
         path: ./${{env.INPUT_DATA}}
 
     - name: Upload diagrams for automatic inspection
-      run: docker run -v $(pwd):/app -e PERCY_TOKEN=${{env.PERCY_TOKEN}} -e PERCY_BRANCH=${GITHUB_REF##*/} -e PERCY_PULL_REQUEST=${GITHUB_REF##*/} percyio/agent percy upload /app/${{env.INPUT_DATA}}
+      run: docker run -v $(pwd):/app -e PERCY_TOKEN=${{env.PERCY_TOKEN}} -e PERCY_BRANCH=${GITHUB_REF##*/} percyio/agent percy upload /app/${{env.INPUT_DATA}}
 
     - name: Publish to Github Registry
       uses: elgohr/Publish-Docker-Github-Action@2.17
