@@ -28,7 +28,7 @@ jobs:
       run: docker build -t ${{env.IMAGETAG}} . -f $DOCKERFILE
  
     - name: Test if the CLI actually works
-      run: for i in $(ls $INPUT_DATA/*.mmd); do docker run -v $(pwd):/data ${{env.IMAGETAG}} -i /data/$i -o /data/$i.jpg; done
+      run: for i in $(ls $INPUT_DATA/*.mmd); do docker run -v $(pwd):/data ${{env.IMAGETAG}} -i /data/$i -o /data/$i.png; done
      
     - name: Upload diagrams for manual inspection
       uses: actions/upload-artifact@v1
