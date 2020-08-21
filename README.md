@@ -1,14 +1,6 @@
 [![Join our Slack!](https://img.shields.io/static/v1?message=join%20chat&color=9cf&logo=slack&label=slack)](https://join.slack.com/t/mermaid-talk/shared_invite/enQtNzc4NDIyNzk4OTAyLWVhYjQxOTI2OTg4YmE1ZmJkY2Y4MTU3ODliYmIwOTY3NDJlYjA0YjIyZTdkMDMyZTUwOGI0NjEzYmEwODcwOTE) [![This project is using Percy.io for visual regression testing.](https://percy.io/static/images/percy-badge.svg)](https://percy.io/Mermaid/mermaid-cli) ![Build, test and deploy](https://github.com/mermaid-js/mermaid-cli/workflows/Build,%20test%20and%20deploy%20mermaid-cli%20Docker%20image/badge.svg)
 
-# Contributors are welome
-
-If you want to speed up the progress for mermaid-cli, join the slack channel and contact knsv.
-
-# mermaid.cli
-
-Command-line interface for [mermaid](https://mermaidjs.github.io/).
-
-This CLI tool takes a mermaid definition file as input and generates svg/png/pdf file as output.
+This is a command-line interface (CLI) for [mermaid](https://mermaidjs.github.io/). It takes a mermaid definition file as input and generates svg/png/pdf file as output.
 
 
 ## Install locally
@@ -47,37 +39,14 @@ npm install -g @mermaid-js/mermaid-cli
 
 ```
 mmdc -i input.mmd -o output.svg
-```
-
-```
 mmdc -i input.mmd -o output.png
-```
-
-```
 mmdc -i input.mmd -o output.pdf
-```
-
-```
 mmdc -i input.mmd -o output.svg -w 1024 -H 768
-```
-
-```
 mmdc -i input.mmd -t forest
-```
-
-```
 mmdc -i input.mmd -o output.png -b '#FFF000'
-```
-
-```
 mmdc -i input.mmd -o output.png -b transparent
-```
-
-
-## Options
 
 Please run the following command to see the latest options:
-
 ```
 mmdc -h
 ```
@@ -103,16 +72,12 @@ Usage: mmdc [options]
     -p --puppeteerConfigFile [puppeteerConfigFile]  JSON configuration file for puppeteer. Optional
     -h, --help                                      output usage information
 ```
-
-
 ## Linux sandbox issue
 
 ```
 node:8281) UnhandledPromiseRejectionWarning: Error: Failed to launch chrome!
 [0416/092218.828861:ERROR:zygote_host_impl_linux.cc(88)] Running as root without --no-sandbox is not supported. See https://crbug.com/638180.
-```
 
-```
 (node:8191) UnhandledPromiseRejectionWarning: Error: Failed to launch chrome!
 [0416/091938.210735:FATAL:zygote_host_impl_linux.cc(124)] No usable sandbox! Update your kernel or see https://chromium.googlesource.com/chromium/src/+/master/docs/linux_suid_sandbox_development.md for more information on developing with the SUID sandbox. If you want to live dangerously and need an immediate workaround, you can try using --no-sandbox.
 ```
@@ -147,3 +112,7 @@ mmdc -p puppeteer-config.json ...
 ### Test
 
 Use the fixtures in `test/` to do manual testing after you change something.
+
+# Contributions are welome
+See the contribution guide.
+
