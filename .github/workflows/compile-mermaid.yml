@@ -37,7 +37,7 @@ jobs:
         path: ./${{env.INPUT_DATA}}
 
     - name: Upload diagrams for automatic inspection
-      uses: MindaugasLaganeckas/percy-upload@master
+      uses: MindaugasLaganeckas/percy-upload@v1.0.0
       with:
         inFolder: ${{env.INPUT_DATA}}
 
