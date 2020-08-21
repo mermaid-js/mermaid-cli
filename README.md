@@ -45,7 +45,7 @@ mmdc -i input.mmd -o output.svg -w 1024 -H 768
 mmdc -i input.mmd -t forest
 mmdc -i input.mmd -o output.png -b '#FFF000'
 mmdc -i input.mmd -o output.png -b transparent
-
+```
 Please run the following command to see the latest options:
 ```
 mmdc -h
