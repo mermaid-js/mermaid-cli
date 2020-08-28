@@ -2,6 +2,9 @@
 
 This is a command-line interface (CLI) for [mermaid](https://mermaidjs.github.io/). It takes a mermaid definition file as input and generates svg/png/pdf file as output.
 
+## Use Docker:
+```docker pull minlag/mermaid-cli```
+https://hub.docker.com/r/minlag/mermaid-cli
 
 ## Install locally
 
