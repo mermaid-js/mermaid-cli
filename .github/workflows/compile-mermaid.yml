@@ -27,8 +27,11 @@ jobs:
     - name: Docker build
       run: docker build -t ${{env.IMAGETAG}} . -f $DOCKERFILE
  
-    - name: Test if the CLI actually works
+    - name: Test if the CLI actually works (PNG)
       run: for i in $(ls $INPUT_DATA/*.mmd); do docker run -v $(pwd):/data ${{env.IMAGETAG}} -i /data/$i -o /data/$i.png -w 800; done
+    
+    - name: Test if the CLI actually works (PDF)
+      run: for i in $(ls $INPUT_DATA/*.mmd); do docker run -v $(pwd):/data ${{env.IMAGETAG}} -i /data/$i -o /data/$i.pdf; done
      
     - name: Upload diagrams for manual inspection
       uses: actions/upload-artifact@v1
@@ -40,17 +43,6 @@ jobs:
       uses: MindaugasLaganeckas/percy-upload@v1.0.0
       with:
         inFolder: ${{env.INPUT_DATA}}
-
-    - name: Publish to Github Registry
-      uses: elgohr/Publish-Docker-Github-Action@2.17
-      with:
-        name: ${{env.GITHUB_REPOSITORY_LOWER_CASE}}/${{env.IMAGENAME}}
-        username: $GITHUB_ACTOR
-        password: ${{secrets.GITHUB_TOKEN}}
-        registry: docker.pkg.github.com
-        dockerfile: ${{env.DOCKERFILE}}
-        snapshot: true
-        tags: "latest,${{env.RELEASE_VERSION}}"
 
     - name: Publish to Docker.io Registry
       uses: elgohr/Publish-Docker-Github-Action@2.17
