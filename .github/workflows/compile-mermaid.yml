@@ -45,6 +45,7 @@ jobs:
         inFolder: ${{env.INPUT_DATA}}
 
     - name: Publish to Github Registry
+      if: github.ref == 'refs/heads/master'
       uses: elgohr/Publish-Docker-Github-Action@2.17
       with:
         name: ${{env.GITHUB_REPOSITORY_LOWER_CASE}}/${{env.IMAGENAME}}
@@ -56,6 +57,7 @@ jobs:
         tags: "latest,${{env.RELEASE_VERSION}}"
 
     - name: Publish to Docker.io Registry
+      if: github.ref == 'refs/heads/master'
       uses: elgohr/Publish-Docker-Github-Action@2.17
       with:
         name: ${{env.DOCKER_IO_REPOSITORY}}
