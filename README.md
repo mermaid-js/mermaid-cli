@@ -42,6 +42,15 @@ yarn global add @mermaid-js/mermaid-cli
 npm install -g @mermaid-js/mermaid-cli
 ```
 
+## Run with npx
+
+[`npx`](https://www.npmjs.com/package/npx) is installed by default with NPM. It downloads and runs commands at the same time.
+
+To use Mermaid CLI with npx, you need to use the `-p` flag because the package name is different than the command it installs (`mmdc`).
+
+```
+npx -p @mermaid-js/mermaid-cli mmdc -i input.mmd -o output.svg
+```
 
 ## Examples
 
