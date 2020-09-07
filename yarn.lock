@@ -2687,9 +2687,9 @@ math-random@^1.0.1:
   integrity sha512-rUxjysqif/BZQH2yhd5Aaq7vXMSx9NdEsQcyA07uEzIvxgI7zIr33gGsh+RU0/XjmQpCW7RsVof1vlkvQVCK5A==
 
 mermaid@^8.6.0:
-  version "8.7.0"
-  resolved "https://registry.yarnpkg.com/mermaid/-/mermaid-8.7.0.tgz#741a1c4e81a29b612010f623b2abd25c4bc3d71e"
-  integrity sha512-SkinxAY3sIdML+o5U4U7rQEIa628OEywEw+pfhc3wSVDFqLk2XNdX2j3YmkyCw3Kcbp9BXar533ei+/saYBs5g==
+  version "8.8.0"
+  resolved "https://registry.yarnpkg.com/mermaid/-/mermaid-8.8.0.tgz#45a515cc199fa9bfe39fbebbf964c474b4cbc98b"
+  integrity sha512-SbMzt5T6+XMkHRUECHUneq26H8bvjF752YZCKCJ4G8UU7qI2OmmxYdj4ZJnda7JIx3EuNeN4xSLuLCBJ5ByzSQ==
   dependencies:
     "@braintree/sanitize-url" "^3.1.0"
     babel-eslint "^10.1.0"
