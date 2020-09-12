@@ -12,7 +12,7 @@ Please note that this project is released with a [Contributor Code of Conduct][c
 ## Submitting a pull request
 
 1. [Fork][fork] and clone the repository
-1. Configure and install the dependencies: `yarn`
+1. Configure and install the dependencies: `yarn install; source copy_modules.sh`
 1. Create a new branch: `git checkout -b my-branch-name`. Make sure to give a good name to the branch. New features shall start with `feature/<branch name>`. Bug fixes shall start with `fix/<branch-name>` 
 1. Make your change, add tests, and make sure the tests still pass
 1. Push to your fork and [submit a pull request][pr]
