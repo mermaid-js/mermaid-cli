@@ -21,6 +21,7 @@ npm install @mermaid-js/mermaid-cli
 ### Examples
 Please run the following command to see the latest options: `mmdc -h`
 Run this command to convert Mermaid mmd diagram to an svg file: 
+
 `mmdc -i input.mmd -o output.svg`
 ### Run with npx
 [`npx`](https://www.npmjs.com/package/npx) is installed by default with NPM. It downloads and runs commands at the same time.
