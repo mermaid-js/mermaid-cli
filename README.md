@@ -25,7 +25,6 @@ yarn global add @mermaid-js/mermaid-cli
 npm install -g @mermaid-js/mermaid-cli
 ```
 ### Examples
-```
 mmdc -i input.mmd -o output.svg
 ```
 Please run the following command to see the latest options:

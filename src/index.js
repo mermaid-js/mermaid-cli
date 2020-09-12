@@ -29,10 +29,11 @@ commander
   .option('-c, --configFile [configFile]', 'JSON configuration file for mermaid. Optional')
   .option('-C, --cssFile [cssFile]', 'CSS file for the page. Optional')
   .option('-s, --scale [scale]', 'Puppeteer scale factor, default 1. Optional')
+  .option('-f, --pdfFit', 'Scale PDF to fit chart')
   .option('-p --puppeteerConfigFile [puppeteerConfigFile]', 'JSON configuration file for puppeteer. Optional')
   .parse(process.argv)
 
-let { theme, width, height, input, output, backgroundColor, configFile, cssFile, puppeteerConfigFile, scale } = commander
+let { theme, width, height, input, output, backgroundColor, configFile, cssFile, puppeteerConfigFile, scale, pdfFit } = commander
 
 // check input file
 if (!input) {
@@ -127,7 +128,24 @@ const deviceScaleFactor = parseInt(scale || 1, 10);
     await page.setViewport({ width: clip.x + clip.width, height: clip.y + clip.height, deviceScaleFactor })
     await page.screenshot({ path: output, clip, omitBackground: backgroundColor === 'transparent' })
   } else { // pdf
-    await page.pdf({ path: output, printBackground: backgroundColor !== 'transparent' })
+    if (pdfFit) {
+      const clip = await page.$eval('svg', svg => {
+        const react = svg.getBoundingClientRect()
+        return { x: react.left, y: react.top, width: react.width, height: react.height }
+      })
+      await page.pdf({
+        path: output,
+        printBackground: backgroundColor !== 'transparent',
+        width: (Math.ceil(clip.width) + clip.x*2) + 'px',
+        height: (Math.ceil(clip.height) + clip.y*2) + 'px',
+        pageRanges: '1-1',
+      })
+    } else {
+      await page.pdf({
+        path: output,
+        printBackground: backgroundColor !== 'transparent'
+      })
+    }
   }
   await browser.close()
 })()
