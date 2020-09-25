@@ -18,6 +18,37 @@ const checkConfigFile = file => {
   }
 }
 
+const inputPipedFromStdin = () => fs.fstatSync(0).isFIFO()
+
+const getInputData = async inputFile => new Promise((resolve, reject) => {
+  if (typeof inputFile !== 'undefined') {
+    return fs.readFile(inputFile, 'utf-8', (err, data) => {
+      if (err) {
+        return reject(err)
+      }
+
+      return resolve(data)
+    })
+  }
+
+  let data = ''
+  process.stdin.on('readable', function () {
+    var chunk = this.read()
+
+    if (chunk !== null) {
+      data += chunk
+    }
+  })
+
+  process.stdin.on('error', function (err) {
+    reject(err)
+  })
+
+  process.stdin.on('end', function () {
+    resolve(data)
+  })
+})
+
 commander
   .version(pkg.version)
   .option('-t, --theme [theme]', 'Theme of the chart, could be default, forest, dark or neutral. Optional. Default: default', /^default|forest|dark|neutral$/, 'default')
@@ -36,16 +67,16 @@ commander
 let { theme, width, height, input, output, backgroundColor, configFile, cssFile, puppeteerConfigFile, scale, pdfFit } = commander
 
 // check input file
-if (!input) {
+if (!(input || inputPipedFromStdin())) {
   error('Please specify input file: -i <input>')
 }
-if (!fs.existsSync(input)) {
+if (input && !fs.existsSync(input)) {
   error(`Input file "${input}" doesn't exist`)
 }
 
 // check output file
 if (!output) {
-  output = input + '.svg'
+  output = inputPipedFromStdin() ? 'out.svg' : (input + '.svg')
 }
 if (!/\.(?:svg|png|pdf)$/.test(output)) {
   error(`Output file must end with ".svg", ".png" or ".pdf"`)
@@ -88,7 +119,7 @@ const deviceScaleFactor = parseInt(scale || 1, 10);
   page.setViewport({ width, height, deviceScaleFactor })
   await page.goto(`file://${path.join(__dirname, 'index.html')}`)
   await page.evaluate(`document.body.style.background = '${backgroundColor}'`)
-  const definition = fs.readFileSync(input, 'utf-8')
+  const definition = await getInputData(input)
 
   const result = await page.$eval('#container', (container, definition, mermaidConfig, myCSS) => {
     container.textContent = definition
