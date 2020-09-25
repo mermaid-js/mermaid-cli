@@ -20,9 +20,35 @@ npm install @mermaid-js/mermaid-cli
 `yarn global add @mermaid-js/mermaid-cli` or `npm install -g @mermaid-js/mermaid-cli`
 ### Examples
 Please run the following command to see the latest options: `mmdc -h`
-Run this command to convert Mermaid mmd diagram to an svg file: 
+Run this command to convert Mermaid mmd diagram to an svg file:
 
 `mmdc -i input.mmd -o output.svg`
+
+#### Piping from stdin
+
+You can also pipe input from stdin
+
+```bash
+# create_mermaid_output is an executable that sends mermaid output to stdout
+create_mermaid_output | mmdc -o output.svg
+```
+
+```bash
+cat << EOF | mmdc
+sequenceDiagram
+    participant Alice
+    participant Bob
+    Alice->>John: Hello John, how are you?
+    loop Healthcheck
+        John->>John: Fight against hypochondria
+    end
+    Note right of John: Rational thoughts <br/>prevail!
+    John-->>Alice: Great!
+    John->>Bob: How about you?
+    Bob-->>John: Jolly good!
+EOF
+```
+
 ### Run with npx
 [`npx`](https://www.npmjs.com/package/npx) is installed by default with NPM. It downloads and runs commands at the same time.
 To use Mermaid CLI with npx, you need to use the `-p` flag because the package name is different than the command it installs (`mmdc`).
@@ -31,4 +57,3 @@ To use Mermaid CLI with npx, you need to use the `-p` flag because the package n
 1. [Linux sandbox issue](docs/linux-sandbox-issue.md)
 ### For contributors
 Contributions are welome. See the [contribution guide](CONTRIBUTING.md).
-
