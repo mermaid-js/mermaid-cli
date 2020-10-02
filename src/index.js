@@ -21,6 +21,8 @@ const checkConfigFile = file => {
 const inputPipedFromStdin = () => fs.fstatSync(0).isFIFO()
 
 const getInputData = async inputFile => new Promise((resolve, reject) => {
+  // if an input file has been specified using '-i', it takes precedence over
+  // piping from stdin
   if (typeof inputFile !== 'undefined') {
     return fs.readFile(inputFile, 'utf-8', (err, data) => {
       if (err) {
@@ -76,7 +78,10 @@ if (input && !fs.existsSync(input)) {
 
 // check output file
 if (!output) {
-  output = inputPipedFromStdin() ? 'out.svg' : (input + '.svg')
+  // if an input file is defined, it should take precedence, otherwise, input is
+  // coming from stdin and just name the file out.svg, if it hasn't been
+  // specified with the '-o' option
+  output = input ? (input + '.svg') : 'out.svg'
 }
 if (!/\.(?:svg|png|pdf)$/.test(output)) {
   error(`Output file must end with ".svg", ".png" or ".pdf"`)
