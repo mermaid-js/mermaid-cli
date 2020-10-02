@@ -1,6 +1,6 @@
 {
   "name": "@mermaid-js/mermaid-cli",
-  "version": "8.8.0",
+  "version": "8.8.1",
   "description": "Command-line interface for mermaid",
   "license": "MIT",
   "repository": "git@github.com:mermaid-js/mermaid-cli.git",
@@ -22,7 +22,7 @@
     "@fortawesome/fontawesome-free-webfonts": "^1.0.9",
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
-    "mermaid": "^8.6.0",
+    "mermaid": "^8.8.1",
     "standard": "^14.3.4",
     "yarn-upgrade-all": "^0.5.2"
   },
