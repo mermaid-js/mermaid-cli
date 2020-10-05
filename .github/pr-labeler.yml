@@ -1,4 +1,5 @@
 feature: ['feature/*', 'feat/*']
 fix: fix/*
 chore: chore/*
+dependencies: dependabot/*
 fixed-branch: fixed-branch-name
