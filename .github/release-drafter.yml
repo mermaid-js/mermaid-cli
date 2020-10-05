@@ -11,6 +11,9 @@ categories:
       - 'bug'
   - title: '🧰 Maintenance'
     label: 'chore'
+  - title: 📦 Dependency updates
+    labels:
+      - dependencies
 change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
 template: |
   ## Changes
