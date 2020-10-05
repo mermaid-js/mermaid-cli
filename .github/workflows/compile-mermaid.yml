@@ -15,19 +15,20 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.4
+      with:
+        versionSpec: '5.3.x'
+
+    - name: Use GitVersion
+      id: gitversion # step id used as reference for output values
+      uses: gittools/actions/gitversion/execute@v0.9.4
+      
     - name: Convert repository name to lower case
       run: echo "::set-env name=GITHUB_REPOSITORY_LOWER_CASE::$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')"
 
-    - name: Is JQ installed
-      run: jq --version
-
-    - name: Call GitVersion
-      run: docker run --rm -v "$(pwd):/repo" gittools/gitversion:5.3.5-linux-alpine.3.10-x64-netcoreapp3.1 /repo
-
     - name: Get release version
-      run: |
-        SEM_VERSION=$(docker run --rm -v "$(pwd):/repo" gittools/gitversion:5.3.5-linux-alpine.3.10-x64-netcoreapp3.1 /repo | jq -r '.SemVer')
-        echo ::set-env name=RELEASE_VERSION::$(echo ${SEM_VERSION})
+      run: echo ::set-env name=RELEASE_VERSION::$(echo ${{ steps.gitversion.outputs.semVer }})
 
     - name: Create image tag
       run: echo "::set-env name=IMAGETAG::${{env.GITHUB_REPOSITORY_LOWER_CASE}}/$IMAGENAME:${{env.RELEASE_VERSION}}"
