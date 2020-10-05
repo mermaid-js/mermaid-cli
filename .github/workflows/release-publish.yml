@@ -34,7 +34,9 @@ jobs:
         yarn prepublishOnly
 
     - name: Get release version
-      run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
+      run: | 
+        SEM_VERSION=$(docker run --rm -v "$(pwd):/repo" gittools/gitversion:5.3.5-linux-alpine.3.10-x64-netcoreapp3.1 /repo | jq -r '.SemVer')
+        echo ::set-env name=RELEASE_VERSION::$(echo ${SEM_VERSION})
 
     - name: Prepare release
       run: npm version --no-git-tag-version --allow-same-version ${{env.RELEASE_VERSION}}
