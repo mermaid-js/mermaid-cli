@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        fetch-depth: 2
+        fetch-depth: 0
 
     - name: Convert repository name to lower case
       run: echo "::set-env name=GITHUB_REPOSITORY_LOWER_CASE::$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')"
