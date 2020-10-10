@@ -23,7 +23,7 @@ jobs:
     - name: Use GitVersion
       id: gitversion # step id used as reference for output values
       uses: gittools/actions/gitversion/execute@v0.9.4
-      
+
     - name: Convert repository name to lower case
       run: echo "::set-env name=GITHUB_REPOSITORY_LOWER_CASE::$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')"
 
@@ -36,15 +36,8 @@ jobs:
     - name: Docker build
       run: docker build -t ${{env.IMAGETAG}} . -f $DOCKERFILE
 
-    - name: Test if the CLI actually works (PNG)
-      run: |
-        for i in $(ls $INPUT_DATA/*.mmd); do docker run -v $(pwd):/data ${{env.IMAGETAG}} -i /data/$i -o /data/$i.png -w 800; done
-        for i in $(ls $INPUT_DATA/*.mmd); do cat $i | docker run -i -v $(pwd):/data ${{env.IMAGETAG}} -o /data/$i-stdin.png -w 800; done
-
-    - name: Test if the CLI actually works (PDF)
-      run: |
-        for i in $(ls $INPUT_DATA/*.mmd); do docker run -v $(pwd):/data ${{env.IMAGETAG}} -i /data/$i -o /data/$i.pdf; done
-        for i in $(ls $INPUT_DATA/*.mmd); do cat $i | docker run -i -v $(pwd):/data ${{env.IMAGETAG}} -o /data/$i-stdin.pdf; done
+    - name: Run e2e tests
+      run: bash run-tests.sh ${{env.INPUT_DATA}} ${{env.IMAGETAG}}
 
     - name: Upload diagrams for manual inspection
       uses: actions/upload-artifact@v1
