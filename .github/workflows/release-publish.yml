@@ -14,7 +14,7 @@ jobs:
       DOCKER_IO_REPOSITORY: minlag/mermaid-cli
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - uses: fregante/setup-git-user@v1
 
     - uses: actions/setup-node@v1
