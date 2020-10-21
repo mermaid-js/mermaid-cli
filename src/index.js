@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+process.title = "mmdc"
 const commander = require('commander')
 const chalk = require('chalk')
 const fs = require('fs')
