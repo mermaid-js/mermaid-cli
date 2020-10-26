@@ -23,7 +23,7 @@
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "mermaid": "^8.8.1",
-    "standard": "^14.3.4",
+    "standard": "^15.0.0",
     "yarn-upgrade-all": "^0.5.2"
   },
   "files": [
