@@ -19,9 +19,9 @@ npm install @mermaid-js/mermaid-cli
 ❗️ We do **NOT** recommend installing it globally because both YARN and NPM could fail to install a command line tool globally properly due to weird permission issues.
 `yarn global add @mermaid-js/mermaid-cli` or `npm install -g @mermaid-js/mermaid-cli`
 ### Examples
-Please run the following command to see the latest options: `mmdc -h`
+To see the latest options, please run the following command: `mmdc -h`
 
-Run this command to convert Mermaid mmd diagram to an svg file:`mmdc -i input.mmd -o output.svg`
+To convert Mermaid mmd diagram to an svg file, run this command: `mmdc -i input.mmd -o output.svg`
 
 #### Piping from stdin
 
