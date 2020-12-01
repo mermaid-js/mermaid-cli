@@ -18,6 +18,8 @@ npm install @mermaid-js/mermaid-cli
 ### Install globally
 ❗️ We do **NOT** recommend installing it globally because both YARN and NPM could fail to install a command line tool globally properly due to weird permission issues.
 `yarn global add @mermaid-js/mermaid-cli` or `npm install -g @mermaid-js/mermaid-cli`
+### Install with [brew](https://brew.sh)
+Run `brew install mermaid-cli`
 ### Examples
 To see the latest options, please run the following command: `mmdc -h`
 
