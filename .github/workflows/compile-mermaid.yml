@@ -37,7 +37,7 @@ jobs:
       run: docker build -t ${{env.IMAGETAG}} . -f $DOCKERFILE
 
     - name: Setup test environment
-      run: npm install --global convert-svg-to-png
+      run: sudo npm install --global convert-svg-to-png
       
     - name: Run e2e tests
       run: bash run-tests.sh ${{env.INPUT_DATA}} ${{env.IMAGETAG}}
