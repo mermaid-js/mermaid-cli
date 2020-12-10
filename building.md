@@ -14,14 +14,14 @@ Instead of creating a .npmrc file on your own you can also use npm login --regis
 
 1. Do yarn
 
-```
-   yarn
+```sh
+yarn
 ```
 
 2. Run the bash script copy_modules.sh
 
 3. Run the script like below:
 
-```
-   node index.bundle.js -i test/state1.mmd
+```sh
+node index.bundle.js -i test/state1.mmd
 ```
