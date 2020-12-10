@@ -8,7 +8,9 @@ assignees: ''
 ---
 
 ## Help us help you!
+
 You want an answer. Here are some ways to get it quicker:
+
 * Use a clear and concise title.
 * Try to pose a clear and concise question.
 * Include as much, or as little, code as necessary.

@@ -20,6 +20,6 @@ Create a `puppeteer-config.json` file:
 
 And when you invoke `mmdc`:
 
-```
+```sh
 mmdc -p puppeteer-config.json ...
 ```
