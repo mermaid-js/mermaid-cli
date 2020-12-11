@@ -35,9 +35,14 @@ jobs:
 
     - name: Docker build
       run: docker build -t ${{env.IMAGETAG}} . -f $DOCKERFILE
-
+   
     - name: Run e2e tests
       run: bash run-tests.sh ${{env.INPUT_DATA}} ${{env.IMAGETAG}}
+      
+    - name: Convert all svg files to png before uploading for automatic inspection
+      run: |
+        npm install convert-svg-to-png
+        $(npm bin)/convert-svg-to-png ${{env.INPUT_DATA}}/*.svg
 
     - name: Upload diagrams for manual inspection
       uses: actions/upload-artifact@v1
