@@ -80,4 +80,4 @@ To use Mermaid CLI with npx, you need to use the `-p` flag because the package n
 
 ## For contributors
 
-Contributions are welome. See the [contribution guide](CONTRIBUTING.md).
+Contributions are welcome. See the [contribution guide](CONTRIBUTING.md).
