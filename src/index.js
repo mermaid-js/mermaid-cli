@@ -52,6 +52,17 @@ const getInputData = async inputFile => new Promise((resolve, reject) => {
   })
 })
 
+const convertToValidXML = html => {
+  var xml = html
+
+  // <br> tags in valid HTML (from innerHTML) look like <br>, but they must look like <br/> to be valid XML (such as SVG)
+  xml.replace(/<br>/gi, '<br/>')
+
+  return xml
+}
+
+
+
 commander
   .version(pkg.version)
   .option('-t, --theme [theme]', 'Theme of the chart, could be default, forest, dark or neutral. Optional. Default: default', /^default|forest|dark|neutral$/, 'default')
@@ -158,7 +169,8 @@ const deviceScaleFactor = parseInt(scale || 1, 10);
 
   if (output.endsWith('svg')) {
     const svg = await page.$eval('#container', container => container.innerHTML)
-    fs.writeFileSync(output, svg)
+    const svg_xml = convertToValidXML(svg)
+    fs.writeFileSync(output, svg_xml)
   } else if (output.endsWith('png')) {
     const clip = await page.$eval('svg', svg => {
       const react = svg.getBoundingClientRect()
