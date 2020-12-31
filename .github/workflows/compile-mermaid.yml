@@ -42,6 +42,7 @@ jobs:
     - name: Convert all svg files to png before uploading for automatic inspection
       run: |
         npm install convert-svg-to-png
+        ls -la ${{env.INPUT_DATA}}
         # This will overwite any PNG files with the same name that have been created by run-tests.sh
         $(npm bin)/convert-svg-to-png ${{env.INPUT_DATA}}/graph-with-br.mmd.svg
         $(npm bin)/convert-svg-to-png ${{env.INPUT_DATA}}/graph-with-br.mmd-stdin.svg
