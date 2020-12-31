@@ -42,9 +42,9 @@ jobs:
     - name: Convert all svg files to png before uploading for automatic inspection
       run: |
         npm install convert-svg-to-png
-        # convert-svg-to-png tries to create files by changing their extension, which could clash with already-existing PNG files
-        for png_file in "${{env.INPUT_DATA}}"/*.png; do echo "Moving $png_file..."; mv "$png_file" "$png_file.bak"; done
-        $(npm bin)/convert-svg-to-png ${{env.INPUT_DATA}}/*.svg
+        # This will overwite any PNG files with the same name that have been created by run-tests.sh
+        $(npm bin)/convert-svg-to-png ${{env.INPUT_DATA}}/graph-with-br.mmd.svg
+        $(npm bin)/convert-svg-to-png ${{env.INPUT_DATA}}/graph-with-br.mmd-stdin.svg
 
     - name: Upload diagrams for manual inspection
       uses: actions/upload-artifact@v1
