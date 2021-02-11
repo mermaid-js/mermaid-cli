@@ -68,6 +68,12 @@ sequenceDiagram
 EOF
 ```
 
+## Install with [brew](https://brew.sh)
+
+```
+brew install mermaid-cli
+```
+
 ### Run with npx
 
 [`npx`](https://www.npmjs.com/package/npx) is installed by default with NPM. It downloads and runs commands at the same time.
