@@ -16,6 +16,12 @@ or e.g. version 8.8.0
 docker pull minlag/mermaid-cli:8.8.0
 ```
 
+The container looks for input files in `/data`. So for example, if you have a diagram defined on your system in `/path/to/diagrams/diagram.mmd`, you can use the container generate an SVG file as follows:
+
+```sh
+docker run -it -v /path/to/diagrams:/data minlag/mermaid-cli -i /data/diagram.mmd
+```
+
 ## Install locally
 
 Some people are [having issue](https://github.com/mermaidjs/mermaid.cli/issues/15) installing this tool globally. Installing it locally is an alternative solution:
