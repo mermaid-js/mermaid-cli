@@ -19,7 +19,6 @@ for test in $(ls $INPUT_DATA/*.mmd); do
     if [ "$fmt" = "png" ] ; then
       EXTRA_PARAMS="-w 800"
     fi
-    echo docker run -v $(pwd):/data $IMAGETAG -i /data/$test $STYLE_PARAMS -o /data/$test.$fmt $EXTRA_PARAMS
     docker run -v $(pwd):/data $IMAGETAG -i /data/$test $STYLE_PARAMS -o /data/$test.$fmt $EXTRA_PARAMS
     cat $test |  docker run -i -v $(pwd):/data $IMAGETAG $STYLE_PARAMS -o /data/$test-stdin.$fmt $EXTRA_PARAMS
 
