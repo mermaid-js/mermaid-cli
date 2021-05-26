@@ -63,11 +63,13 @@ commander
   .option('-c, --configFile [configFile]', 'JSON configuration file for mermaid. Optional')
   .option('-C, --cssFile [cssFile]', 'CSS file for the page. Optional')
   .option('-s, --scale [scale]', 'Puppeteer scale factor, default 1. Optional')
-  .option('-f, --pdfFit', 'Scale PDF to fit chart')
+  .option('-f, --pdfFit [pdfFit]', 'Scale PDF to fit chart')
   .option('-p --puppeteerConfigFile [puppeteerConfigFile]', 'JSON configuration file for puppeteer. Optional')
   .parse(process.argv)
 
-let { theme, width, height, input, output, backgroundColor, configFile, cssFile, puppeteerConfigFile, scale, pdfFit } = commander
+const options = commander.opts();
+
+let { theme, width, height, input, output, backgroundColor, configFile, cssFile, puppeteerConfigFile, scale, pdfFit } = options
 
 // check input file
 if (!(input || inputPipedFromStdin())) {
