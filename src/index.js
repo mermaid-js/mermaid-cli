@@ -125,66 +125,66 @@ const deviceScaleFactor = parseInt(scale || 1, 10);
   const browser = await puppeteer.launch(puppeteerConfig)
   const page = await browser.newPage()
   page.setViewport({ width, height, deviceScaleFactor })
-  await page.goto(`file://${path.join(__dirname, 'index.html')}`)
-  await page.evaluate(`document.body.style.background = '${backgroundColor}'`)
-  const definition = await getInputData(input)
+  // await page.goto(`file://${path.join(__dirname, 'index.html')}`)
+  // await page.evaluate(`document.body.style.background = '${backgroundColor}'`)
+  // const definition = await getInputData(input)
 
-  const result = await page.$eval('#container', (container, definition, mermaidConfig, myCSS) => {
-    container.textContent = definition
-    window.mermaid.initialize(mermaidConfig)
+  // const result = await page.$eval('#container', (container, definition, mermaidConfig, myCSS) => {
+  //   container.textContent = definition
+  //   window.mermaid.initialize(mermaidConfig)
 
-    if (myCSS) {
-      const head = window.document.head || window.document.getElementsByTagName('head')[0]
-      const style = document.createElement('style')
-      style.type = 'text/css'
-      if (style.styleSheet) {
-        style.styleSheet.cssText = myCSS
-      } else {
-        style.appendChild(document.createTextNode(myCSS))
-      }
-      head.appendChild(style)
-    }
+  //   if (myCSS) {
+  //     const head = window.document.head || window.document.getElementsByTagName('head')[0]
+  //     const style = document.createElement('style')
+  //     style.type = 'text/css'
+  //     if (style.styleSheet) {
+  //       style.styleSheet.cssText = myCSS
+  //     } else {
+  //       style.appendChild(document.createTextNode(myCSS))
+  //     }
+  //     head.appendChild(style)
+  //   }
 
-    try {
-      window.mermaid.init(undefined, container)
-      return { status: 'success' };
-    } catch (error) {
-      return { status: 'error', error, message: error.message };
-    }
-  }, definition, mermaidConfig, myCSS)
-  if (result.status === 'error') {
-    error(result.message);
-  }
+  //   try {
+  //     window.mermaid.init(undefined, container)
+  //     return { status: 'success' };
+  //   } catch (error) {
+  //     return { status: 'error', error, message: error.message };
+  //   }
+  // }, definition, mermaidConfig, myCSS)
+  // if (result.status === 'error') {
+  //   error(result.message);
+  // }
 
-  if (output.endsWith('svg')) {
-    const svg = await page.$eval('#container', container => container.innerHTML)
-    fs.writeFileSync(output, svg)
-  } else if (output.endsWith('png')) {
-    const clip = await page.$eval('svg', svg => {
-      const react = svg.getBoundingClientRect()
-      return { x: Math.floor(react.left), y: Math.floor(react.top), width: Math.ceil(react.width), height: Math.ceil(react.height) }
-    })
-    await page.setViewport({ width: clip.x + clip.width, height: clip.y + clip.height, deviceScaleFactor })
-    await page.screenshot({ path: output, clip, omitBackground: backgroundColor === 'transparent' })
-  } else { // pdf
-    // if (pdfFit) {
-    //   const clip = await page.$eval('svg', svg => {
-    //     const react = svg.getBoundingClientRect()
-    //     return { x: react.left, y: react.top, width: react.width, height: react.height }
-    //   })
-    //   await page.pdf({
-    //     path: output,
-    //     printBackground: backgroundColor !== 'transparent',
-    //     width: (Math.ceil(clip.width) + clip.x*2) + 'px',
-    //     height: (Math.ceil(clip.height) + clip.y*2) + 'px',
-    //     pageRanges: '1-1',
-    //   })
-    // } else {
-    //   await page.pdf({
-    //     path: output,
-    //     printBackground: backgroundColor !== 'transparent'
-    //   })
-    // }
-  }
+  // if (output.endsWith('svg')) {
+  //   const svg = await page.$eval('#container', container => container.innerHTML)
+  //   fs.writeFileSync(output, svg)
+  // } else if (output.endsWith('png')) {
+  //   const clip = await page.$eval('svg', svg => {
+  //     const react = svg.getBoundingClientRect()
+  //     return { x: Math.floor(react.left), y: Math.floor(react.top), width: Math.ceil(react.width), height: Math.ceil(react.height) }
+  //   })
+  //   await page.setViewport({ width: clip.x + clip.width, height: clip.y + clip.height, deviceScaleFactor })
+  //   await page.screenshot({ path: output, clip, omitBackground: backgroundColor === 'transparent' })
+  // } else { // pdf
+  //   // if (pdfFit) {
+  //   //   const clip = await page.$eval('svg', svg => {
+  //   //     const react = svg.getBoundingClientRect()
+  //   //     return { x: react.left, y: react.top, width: react.width, height: react.height }
+  //   //   })
+  //   //   await page.pdf({
+  //   //     path: output,
+  //   //     printBackground: backgroundColor !== 'transparent',
+  //   //     width: (Math.ceil(clip.width) + clip.x*2) + 'px',
+  //   //     height: (Math.ceil(clip.height) + clip.y*2) + 'px',
+  //   //     pageRanges: '1-1',
+  //   //   })
+  //   // } else {
+  //   //   await page.pdf({
+  //   //     path: output,
+  //   //     printBackground: backgroundColor !== 'transparent'
+  //   //   })
+  //   // }
+  // }
   await browser.close()
 })()
