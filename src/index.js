@@ -71,6 +71,8 @@ const options = commander.opts();
 
 let { theme, width, height, input, output, backgroundColor, configFile, cssFile, puppeteerConfigFile, scale, pdfFit } = options
 
+const options = commander.opts();
+
 // check input file
 if (!(input || inputPipedFromStdin())) {
   error('Please specify input file: -i <input>')
@@ -114,8 +116,8 @@ if (cssFile) {
   }
   myCSS = fs.readFileSync(cssFile, 'utf-8')
 }
-console.log("MLG: " + width);
-console.log("MLG: " + height);
+console.log("MLG: " + options.width);
+console.log("MLG: " + options.height);
 // normalize args
 width = parseInt(width)
 height = parseInt(height)
