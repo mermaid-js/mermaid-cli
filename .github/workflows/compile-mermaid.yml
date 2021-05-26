@@ -44,10 +44,6 @@ jobs:
         npm install convert-svg-to-png
         $(npm bin)/convert-svg-to-png ${{env.INPUT_DATA}}/*.svg
 
-    - name: Delete me
-      run: |
-        rm ${{env.INPUT_DATA}}/*.png
-
     - name: Upload diagrams for manual inspection
       uses: actions/upload-artifact@v1
       with:
