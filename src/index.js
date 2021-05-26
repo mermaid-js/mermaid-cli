@@ -167,18 +167,18 @@ const deviceScaleFactor = parseInt(scale || 1, 10);
     await page.setViewport({ width: clip.x + clip.width, height: clip.y + clip.height, deviceScaleFactor })
     await page.screenshot({ path: output, clip, omitBackground: backgroundColor === 'transparent' })
   } else { // pdf
-    if (pdfFit) {
-      const clip = await page.$eval('svg', svg => {
-        const react = svg.getBoundingClientRect()
-        return { x: react.left, y: react.top, width: react.width, height: react.height }
-      })
-      await page.pdf({
-        path: output,
-        printBackground: backgroundColor !== 'transparent',
-        width: (Math.ceil(clip.width) + clip.x*2) + 'px',
-        height: (Math.ceil(clip.height) + clip.y*2) + 'px',
-        pageRanges: '1-1',
-      })
+    // if (pdfFit) {
+    //   const clip = await page.$eval('svg', svg => {
+    //     const react = svg.getBoundingClientRect()
+    //     return { x: react.left, y: react.top, width: react.width, height: react.height }
+    //   })
+    //   await page.pdf({
+    //     path: output,
+    //     printBackground: backgroundColor !== 'transparent',
+    //     width: (Math.ceil(clip.width) + clip.x*2) + 'px',
+    //     height: (Math.ceil(clip.height) + clip.y*2) + 'px',
+    //     pageRanges: '1-1',
+    //   })
     } else {
       await page.pdf({
         path: output,
