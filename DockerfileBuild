@@ -20,13 +20,15 @@ COPY --from=build /app/puppeteer-config.json /puppeteer-config.json
 ADD install-dependencies.sh /install-dependencies.sh
 RUN chmod 755 /install-dependencies.sh && /install-dependencies.sh
 
-ADD setup-sandbox.sh /setup-sandbox.sh
-RUN chmod 755 /setup-sandbox.sh && /setup-sandbox.sh
-
 RUN useradd -ms /bin/bash mermaidcli
 USER mermaidcli
 WORKDIR /home/mermaidcli
 RUN yarn add $(ls -d /install/*.tgz)
+
+USER root
+ADD setup-sandbox.sh /setup-sandbox.sh
+RUN chmod 755 /setup-sandbox.sh && /setup-sandbox.sh
+USER mermaidcli
 
 ADD puppeteer-config.json  /puppeteer-config.json
 ENTRYPOINT ["./node_modules/.bin/mmdc", "-p", "/puppeteer-config.json"]
