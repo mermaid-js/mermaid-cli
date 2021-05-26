@@ -114,7 +114,8 @@ if (cssFile) {
   }
   myCSS = fs.readFileSync(cssFile, 'utf-8')
 }
-
+console.log("MLG: " + width);
+console.log("MLG: " + height);
 // normalize args
 width = parseInt(width)
 height = parseInt(height)
