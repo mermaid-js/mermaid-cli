@@ -124,7 +124,7 @@ const deviceScaleFactor = parseInt(scale || 1, 10);
 (async () => {
   const browser = await puppeteer.launch(puppeteerConfig)
   const page = await browser.newPage()
-  page.setViewport({ width: 500, height: 400, deviceScaleFactor: deviceScaleFactor })
+  page.setViewport({ width: width, height: height, deviceScaleFactor: deviceScaleFactor })
   // await page.goto(`file://${path.join(__dirname, 'index.html')}`)
   // await page.evaluate(`document.body.style.background = '${backgroundColor}'`)
   // const definition = await getInputData(input)
