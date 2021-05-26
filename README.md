@@ -56,8 +56,9 @@ diagram defined on your system in `/path/to/diagrams/diagram.mmd`, you can use
 the container to generate an SVG file as follows:
 
 ```sh
-docker run -it -v /path/to/diagrams:/data minlag/mermaid-cli -i /data/diagram.mmd
+docker run -it -v /path/to/diagrams:/data --cap-add=SYS_ADMIN minlag/mermaid-cli -i /data/diagram.mmd
 ```
+[Why cap-add=SYS_ADMIN is needed](https://awesomeopensource.com/project/yukinying/chrome-headless-browser-docker)
 
 ## Install locally
 
