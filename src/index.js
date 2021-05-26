@@ -121,8 +121,8 @@ height = parseInt(height)
 backgroundColor = backgroundColor || 'white';
 const deviceScaleFactor = parseInt(scale || 1, 10);
 
-console.log("MLG: " + width)
-console.log("MLG: " + height)
+window.console.log("MLG: " + width);
+window.console.log("MLG: " + height);
 
 (async () => {
   const browser = await puppeteer.launch(puppeteerConfig)
