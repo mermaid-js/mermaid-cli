@@ -179,12 +179,12 @@ const deviceScaleFactor = parseInt(scale || 1, 10);
     //     height: (Math.ceil(clip.height) + clip.y*2) + 'px',
     //     pageRanges: '1-1',
     //   })
-    } else {
-      await page.pdf({
-        path: output,
-        printBackground: backgroundColor !== 'transparent'
-      })
-    }
+    // } else {
+    //   await page.pdf({
+    //     path: output,
+    //     printBackground: backgroundColor !== 'transparent'
+    //   })
+    // }
   }
   await browser.close()
 })()
