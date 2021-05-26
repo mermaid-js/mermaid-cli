@@ -30,6 +30,5 @@ ADD setup-sandbox.sh /setup-sandbox.sh
 RUN chmod 755 /setup-sandbox.sh && /setup-sandbox.sh
 USER mermaidcli
 
-ADD puppeteer-config.json  /puppeteer-config.json
-ENTRYPOINT ["./node_modules/.bin/mmdc", "-p", "/puppeteer-config.json"]
+ENTRYPOINT ["./node_modules/.bin/mmdc"]
 CMD [ "--help" ]
