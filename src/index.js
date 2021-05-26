@@ -114,16 +114,12 @@ if (cssFile) {
   }
   myCSS = fs.readFileSync(cssFile, 'utf-8')
 }
-console.log("MLG: " + options.width);
-console.log("MLG: " + options.height);
+
 // normalize args
 width = parseInt(width)
 height = parseInt(height)
 backgroundColor = backgroundColor || 'white';
 const deviceScaleFactor = parseInt(scale || 1, 10);
-
-console.log("MLG: " + width);
-console.log("MLG: " + height);
 
 (async () => {
   const browser = await puppeteer.launch(puppeteerConfig)
