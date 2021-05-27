@@ -135,7 +135,7 @@ const deviceScaleFactor = parseInt(scale || 1, 10);
 
     if (myCSS) {
       const head = window.document.head || window.document.getElementsByTagName('head')[0]
-      const style = document.createElement('style')
+      style = document.createElement('style')
       style.type = 'text/css'
       if (style.styleSheet) {
         style.styleSheet.cssText = myCSS
@@ -143,7 +143,9 @@ const deviceScaleFactor = parseInt(scale || 1, 10);
         style.appendChild(document.createTextNode(myCSS))
       }
       head.appendChild(style)
-    }
+    } else {
+      style = null;
+    }	    
 
     try {
       window.mermaid.init(undefined, container)
@@ -157,7 +159,10 @@ const deviceScaleFactor = parseInt(scale || 1, 10);
   }
 
   if (output.endsWith('svg')) {
-    const svg = await page.$eval('#container', container => container.innerHTML)
+    const svg = await page.$eval('#container', container => {
+      if (style) container.childNodes[0].appendChild(style);
+      return container.innerHTML;
+    });
     fs.writeFileSync(output, svg)
   } else if (output.endsWith('png')) {
     const clip = await page.$eval('svg', svg => {
