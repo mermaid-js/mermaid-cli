@@ -7,4 +7,5 @@ apt-get update \
                           libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 \
                           libxcursor1 libxdamage1 libxss1 libxtst6 libappindicator1 \
                           libnss3 libasound2 libatk1.0-0 libc6 ca-certificates \
-                          fonts-liberation lsb-release xdg-utils wget libgbm-dev
+                          fonts-liberation2 lsb-release xdg-utils wget libgbm-dev \
+                          fonts-noto-color-emoji fonts-takao
