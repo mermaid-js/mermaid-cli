@@ -132,18 +132,14 @@ height = parseInt(height)
 backgroundColor = backgroundColor || 'white';
 const deviceScaleFactor = parseInt(scale || 1, 10);
 
-(async () => {
-  const browser = await puppeteer.launch(puppeteerConfig)
+const parseMMD = async (browser, definition, output) => {
   const page = await browser.newPage()
   page.setViewport({ width, height, deviceScaleFactor })
   await page.goto(`file://${path.join(__dirname, 'index.html')}`)
   await page.evaluate(`document.body.style.background = '${backgroundColor}'`)
-  const definition = await getInputData(input)
-
   const result = await page.$eval('#container', (container, definition, mermaidConfig, myCSS) => {
     container.textContent = definition
     window.mermaid.initialize(mermaidConfig)
-
     if (myCSS) {
       const head = window.document.head || window.document.getElementsByTagName('head')[0]
       const style = document.createElement('style')
@@ -198,5 +194,22 @@ const deviceScaleFactor = parseInt(scale || 1, 10);
       })
     }
   }
+}
+
+(async () => {
+  const browser = await puppeteer.launch(puppeteerConfig)
+  const definition = await getInputData(input)
+  if (/\.md$/.test(input)) {
+    const matches = definition.match(/^```(?:mermaid)(\n([\s\S]*?))```$/gm);
+    if (matches.length > 0) {
+      const mmdStrings = matches.map((str) => str.replace(/^```(?:mermaid)(\n([\s\S]*?))```$/,'$1').trim());
+      await Promise.all(mmdStrings.map((mmdString, index) => 
+        parseMMD(browser, mmdString, output.replace(/(\..*)$/,`-${index + 1}$1`))
+      ));  
+    }
+  } else {
+    await parseMMD(browser, definition, output)
+  }
+  
   await browser.close()
 })()
