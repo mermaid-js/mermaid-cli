@@ -11,7 +11,7 @@ const out = "test-positive";
 async function compileDiagramFromStdin(file, format) {
   return new Promise(function (resolve, reject) {
     try {
-      const result = file.replace(".mmd", "-stdin." + format);
+      const result = file.replace(/\.(?:mmd|md)$/, "-stdin." + format);
       // eslint-disable-next-line no-console
       console.warn(`Compiling ${file} into ${result}`);
       execSync(`cat ${workflows}/${file} | \
@@ -31,7 +31,7 @@ async function compileDiagramFromStdin(file, format) {
  */
 async function compileDiagram(file, format) {
   return new Promise(async function(resolve, reject) {
-    const result = file.replace(".mmd", "." + format);
+    const result = file.replace(/\.(?:mmd|md)$/, "." + format);
     // eslint-disable-next-line no-console
     console.warn(`Compiling ${file} into ${result}`);
     const child = spawnSync("node", [
@@ -75,7 +75,7 @@ async function compileAll() {
     fs.readdir(workflows, async (err, files) => {
       resolve(Promise.all(
         files.map(async file => {
-          if (!file.endsWith(".mmd")) {
+          if (!(file.endsWith(".mmd") | /\.md$/.test(file))) {
             return Promise.resolve();
           }
           const expectError = /expect-error/.test(file);
@@ -106,7 +106,7 @@ async function compileAllStdin() {
     fs.readdir(workflows, async (err, files) => {
       resolve(Promise.all(
         files.map(async file => {
-          if (!file.endsWith(".mmd")) {
+          if (!(file.endsWith(".mmd") | /\.md$/.test(file))) {
             return Promise.resolve();
           }
           const expectError = /expect-error/.test(file);
