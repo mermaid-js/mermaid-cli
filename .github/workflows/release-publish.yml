@@ -19,8 +19,9 @@ jobs:
         fetch-depth: 0
     - uses: fregante/setup-git-user@v1
 
-    - uses: actions/setup-node@v2.3.0
+    - uses: actions/setup-node@v2
       with:
+        cache: yarn
         node-version: 12
         registry-url: https://registry.npmjs.org/
     - name: Install Yarn
