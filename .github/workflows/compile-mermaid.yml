@@ -60,7 +60,7 @@ jobs:
 
     - name: Publish to Github Registry
       if: github.ref == 'refs/heads/master'
-      uses: elgohr/Publish-Docker-Github-Action@2.17
+      uses: elgohr/Publish-Docker-Github-Action@3.04
       with:
         name: ${{env.GITHUB_REPOSITORY_LOWER_CASE}}/${{env.IMAGENAME}}
         username: $GITHUB_ACTOR
@@ -72,7 +72,7 @@ jobs:
 
     - name: Publish to Docker.io Registry
       if: github.ref == 'refs/heads/master'
-      uses: elgohr/Publish-Docker-Github-Action@2.17
+      uses: elgohr/Publish-Docker-Github-Action@3.04
       with:
         name: ${{env.DOCKER_IO_REPOSITORY}}
         username: ${{secrets.DOCKER_USERNAME}}

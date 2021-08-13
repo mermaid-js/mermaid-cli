@@ -62,7 +62,7 @@ jobs:
         path: /home/runner/.npm/_logs
 
     - name: Publish to Docker.io Registry
-      uses: elgohr/Publish-Docker-Github-Action@2.17
+      uses: elgohr/Publish-Docker-Github-Action@3.04
       with:
         name: ${{env.DOCKER_IO_REPOSITORY}}
         username: ${{secrets.DOCKER_USERNAME}}
