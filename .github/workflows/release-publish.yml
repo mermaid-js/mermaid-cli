@@ -22,6 +22,7 @@ jobs:
     - uses: actions/setup-node@v2.4.0
       with:
         node-version: 12
+        cache: npm
         registry-url: https://registry.npmjs.org/
     - name: Install Yarn
       run: npm i yarn --global
