@@ -1,0 +1,24 @@
+name: Update dist
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+          cache: npm
+          registry-url: https://registry.npmjs.org/
+      - name: Install Yarn
+        run: npm i yarn --global
+      - name: Build the package
+        run: yarn
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v7
+        with:
+          author_name: ${{ github.actor }}
+          author_email: ${{ github.actor }}@users.noreply.github.com
+          message: 'yarn'
