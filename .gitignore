@@ -7,3 +7,4 @@ node_modules/
 fontawesome/
 .DS_Store
 .npmrc
+yarn-error.log
