@@ -68,19 +68,20 @@ commander
   .option('-t, --theme [theme]', 'Theme of the chart, could be default, forest, dark or neutral. Optional. Default: default', /^default|forest|dark|neutral$/, 'default')
   .option('-w, --width [width]', 'Width of the page. Optional. Default: 800', /^\d+$/, '800')
   .option('-H, --height [height]', 'Height of the page. Optional. Default: 600', /^\d+$/, '600')
-  .option('-i, --input <input>', 'Input mermaid file. Required.')
+  .option('-i, --input <input>', 'Input mermaid file. Files ending in .md will be treated as Markdown and all charts (e.g. ```mermaid (...)```) will be extracted and generated. Required.')
   .option('-o, --output [output]', 'Output file. It should be either svg, png or pdf. Optional. Default: input + ".svg"')
   .option('-b, --backgroundColor [backgroundColor]', 'Background color. Example: transparent, red, \'#F0F0F0\'. Optional. Default: white')
   .option('-c, --configFile [configFile]', 'JSON configuration file for mermaid. Optional')
   .option('-C, --cssFile [cssFile]', 'CSS file for the page. Optional')
   .option('-s, --scale [scale]', 'Puppeteer scale factor, default 1. Optional')
   .option('-f, --pdfFit [pdfFit]', 'Scale PDF to fit chart')
+  .option('-q, --quiet', 'Suppress log output')
   .option('-p --puppeteerConfigFile [puppeteerConfigFile]', 'JSON configuration file for puppeteer. Optional')
   .parse(process.argv)
 
 const options = commander.opts();
 
-let { theme, width, height, input, output, backgroundColor, configFile, cssFile, puppeteerConfigFile, scale, pdfFit } = options
+let { theme, width, height, input, output, backgroundColor, configFile, cssFile, puppeteerConfigFile, scale, pdfFit, quiet } = options
 
 // check input file
 if (!(input || inputPipedFromStdin())) {
@@ -124,6 +125,12 @@ if (cssFile) {
     error(`CSS file "${cssFile}" doesn't exist`)
   }
   myCSS = fs.readFileSync(cssFile, 'utf-8')
+}
+
+const info = message => {
+  if (!quiet) {
+    console.log(message)
+  }
 }
 
 // normalize args
@@ -201,15 +208,22 @@ const parseMMD = async (browser, definition, output) => {
   const definition = await getInputData(input)
   if (/\.md$/.test(input)) {
     const matches = definition.match(/^```(?:mermaid)(\n([\s\S]*?))```$/gm);
-    if (matches.length > 0) {
+
+    if (matches !== null) {
+      info(`Found ${matches.length} mermaid charts in Markdown input`);
       const mmdStrings = matches.map((str) => str.replace(/^```(?:mermaid)(\n([\s\S]*?))```$/,'$1').trim());
-      await Promise.all(mmdStrings.map((mmdString, index) => 
-        parseMMD(browser, mmdString, output.replace(/(\..*)$/,`-${index + 1}$1`))
-      ));  
+      await Promise.all(mmdStrings.map((mmdString, index) => {
+          const output_file = output.replace(/(\..*)$/,`-${index + 1}$1`);
+          info(` - ${output_file}`);
+          return parseMMD(browser, mmdString, output_file);
+        })
+      );
+    } else {
+      info(`No mermaid charts found in Markdown input`);
     }
   } else {
-    await parseMMD(browser, definition, output)
+    info(`Generating single mermaid chart`);
+    await parseMMD(browser, definition, output);
   }
-  
   await browser.close()
 })()
