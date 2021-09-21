@@ -129,7 +129,7 @@ if (cssFile) {
 
 const info = message => {
   if (!quiet) {
-    console.log(message)
+    console.info(message)
   }
 }
 
