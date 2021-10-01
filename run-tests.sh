@@ -16,3 +16,10 @@ for i in $(ls $INPUT_DATA/*.mmd); do cat $i | docker run -i -v $(pwd):/data $IMA
 OUTPUT=$(docker run -v $(pwd):/data $IMAGETAG -i /data/test-positive/no-charts.md)
 EXPECTED_OUTPUT="No mermaid charts found in Markdown input"
 [[ "$OUTPUT" == "$EXPECTED_OUTPUT" ]] || echo "Expected output to be '$EXPECTED_OUTPUT', got '$OUTPUT'"
+
+# Test if mmdc does not replace <br> with <br/>
+docker run -v $(pwd):/data $IMAGETAG -i /data/graph-with-br.mmd -w 800;
+if grep -q "<br>" "./test-positive/graph-with-br.mmd.svg"; then
+  echo "<br> has not been replaced with <br/>";
+  exit 1;
+fi
