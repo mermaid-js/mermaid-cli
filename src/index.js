@@ -53,15 +53,9 @@ const getInputData = async inputFile => new Promise((resolve, reject) => {
 })
 
 const convertToValidXML = html => {
-  var xml = html
-
   // <br> tags in valid HTML (from innerHTML) look like <br>, but they must look like <br/> to be valid XML (such as SVG)
-  xml.replace(/<br>/gi, '<br/>')
-
-  return xml
+  return html.replace(/<br>/gi, '<br/>')
 }
-
-
 
 commander
   .version(pkg.version)
