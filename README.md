@@ -99,6 +99,7 @@ it installs (`mmdc`).  `npx -p @mermaid-js/mermaid-cli mmdc -h`
 ## Known issues
 
 1. [Linux sandbox issue](docs/linux-sandbox-issue.md)
+2. [Docker permission denied issue](docs/docker-permission-denied.md)
 
 ## For contributors
 
