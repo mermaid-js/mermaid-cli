@@ -3,9 +3,9 @@
 
 
 "@babel/cli@^7.0.0":
-  version "7.15.7"
-  resolved "https://registry.yarnpkg.com/@babel/cli/-/cli-7.15.7.tgz#62658abedb786d09c1f70229224b11a65440d7a1"
-  integrity sha512-YW5wOprO2LzMjoWZ5ZG6jfbY9JnkDxuHDwvnrThnuYtByorova/I0HNXJedrUfwuXFQfYOjcqDA4PU3qlZGZjg==
+  version "7.16.0"
+  resolved "https://registry.yarnpkg.com/@babel/cli/-/cli-7.16.0.tgz#a729b7a48eb80b49f48a339529fc4129fd7bcef3"
+  integrity sha512-WLrM42vKX/4atIoQB+eb0ovUof53UUvecb4qGjU2PDDWRiZr50ZpiV8NpcLo7iSxeGYrRG0Mqembsa+UrTAV6Q==
   dependencies:
     commander "^4.0.1"
     convert-source-map "^1.1.0"
@@ -2272,21 +2272,10 @@ glob-parent@^5.0.0, glob-parent@~5.1.2:
   dependencies:
     is-glob "^4.0.1"
 
-glob@^7.0.0:
+glob@^7.0.0, glob@^7.1.3:
   version "7.1.7"
   resolved "https://registry.yarnpkg.com/glob/-/glob-7.1.7.tgz#3b193e9233f01d42d0b3f78294bbeeb418f94a90"
   integrity sha512-OvD9ENzPLbegENnYP5UUfJIirTg4+XwMWGaQfQTY0JenxNvvIKP3U3/tAQSPIu/lHxXYSZmpXlUHeqAIdKzBLQ==
-  dependencies:
-    fs.realpath "^1.0.0"
-    inflight "^1.0.4"
-    inherits "2"
-    minimatch "^3.0.4"
-    once "^1.3.0"
-    path-is-absolute "^1.0.0"
-
-glob@^7.1.3:
-  version "7.1.6"
-  resolved "https://registry.npmjs.org/glob/-/glob-7.1.6.tgz"
   dependencies:
     fs.realpath "^1.0.0"
     inflight "^1.0.4"
