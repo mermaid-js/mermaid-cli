@@ -35,13 +35,13 @@ jobs:
         yarn prepublishOnly
 
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v0.9.10
+      uses: gittools/actions/gitversion/setup@v0.9.11
       with:
         versionSpec: '5.x'
 
     - name: Use GitVersion
       id: gitversion # step id used as reference for output values
-      uses: gittools/actions/gitversion/execute@v0.9.10
+      uses: gittools/actions/gitversion/execute@v0.9.11
 
     - name: Get release version
       run: echo "RELEASE_VERSION=${{ steps.gitversion.outputs.semVer }}" >> $GITHUB_ENV
