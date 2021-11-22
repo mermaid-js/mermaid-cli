@@ -2719,9 +2719,9 @@ make-dir@^2.1.0:
     semver "^5.6.0"
 
 mermaid@^8.9.0:
-  version "8.13.3"
-  resolved "https://registry.yarnpkg.com/mermaid/-/mermaid-8.13.3.tgz#3e7ae41210cfbe5b252db609ef86be8435b0b75d"
-  integrity sha512-w6KmDtSzkk856WUVqlBsyLZX0q4Jr35IlxiHTPTaWwMgWHFpI8rEJzcxWoyrpxeT/Rac/vvvSFOZymDTeA0iiA==
+  version "8.13.4"
+  resolved "https://registry.yarnpkg.com/mermaid/-/mermaid-8.13.4.tgz#924cb85f39380285e0a99f245c66cfa61014a2e1"
+  integrity sha512-zdWtsXabVy1PEAE25Jkm4zbTDlQe8rqNlTMq2B3j+D+NxDskJEY5OsgalarvNLsw+b5xFa1a8D1xcm/PijrDow==
   dependencies:
     "@braintree/sanitize-url" "^3.1.0"
     d3 "^7.0.0"
