@@ -144,7 +144,7 @@ const parseMMD = async (browser, definition, output) => {
     container.textContent = definition
     window.mermaid.initialize(mermaidConfig)
 
-    let style = null
+    let style
     if (myCSS) {
       const head = window.document.head || window.document.getElementsByTagName('head')[0]
       style = document.createElement('style')
@@ -170,7 +170,7 @@ const parseMMD = async (browser, definition, output) => {
 
   if (output.endsWith('svg')) {
     const svg = await page.$eval('#container', container => {
-      if (style && container.childNodes && container.childNodes[0]) {
+      if (style) {
         container.childNodes[0].appendChild(style);
       }
       return container.innerHTML
