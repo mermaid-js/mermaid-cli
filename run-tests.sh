@@ -3,6 +3,7 @@ INPUT_DATA=$1
 IMAGETAG=$2
 
 set -e
+set -o xtrace
 
 # Test if the CLI actually works (PNG)
 for i in $(ls $INPUT_DATA/*.mmd); do docker run -v $(pwd):/data $IMAGETAG -i /data/$i -o /data/$i.png -w 800; done
