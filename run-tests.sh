@@ -8,7 +8,7 @@ set -e
 for i in $(ls $INPUT_DATA/*.mmd); do docker run -v $(pwd):/data $IMAGETAG -i /data/$i -o /data/$i.png -w 800; done
 
 # Test if the CLI actually works (PNG) for md files
-for i in $(ls $INPUT_DATA/*.md); do docker run -v $(pwd):/data $IMAGETAG -i /data/$i -o /data/$i.pdf; done
+for i in $(ls $INPUT_DATA/*.md); do docker run -v $(pwd):/data $IMAGETAG -i /data/$i -o /data/$i.png; done
 
 # Test if the CLI actually works (PDF)
 for i in $(ls $INPUT_DATA/*.mmd); do docker run -v $(pwd):/data $IMAGETAG -i /data/$i -o /data/$i.pdf; done
