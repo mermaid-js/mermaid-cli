@@ -45,7 +45,7 @@ jobs:
         ls -la ${{env.INPUT_DATA}}
         # This will overwite any PNG files with the same name that have been created by run-tests.sh
         $(npm bin)/convert-svg-to-png ${{env.INPUT_DATA}}/graph-with-br.mmd.svg
-        $(npm bin)/convert-svg-to-png ${{env.INPUT_DATA}}/graph-with-br.mmd-stdin.svg
+        $(npm bin)/convert-svg-to-png ${{env.INPUT_DATA}}/flowchart4-with-style.svg
 
     - name: Upload diagrams for manual inspection
       uses: actions/upload-artifact@v2.2.4

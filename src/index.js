@@ -143,9 +143,11 @@ const parseMMD = async (browser, definition, output) => {
   const result = await page.$eval('#container', (container, definition, mermaidConfig, myCSS) => {
     container.textContent = definition
     window.mermaid.initialize(mermaidConfig)
+
+    let style = null
     if (myCSS) {
       const head = window.document.head || window.document.getElementsByTagName('head')[0]
-      const style = document.createElement('style')
+      style = document.createElement('style')
       style.type = 'text/css'
       if (style.styleSheet) {
         style.styleSheet.cssText = myCSS
@@ -167,7 +169,12 @@ const parseMMD = async (browser, definition, output) => {
   }
 
   if (output.endsWith('svg')) {
-    const svg = await page.$eval('#container', container => container.innerHTML)
+    const svg = await page.$eval('#container', container => {
+      if (style && container.childNodes && container.childNodes[0]) {
+        container.childNodes[0].appendChild(style);
+      }
+      return container.innerHTML
+    }
     const svg_xml = convertToValidXML(svg)
     fs.writeFileSync(output, svg_xml)
   } else if (output.endsWith('png')) {

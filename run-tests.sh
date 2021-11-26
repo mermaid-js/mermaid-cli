@@ -27,3 +27,6 @@ if grep -q "<br>" "./test-positive/graph-with-br.mmd.svg"; then
   echo "<br> has not been replaced with <br/>";
   exit 1;
 fi
+
+# Test if style is correctly applied to svg
+cat $INPUT_DATA/flowchart4.mmd | docker run -i -v $(pwd):/data $IMAGETAG -C /data/$INPUT_DATA/flowchart4.css -o /data/$INPUT_DATA/flowchart4-with-style.svg -w 800
