@@ -135,6 +135,8 @@ height = parseInt(height)
 backgroundColor = backgroundColor || 'white';
 const deviceScaleFactor = parseInt(scale || 1, 10);
 
+let style
+
 const parseMMD = async (browser, definition, output) => {
   const page = await browser.newPage()
   page.setViewport({ width, height, deviceScaleFactor })
@@ -144,7 +146,6 @@ const parseMMD = async (browser, definition, output) => {
     container.textContent = definition
     window.mermaid.initialize(mermaidConfig)
 
-    let style
     if (myCSS) {
       const head = window.document.head || window.document.getElementsByTagName('head')[0]
       style = document.createElement('style')
