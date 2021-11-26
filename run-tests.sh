@@ -14,7 +14,7 @@ for i in $(ls $INPUT_DATA/*.md); do docker run -v $(pwd):/data $IMAGETAG -i /dat
 for i in $(ls $INPUT_DATA/*.mmd); do docker run -v $(pwd):/data $IMAGETAG -i /data/$i -o /data/$i.pdf; done
 
 # Test if a diagram from STDIN can be understood
-cat $INPUT_DATA/flowchart1.mmd | docker run -i -v $(pwd):/data $IMAGETAG -o /data/$INPUT_DATA/flowchart1-stdin.png -w 800; done
+cat $INPUT_DATA/flowchart1.mmd | docker run -i -v $(pwd):/data $IMAGETAG -o /data/$INPUT_DATA/flowchart1-stdin.png -w 800
 
 # Test if mmdc crashes on Markdown files containing no mermaid charts
 OUTPUT=$(docker run -v $(pwd):/data $IMAGETAG -i /data/test-positive/no-charts.md)
