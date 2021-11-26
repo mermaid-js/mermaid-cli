@@ -135,7 +135,7 @@ height = parseInt(height)
 backgroundColor = backgroundColor || 'white';
 const deviceScaleFactor = parseInt(scale || 1, 10);
 
-let style
+let style = null
 
 const parseMMD = async (browser, definition, output) => {
   const page = await browser.newPage()
@@ -171,7 +171,7 @@ const parseMMD = async (browser, definition, output) => {
 
   if (output.endsWith('svg')) {
     const svg = await page.$eval('#container', container => {
-      if (style) {
+      if (style != null) {
         container.childNodes[0].appendChild(style);
       }
       return container.innerHTML
