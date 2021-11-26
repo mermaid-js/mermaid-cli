@@ -174,7 +174,7 @@ const parseMMD = async (browser, definition, output) => {
         container.childNodes[0].appendChild(style);
       }
       return container.innerHTML
-    }
+    })
     const svg_xml = convertToValidXML(svg)
     fs.writeFileSync(output, svg_xml)
   } else if (output.endsWith('png')) {
