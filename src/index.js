@@ -200,12 +200,12 @@ const parseMMD = async (browser, definition, output) => {
 }
 
 (async () => {
-  const mermaidChartsInMarkdown = '^```(?:mermaid)(\r?\n([\s\S]*?))```$';
+  const mermaidChartsInMarkdown = '^```(?:mermaid)(\r?\n([\\s\\S]*?))```$';
   const mermaidChartsInMarkdownReg = new RegExp(mermaidChartsInMarkdown, 'gm')
   const browser = await puppeteer.launch(puppeteerConfig)
   const definition = await getInputData(input)
   if (/\.md$/.test(input)) {
-    const matches = mermaidChartsInMarkdownReg.match(definition);
+    const matches = definition.match(mermaidChartsInMarkdownReg);
 
     if (matches !== null) {
       info(`Found ${matches.length} mermaid charts in Markdown input`);
