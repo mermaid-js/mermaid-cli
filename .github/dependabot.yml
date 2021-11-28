@@ -9,7 +9,11 @@ updates:
     directory: /
     schedule:
       interval: weekly
+      day: monday
+      time: "07:00"
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
+      day: monday
+      time: "07:00"
