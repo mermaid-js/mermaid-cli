@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 process.title = "mmdc"
-const commander = require('commander')
-const chalk = require('chalk')
-const fs = require('fs')
-const path = require('path')
-const puppeteer = require('puppeteer')
+import commander from 'commander'
+import chalk from 'chalk'
+import fs from 'fs'
+import path from 'path'
+import puppeteer from 'puppeteer'
 
-const pkg = require('./package.json')
+import pkg from './package.json'
 
 const error = message => {
   console.log(chalk.red(`\n${message}\n`))
