@@ -4,7 +4,7 @@
       "@babel/preset-env",
       {
         "targets": {
-          "esmodules": true
+          "node": "13.2.0"
         }
       }
     ]
