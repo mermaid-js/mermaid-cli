@@ -15,7 +15,7 @@ async function compileDiagramFromStdin(file, format) {
       // eslint-disable-next-line no-console
       console.warn(`Compiling ${file} into ${result}`);
       execSync(`cat ${workflows}/${file} | \
-        node index.js -o ${out}/${result} -c ${workflows}/config.json`);
+        node index.bundle.js -o ${out}/${result} -c ${workflows}/config.json`);
 
       resolve();
     } catch (err) {
@@ -35,7 +35,7 @@ async function compileDiagram(file, format) {
     // eslint-disable-next-line no-console
     console.warn(`Compiling ${file} into ${result}`);
     const child = spawnSync("node", [
-      "index.js",
+      "index.bundle.js",
       "-i",
       workflows + "/" + file,
       "-o",
@@ -75,17 +75,22 @@ async function compileAll() {
     fs.readdir(workflows, async (err, files) => {
       resolve(Promise.all(
         files.map(async file => {
-          if (!(file.endsWith(".mmd") | /\.md$/.test(file))) {
+          if (!(file.endsWith(".mmd") | /\.md$/.test(file)) && file !== 'markdown-output.out.md') {
             return Promise.resolve();
           }
+          let resultP;
+          if (file === 'markdown-output.md') {
+            resultP = compileDiagram(file, "out.md");
+          } else {
+            resultP = compileDiagram(file, "svg")
+              .then(() => compileDiagram(file, "png"));
+          }
           const expectError = /expect-error/.test(file);
-          const resultP = compileDiagram(file, "svg")
-            .then(() => compileDiagram(file, "png"));
           if (!expectError) return resultP;
           try {
             await resultP;
           } catch (err) {
-            return `compling ${file} produced an error, which is well`;
+            return `compiling ${file} produced an error, which is well`;
           }
           throw new Error(`Expected ${file} to fail, but it succeeded`);
         })
