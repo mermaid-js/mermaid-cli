@@ -21,6 +21,40 @@ mmdc -i input.mmd -o output.svg
 mmdc -i input.mmd -o output.png -t dark -b transparent
 ```
 
+### Transform a markdown file with mermaid diagrams
+
+```sh
+mmdc -i readme.template.md -o readme.md
+```
+
+This command transforms a markdown file itself. The mermaid-cli will find the mermaid diagrams, create SVG files from them and refer to those in the markdown output.
+
+This:
+
+~~~md
+### Some markdown
+```mermaid
+graph
+   [....]
+```
+
+### Some more markdown
+```mermaid
+sequenceDiagram
+   [....]
+```
+~~~
+
+Becomes:
+
+```md
+### Some markdown
+![diagram](./readme-1.svg)
+
+### Some more markdown
+![diagram](./readme-2.svg)
+```
+
 ### Piping from stdin
 
 You can easily pipe input from stdin. This example shows how to use a heredoc to
