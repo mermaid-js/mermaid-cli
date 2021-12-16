@@ -208,7 +208,7 @@ const parseMMD = async (browser, definition, output) => {
   if (/\.md$/.test(input)) {
 
     const diagrams = [];
-    const outDefinition = definition.replaceAll(mermaidChartsInMarkdownRegexGlobal, (mermaidMd) => {
+    const outDefinition = definition.replace(mermaidChartsInMarkdownRegexGlobal, (mermaidMd) => {
       const md = mermaidChartsInMarkdownRegex.exec(mermaidMd)[1];
 
       // Output can be either a template image file, or a `.md` output file.
