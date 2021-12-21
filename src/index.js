@@ -13,6 +13,10 @@ const error = message => {
   process.exit(1)
 }
 
+const warn = message => {
+  console.log(chalk.yellow(`\n${message}\n`))
+}
+
 const checkConfigFile = file => {
   if (!fs.existsSync(file)) {
     error(`Configuration file "${file}" doesn't exist`)
@@ -167,7 +171,15 @@ const parseMMD = async (browser, definition, output) => {
   }
 
   if (output.endsWith('svg')) {
-    const svg = await page.$eval('#container', container => container.innerHTML)
+    const svg = await page.$eval('#container', (container, backgroundColor) => {
+      const svg = container.getElementsByTagName?.('svg')?.[0]
+      if (svg.style) {
+        svg.style.backgroundColor = backgroundColor
+      } else {
+        warn("svg not found. Not applying background color.")
+      }
+      return container.innerHTML
+    }, backgroundColor)
     const svg_xml = convertToValidXML(svg)
     fs.writeFileSync(output, svg_xml)
   } else if (output.endsWith('png')) {
