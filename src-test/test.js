@@ -41,7 +41,9 @@ async function compileDiagram(file, format) {
       "-o",
       out + "/" + result,
       "-c",
-      workflows + "/config.json"
+      workflows + "/config.json",
+      "-b",
+      "lightgray"
     ], { timeout: 5000 });
 
     const stdout = child.stdout.toString('utf8').trim()
