@@ -25,7 +25,7 @@
     "@babel/preset-env": "^7.0.0",
     "@fortawesome/fontawesome-free-webfonts": "^1.0.9",
     "standard": "^16.0.1",
-    "yarn-upgrade-all": "^0.5.2"
+    "yarn-upgrade-all": "^0.6.1"
   },
   "files": [
     "index.bundle.js",
