@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "chalk": "^4.1.0",
-    "commander": "^8.0.0",
+    "commander": "^9.0.0",
     "mermaid": "^8.9.0",
     "puppeteer": "^13.0.0"
   },
