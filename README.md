@@ -95,7 +95,7 @@ docker run -it -v /path/to/diagrams:/data minlag/mermaid-cli -i /data/diagram.mm
 
 ## Install locally
 
-Some people are [having issue](https://github.com/mermaidjs/mermaid.cli/issues/15)
+Some people are [having issues](https://github.com/mermaidjs/mermaid.cli/issues/15)
 installing this tool globally. Installing it locally is an alternative solution:
 
 ```
