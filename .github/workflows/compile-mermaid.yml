@@ -11,7 +11,7 @@ jobs:
       INPUT_DATA: test-positive
       PERCY_TOKEN: ${{secrets.PERCY_TOKEN}}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
