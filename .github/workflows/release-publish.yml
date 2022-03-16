@@ -14,78 +14,99 @@ jobs:
       DOCKER_IO_REPOSITORY: minlag/mermaid-cli
 
     steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - uses: fregante/setup-git-user@v1
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: fregante/setup-git-user@v1
 
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 12
-        cache: npm
-        registry-url: https://registry.npmjs.org/
-    - name: Install Yarn
-      run: npm i yarn --global
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 12
+          cache: npm
+          registry-url: https://registry.npmjs.org/
+      - name: Install Yarn
+        run: npm i yarn --global
 
-    - name: Build the package
-      run: |
-        yarn
-        chmod 755 copy_modules.sh
-        ./copy_modules.sh
-        yarn prepublishOnly
+      - name: Build the package
+        run: |
+          yarn
+          chmod 755 copy_modules.sh
+          ./copy_modules.sh
+          yarn prepublishOnly
 
-    - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v0.9.13
-      with:
-        versionSpec: '5.x'
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.13
+        with:
+          versionSpec: "5.x"
 
-    - name: Use GitVersion
-      id: gitversion # step id used as reference for output values
-      uses: gittools/actions/gitversion/execute@v0.9.13
+      - name: Use GitVersion
+        id: gitversion # step id used as reference for output values
+        uses: gittools/actions/gitversion/execute@v0.9.13
 
-    - name: Get release version
-      run: echo "RELEASE_VERSION=${{ steps.gitversion.outputs.semVer }}" >> $GITHUB_ENV
+      - name: Get release version
+        run: echo "RELEASE_VERSION=${{ steps.gitversion.outputs.semVer }}" >> $GITHUB_ENV
 
-    - name: Prepare release
-      run: npm version --no-git-tag-version --allow-same-version ${{env.RELEASE_VERSION}}
+      - name: Prepare release
+        run: npm version --no-git-tag-version --allow-same-version ${{env.RELEASE_VERSION}}
 
-    - name: Publish to npmjs
-      run: npm publish --access public
-      env:
-        NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - name: Publish to npmjs
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
-    - name: The job has failed
-      if: ${{ failure() }}
-      uses: actions/upload-artifact@v3
-      with:
-        name: npm-logs
-        path: /home/runner/.npm/_logs
+      - name: The job has failed
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v2.3.1
+        with:
+          name: npm-logs
+          path: /home/runner/.npm/_logs
 
-    - name: Publish to Docker.io Registry
-      uses: elgohr/Publish-Docker-Github-Action@3.04
-      with:
-        name: ${{env.DOCKER_IO_REPOSITORY}}
-        username: ${{secrets.DOCKER_USERNAME}}
-        password: ${{secrets.DOCKER_PASSWORD}}
-        dockerfile: ${{env.DOCKERFILE}}
-        buildargs: ${{env.RELEASE_VERSION}}
-        snapshot: false
-        tags: "latest,${{env.RELEASE_VERSION}}"
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
 
-    - name: Post deployment tests
-      run: |
-        for i in $(ls test-positive/*.mmd); do docker run -v $(pwd):/data ${{env.DOCKER_IO_REPOSITORY}}:${{env.RELEASE_VERSION}} -i /data/$i; done
-        for i in $(ls test-positive/*.mmd); do cat $i | docker run -i -v $(pwd):/data ${{env.DOCKER_IO_REPOSITORY}}:${{env.RELEASE_VERSION}} -o /data/$i-stdin.svg; done
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
-    - name: Commit new version to the repository
-      run: |
-        git add package.json
-        git checkout master
-        git commit -m "Bump version ${{env.RELEASE_VERSION}}"
-        git push --no-verify
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    # For manual inspection of the generated artifacts
-    - uses: actions/upload-artifact@v3
-      with:
-        name: output
-        path: ./test-positive
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Push Image(s)
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ${{env.DOCKERFILE}}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{env.DOCKER_IO_REPOSITORY}}:latest
+            ${{env.DOCKER_IO_REPOSITORY}}:${{env.RELEASE_VERSION}}
+            ghcr.io/${{env.GITHUB_REPOSITORY_LOWER_CASE}}/${{env.IMAGENAME}}:latest
+            ghcr.io/${{env.GITHUB_REPOSITORY_LOWER_CASE}}/${{env.IMAGENAME}}:${{env.RELEASE_VERSION}}
+
+      - name: Post deployment tests
+        run: |
+          for i in $(ls test-positive/*.mmd); do docker run -v $(pwd):/data ${{env.DOCKER_IO_REPOSITORY}}:${{env.RELEASE_VERSION}} -i /data/$i; done
+          for i in $(ls test-positive/*.mmd); do cat $i | docker run -i -v $(pwd):/data ${{env.DOCKER_IO_REPOSITORY}}:${{env.RELEASE_VERSION}} -o /data/$i-stdin.svg; done
+
+      - name: Commit new version to the repository
+        run: |
+          git add package.json
+          git checkout master
+          git commit -m "Bump version ${{env.RELEASE_VERSION}}"
+          git push --no-verify
+
+      # For manual inspection of the generated artifacts
+      - uses: actions/upload-artifact@v2.3.1
+        with:
+          name: output
+          path: ./test-positive
