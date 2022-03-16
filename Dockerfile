@@ -1,12 +1,14 @@
-FROM node:current-slim
+FROM node:alpine
+
+ENV CHROME_BIN="/usr/bin/chromium-browser" \
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
 
 ARG VERSION
 
-ADD install-dependencies.sh /install-dependencies.sh
+ADD install-dependencies.sh install-dependencies.sh
+RUN chmod 755 install-dependencies.sh && /bin/sh install-dependencies.sh
 
-RUN chmod 755 /install-dependencies.sh && /install-dependencies.sh
-
-RUN useradd -ms /bin/bash mermaidcli
+RUN adduser -D mermaidcli
 USER mermaidcli
 WORKDIR /home/mermaidcli
 RUN yarn add @mermaid-js/mermaid-cli@$VERSION

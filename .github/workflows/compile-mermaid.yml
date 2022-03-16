@@ -1,8 +1,10 @@
-name: 'Build, test and deploy mermaid-cli Docker image'
-on: [push,pull_request]
+name: "Build, test and deploy mermaid-cli Docker image"
+on: [push, pull_request]
+concurrency: ci-${{ github.ref }}
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     env:
       DOCKERFILE: DockerfileBuild
@@ -11,72 +13,90 @@ jobs:
       INPUT_DATA: test-positive
       PERCY_TOKEN: ${{secrets.PERCY_TOKEN}}
     steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-    - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v0.9.13
-      with:
-        versionSpec: '5.x'
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.13
+        with:
+          versionSpec: "5.x"
 
-    - name: Use GitVersion
-      id: gitversion # step id used as reference for output values
-      uses: gittools/actions/gitversion/execute@v0.9.13
+      - name: Use GitVersion
+        id: gitversion # step id used as reference for output values
+        uses: gittools/actions/gitversion/execute@v0.9.13
 
-    - name: Convert repository name to lower case
-      run: echo "GITHUB_REPOSITORY_LOWER_CASE=$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+      - name: Convert repository name to lower case
+        run: echo "GITHUB_REPOSITORY_LOWER_CASE=$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
-    - name: Get release version
-      run: echo "RELEASE_VERSION=${{ steps.gitversion.outputs.semVer }}" >> $GITHUB_ENV
+      - name: Get release version
+        run: echo "RELEASE_VERSION=${{ steps.gitversion.outputs.semVer }}" >> $GITHUB_ENV
 
-    - name: Create image tag
-      run: echo "IMAGETAG=${{env.GITHUB_REPOSITORY_LOWER_CASE}}/$IMAGENAME:${{env.RELEASE_VERSION}}" >> $GITHUB_ENV
+      - name: Create image tag
+        run: echo "IMAGETAG=${{env.GITHUB_REPOSITORY_LOWER_CASE}}/$IMAGENAME:${{env.RELEASE_VERSION}}" >> $GITHUB_ENV
 
-    - name: Docker build
-      run: docker build -t ${{env.IMAGETAG}} . -f $DOCKERFILE
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
 
-    - name: Run e2e tests
-      run: bash run-tests.sh ${{env.INPUT_DATA}} ${{env.IMAGETAG}}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
-    - name: Convert all svg files to png before uploading for automatic inspection
-      run: |
-        npm install convert-svg-to-png
-        ls -la ${{env.INPUT_DATA}}
-        # This will overwite any PNG files with the same name that have been created by run-tests.sh
-        $(npm bin)/convert-svg-to-png ${{env.INPUT_DATA}}/graph-with-br.mmd.svg
-        $(npm bin)/convert-svg-to-png ${{env.INPUT_DATA}}/graph-with-br.mmd-stdin.svg
+      - name: Build Test Image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ${{env.DOCKERFILE}}
+          load: true
+          tags: "${{env.IMAGETAG}}"
 
-    - name: Upload diagrams for manual inspection
-      uses: actions/upload-artifact@v3
-      with:
-        name: output
-        path: ./${{env.INPUT_DATA}}
+      - name: Run e2e tests
+        run: bash run-tests.sh ${{env.INPUT_DATA}} ${{env.IMAGETAG}}
+        timeout-minutes: 5
 
-    - name: Upload diagrams for automatic inspection
-      uses: MindaugasLaganeckas/percy-upload@v1.0.0
-      with:
-        inFolder: ${{env.INPUT_DATA}}
+      - name: Convert all svg files to png before uploading for automatic inspection
+        run: |
+          npm install convert-svg-to-png
+          ls -la ${{env.INPUT_DATA}}
+          # This will overwite any PNG files with the same name that have been created by run-tests.sh
+          $(npm bin)/convert-svg-to-png ${{env.INPUT_DATA}}/graph-with-br.mmd.svg
+          $(npm bin)/convert-svg-to-png ${{env.INPUT_DATA}}/graph-with-br.mmd-stdin.svg
 
-    - name: Publish to Github Registry
-      if: github.ref == 'refs/heads/master'
-      uses: elgohr/Publish-Docker-Github-Action@3.04
-      with:
-        name: ${{env.GITHUB_REPOSITORY_LOWER_CASE}}/${{env.IMAGENAME}}
-        username: $GITHUB_ACTOR
-        password: ${{secrets.GITHUB_TOKEN}}
-        registry: docker.pkg.github.com
-        dockerfile: ${{env.DOCKERFILE}}
-        snapshot: true
-        tags: "latest,${{env.RELEASE_VERSION}}"
+      - name: Upload diagrams for manual inspection
+        uses: actions/upload-artifact@v2.3.1
+        with:
+          name: output
+          path: ./${{env.INPUT_DATA}}
 
-    - name: Publish to Docker.io Registry
-      if: github.ref == 'refs/heads/master'
-      uses: elgohr/Publish-Docker-Github-Action@3.04
-      with:
-        name: ${{env.DOCKER_IO_REPOSITORY}}
-        username: ${{secrets.DOCKER_USERNAME}}
-        password: ${{secrets.DOCKER_PASSWORD}}
-        dockerfile: ${{env.DOCKERFILE}}
-        snapshot: true
-        tags: "latest,${{env.RELEASE_VERSION}}"
+      - name: Upload diagrams for automatic inspection
+        uses: MindaugasLaganeckas/percy-upload@v1.0.0
+        with:
+          inFolder: ${{env.INPUT_DATA}}
+
+      - name: Login to GitHub Container Registry
+        if: github.ref == 'refs/heads/master'
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to DockerHub
+        if: github.ref == 'refs/heads/master'
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Push Image(s)
+        if: github.ref == 'refs/heads/master'
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ${{env.DOCKERFILE}}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{env.DOCKER_IO_REPOSITORY}}:latest
+            ${{env.DOCKER_IO_REPOSITORY}}:${{env.RELEASE_VERSION}}
+            ghcr.io/${{env.GITHUB_REPOSITORY_LOWER_CASE}}/${{env.IMAGENAME}}:latest
+            ghcr.io/${{env.GITHUB_REPOSITORY_LOWER_CASE}}/${{env.IMAGENAME}}:${{env.RELEASE_VERSION}}
