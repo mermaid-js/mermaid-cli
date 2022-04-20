@@ -76,13 +76,19 @@ mmdc -h
 ## Use Docker:
 
 ```sh
+docker pull minlag/mermaid-cli
+```
+
+or pull from Github Container Registry
+
+```sh 
 docker pull ghcr.io/mermaid-js/mermaid-cli/mermaid-cli
 ```
 
 or e.g. version 8.8.0
 
 ```sh
-docker pull ghcr.io/mermaid-js/mermaid-cli/mermaid-cli:8.8.0
+docker pull minlag/mermaid-cli:8.8.0
 ```
 
 The container looks for input files in `/data`. So for example, if you have a
