@@ -197,7 +197,7 @@ const parseMMD = async (browser, definition, output) => {
       })
       await page.pdf({
         path: output,
-        printBackground: backgroundColor !== 'transparent',
+        omitBackground: backgroundColor === 'transparent',
         width: (Math.ceil(clip.width) + clip.x*2) + 'px',
         height: (Math.ceil(clip.height) + clip.y*2) + 'px',
         pageRanges: '1-1',
@@ -205,7 +205,7 @@ const parseMMD = async (browser, definition, output) => {
     } else {
       await page.pdf({
         path: output,
-        printBackground: backgroundColor !== 'transparent'
+        omitBackground: backgroundColor === 'transparent'
       })
     }
   }
