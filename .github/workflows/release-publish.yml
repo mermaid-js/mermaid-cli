@@ -48,6 +48,9 @@ jobs:
 
       - name: Prepare release
         run: npm version --no-git-tag-version --allow-same-version ${{env.RELEASE_VERSION}}
+        
+      - name: Convert repository name to lower case
+        run: echo "GITHUB_REPOSITORY_LOWER_CASE=$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
       - name: Publish to npmjs
         run: npm publish --access public
