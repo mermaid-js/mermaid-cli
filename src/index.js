@@ -160,7 +160,7 @@ const parseMMD = async (browser, definition, output) => {
     }
 
     try {
-      window.mermaid.init(undefined, container)
+      window.mermaid.initThrowsErrors(undefined, container)
       return { status: 'success' };
     } catch (error) {
       return { status: 'error', error, message: error.message };
