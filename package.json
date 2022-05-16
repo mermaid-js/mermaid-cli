@@ -17,7 +17,7 @@
     "chalk": "^4.1.0",
     "commander": "^9.0.0",
     "mermaid": "^9.0.0",
-    "puppeteer": "^13.0.0"
+    "puppeteer": "^14.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
