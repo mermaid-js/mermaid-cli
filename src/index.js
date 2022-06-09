@@ -254,4 +254,4 @@ const parseMMD = async (browser, definition, output) => {
     await parseMMD(browser, definition, output);
   }
   await browser.close()
-})()
+})().catch((exception) => error(exception instanceof Error ? exception.stack: exception))
