@@ -2,6 +2,10 @@
 
 const fs = require("fs");
 const { execSync, spawnSync } = require("child_process");
+
+// Joins together directory/file names in a OS independent way
+const {join} = require("path");
+
 const workflows = "test-positive";
 const out = "test-positive";
 
@@ -28,13 +32,20 @@ async function compileDiagramFromStdin(file, format) {
 
 /**
  * Process workflow into specified format file
+ * 
+ * @param {string} file - Name of mermaid input file relative to workflow folder.
+ * @param {"svg" | "pdf" | "png"} format - Format of output file.
+ * @param {Object} [options] - Optional options.
+ * @param {string} [options.puppeteerConfigFile] - If set, puppeteerConfigFile.
+ * Must be relative to workflow folder.
  */
-async function compileDiagram(file, format) {
+async function compileDiagram(file, format, {puppeteerConfigFile} = {}) {
   return new Promise(async function(resolve, reject) {
     const result = file.replace(/\.(?:mmd|md)$/, "." + format);
     // eslint-disable-next-line no-console
     console.warn(`Compiling ${file} into ${result}`);
-    const child = spawnSync("node", [
+
+    const args = [
       "index.bundle.js",
       "-i",
       workflows + "/" + file,
@@ -44,7 +55,13 @@ async function compileDiagram(file, format) {
       workflows + "/config.json",
       "-b",
       "lightgray"
-    ], { timeout: 5000 });
+    ];
+
+    if (puppeteerConfigFile) {
+      args.push("--puppeteerConfigFile", join(workflows, puppeteerConfigFile));
+    }
+
+    const child = spawnSync("node", args, { timeout: 5000 });
 
     const stdout = child.stdout.toString('utf8').trim()
     if (stdout !== "") {
