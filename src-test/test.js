@@ -38,6 +38,7 @@ async function compileDiagramFromStdin(file, format) {
  * @param {Object} [options] - Optional options.
  * @param {string} [options.puppeteerConfigFile] - If set, puppeteerConfigFile.
  * Must be relative to workflow folder.
+ * @throws {Error} if mmdc fails to launch, or if it has exitCode != 0
  */
 async function compileDiagram(file, format, {puppeteerConfigFile} = {}) {
   return new Promise(async function(resolve, reject) {
@@ -73,9 +74,7 @@ async function compileDiagram(file, format, {puppeteerConfigFile} = {}) {
     }
 
     if (child.status !== 0 || child.error) {
-      // eslint-disable-next-line no-console
-      console.warn(`${file}: child process exited with code ${child.status}, error ${child.error}`);
-      reject(child.status);
+      reject(new Error(`${file}: child process exited with code ${child.status}, error ${child.error}`));
     } else {
       resolve(child.status);
     }
