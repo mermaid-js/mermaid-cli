@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-process.title = "mmdc"
 import { Command } from 'commander'
 import chalk from 'chalk'
 import fs from 'fs'
@@ -67,6 +65,8 @@ const convertToValidXML = html => {
   return html.replace(/<br>/gi, '<br/>')
 }
 
+async function cli () {
+// TODO: This is currently unindented to make `git diff` easier for PR reviewers.
 const commander = new Command()
 commander
   .version(pkg.version)
@@ -134,25 +134,52 @@ if (cssFile) {
   myCSS = fs.readFileSync(cssFile, 'utf-8')
 }
 
-const info = message => {
-  if (!quiet) {
-    console.info(message)
-  }
-}
-
 // normalize args
 width = parseInt(width)
 height = parseInt(height)
 backgroundColor = backgroundColor || 'white';
 const deviceScaleFactor = parseInt(scale || 1, 10);
 
-const parseMMD = async (browser, definition, output) => {
+await run(
+  input, output, {
+    puppeteerConfig,
+    quiet,
+    parseMMDOptions: {
+      mermaidConfig, backgroundColor, myCSS, pdfFit, viewport: { width, height, deviceScaleFactor }
+    }
+  }
+)
+}
+
+/**
+ * @typedef {Object} ParseMDDOptions Options to pass to {@link parseMMD}
+ * @property {puppeteer.Viewport} [viewport] - Puppeteer viewport (e.g. `width`, `height`, `deviceScaleFactor`)
+ * @property {string | "transparent"} [backgroundColor] - Background color.
+ * @property {Parameters<import("mermaid").Mermaid["initialize"]>[0]} [mermaidConfig] - Mermaid config.
+ * @property {CSSStyleDeclaration["cssText"]} [myCSS] - Optional CSS text.
+ * @property {boolean} pdfFit - If set, scale PDF to fit chart.
+ */
+
+/**
+ * Parse and render a mermaid diagram.
+ *
+ * @param {puppeteer.Browser} browser - Puppeteer Browser
+ * @param {string} definition - Mermaid diagram definition
+ * @param {"svg" | "png" | "pdf"} outputFormat - Mermaid output format.
+ * @param {ParseMDDOptions} [opt] - Options, see {@link ParseMDDOptions} for details.
+ * @returns {Promise<Buffer>} The output file in bytes.
+ */
+async function parseMMD (browser, definition, outputFormat, { viewport, backgroundColor = "white", mermaidConfig = {}, myCSS, pdfFit } = {}) {
   const page = await browser.newPage()
-  page.setViewport({ width, height, deviceScaleFactor })
+  if (viewport) {
+    page.setViewport(viewport)
+  }
   const mermaidHTMLPath = path.join(__dirname, "..", "index.html")
   await page.goto(url.pathToFileURL(mermaidHTMLPath))
-  await page.evaluate(`document.body.style.background = '${backgroundColor}'`)
-  const result = await page.$eval('#container', (container, definition, mermaidConfig, myCSS) => {
+  await page.$eval('body', (body, backgroundColor) => {
+    body.style.background = backgroundColor
+  }, backgroundColor)
+  await page.$eval('#container', (container, definition, mermaidConfig, myCSS) => {
     container.textContent = definition
     window.mermaid.initialize(mermaidConfig)
     if (myCSS) {
@@ -167,18 +194,21 @@ const parseMMD = async (browser, definition, output) => {
       head.appendChild(style)
     }
 
+    // should throw an error if mmd diagram is invalid
     try {
       window.mermaid.initThrowsErrors(undefined, container)
-      return { status: 'success' };
     } catch (error) {
-      return { status: 'error', error, message: error.message };
+      if (error instanceof Error) {
+        // mermaid-js doesn't currently throws JS Errors, but let's leave this
+        // here in case it does in the future
+        throw error
+      } else {
+        throw new Error(error?.message ?? 'Unknown mermaid render error')
+      }
     }
   }, definition, mermaidConfig, myCSS)
-  if (result.status === 'error') {
-    error(result.message);
-  }
 
-  if (output.endsWith('svg')) {
+  if (outputFormat === 'svg') {
     const svg = await page.$eval('#container', (container, backgroundColor) => {
       const svg = container.getElementsByTagName?.('svg')?.[0]
       if (svg.style) {
@@ -189,38 +219,54 @@ const parseMMD = async (browser, definition, output) => {
       return container.innerHTML
     }, backgroundColor)
     const svgXML = convertToValidXML(svg)
-    fs.writeFileSync(output, svgXML)
-  } else if (output.endsWith('png')) {
+    return Buffer.from(svgXML, 'utf8')
+  } else if (outputFormat === 'png') {
     const clip = await page.$eval('svg', svg => {
       const react = svg.getBoundingClientRect()
       return { x: Math.floor(react.left), y: Math.floor(react.top), width: Math.ceil(react.width), height: Math.ceil(react.height) }
     })
-    await page.setViewport({ width: clip.x + clip.width, height: clip.y + clip.height, deviceScaleFactor })
-    await page.screenshot({ path: output, clip, omitBackground: backgroundColor === 'transparent' })
+    await page.setViewport({ width: clip.x + clip.width, height: clip.y + clip.height, deviceScaleFactor: viewport.deviceScaleFactor })
+    return await page.screenshot({ clip, omitBackground: backgroundColor === 'transparent' })
   } else { // pdf
     if (pdfFit) {
       const clip = await page.$eval('svg', svg => {
         const react = svg.getBoundingClientRect()
         return { x: react.left, y: react.top, width: react.width, height: react.height }
       })
-      await page.pdf({
-        path: output,
+      return await page.pdf({
         omitBackground: backgroundColor === 'transparent',
         width: (Math.ceil(clip.width) + clip.x*2) + 'px',
         height: (Math.ceil(clip.height) + clip.y*2) + 'px',
         pageRanges: '1-1',
       })
     } else {
-      await page.pdf({
-        path: output,
+      return await page.pdf({
         omitBackground: backgroundColor === 'transparent'
       })
     }
   }
 }
 
-(async () => {
-  const mermaidChartsInMarkdown = '^```(?:mermaid)(\r?\n([\\s\\S]*?))```$';
+/**
+ * Renders a mermaid diagram or mermaid markdown file.
+ *
+ * @param {`${string}.md` | string} [input] - If this ends with `.md`, path to a markdown file containing mermaid.
+ * If this is a string, loads the mermaid definition from the given file.
+ * If this is `undefined`, loads the mermaid definition from stdin.
+ * @param {`${string}.${"md" | "svg" | "png" | "pdf"}`} output - Path to the output file.
+ * @param {Object} [opts] - Options
+ * @param {puppeteer.LaunchOptions} [opts.puppeteerConfig] - Puppeteer launch options.
+ * @param {boolean} [opts.quiet] - If set, suppress log output.
+ * @param {ParseMDDOptions} [opts.parseMMDOptions] - Options to pass to {@link parseMMDOptions}.
+ */
+async function run (input, output, { puppeteerConfig = {}, quiet = false, parseMMDOptions } = {}) {
+  const info = message => {
+    if (!quiet) {
+      console.info(message)
+    }
+  }
+
+  const mermaidChartsInMarkdown = /^```(?:mermaid)(\r?\n([\s\S]*?))```$/
   const mermaidChartsInMarkdownRegexGlobal = new RegExp(mermaidChartsInMarkdown, 'gm')
   const mermaidChartsInMarkdownRegex = new RegExp(mermaidChartsInMarkdown)
   const browser = await puppeteer.launch(puppeteerConfig)
@@ -245,7 +291,8 @@ const parseMMD = async (browser, definition, output) => {
     if (diagrams.length) {
       info(`Found ${diagrams.length} mermaid charts in Markdown input`);
       await Promise.all(diagrams.map(async ([imgFile, md]) => {
-          await parseMMD(browser, md, imgFile);
+          const data = await parseMMD(browser, md, path.extname(imgFile).replace('.', ''), parseMMDOptions)
+          await fs.promises.writeFile(imgFile, data)
           info(` ✅ ${imgFile}`);
         })
       );
@@ -259,7 +306,10 @@ const parseMMD = async (browser, definition, output) => {
     }
   } else {
     info(`Generating single mermaid chart`);
-    await parseMMD(browser, definition, output);
+    const data = await parseMMD(browser, definition, path.extname(output).replace('.', ''), parseMMDOptions)
+    await fs.promises.writeFile(output, data)
   }
   await browser.close()
-})().catch((exception) => error(exception instanceof Error ? exception.stack: exception))
+}
+
+export { run, parseMMD, cli, error }

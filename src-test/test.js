@@ -27,7 +27,7 @@ async function compileDiagramFromStdin(workflow, file, format) {
   const result = file.replace(/\.(?:mmd|md)$/, "-stdin." + format);
   // exec will throw with stderr if there is a non-zero exit code
   return await promisify(exec)(`cat ${workflow}/${file} | \
-    node src/index.js -o ${out}/${result} -c ${workflow}/config.json`
+    node src/cli.js -o ${out}/${result} -c ${workflow}/config.json`
   );
 }
 
@@ -46,7 +46,7 @@ async function compileDiagram(workflow, file, format, {puppeteerConfigFile} = {}
     const result = file.replace(/\.(?:mmd|md)$/, "." + format);
 
     const args = [
-      "src/index.js",
+      "src/cli.js",
       "-i",
       join(workflow, file),
       "-o",
@@ -124,7 +124,7 @@ describe("mermaid-cli", () => {
   });
 
   test("should error on missing input", async() => {
-    await expect(promisify(execFile)('node', ['src/index.js'])).rejects.toThrow();
+    await expect(promisify(execFile)('node', ['src/cli.js'])).rejects.toThrow();
   });
 
   test("should error on mermaid syntax error", async() => {
@@ -138,7 +138,7 @@ describe("mermaid-cli", () => {
     // delete any files from previous test (fs.rm added in Node v14.14.0)
     await Promise.all(expectedOutputFiles.map((file) => fs.rm(file, { force: true })))
 
-    await promisify(execFile)('node', ['src/index.js', '-i', 'test-positive/mermaid.md'])
+    await promisify(execFile)('node', ['src/cli.js', '-i', 'test-positive/mermaid.md'])
 
     // files should exist, and they should be SVGs
     await Promise.all(expectedOutputFiles.map(async (file) => {

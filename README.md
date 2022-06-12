@@ -99,6 +99,20 @@ the container to generate an SVG file as follows:
 docker run -it -v /path/to/diagrams:/data minlag/mermaid-cli -i /data/diagram.mmd
 ```
 
+## Use Node.JS API
+
+It's possible to call `mermaid-cli` via a Node.JS API.
+Please be aware that **the NodeJS API is not covered by semver**, as `mermaid-cli` follows
+`mermaid`'s versioning.
+
+```js
+import { run } from "@mermaid-js/mermaid-cli"
+
+await run(
+   "input.mmd", "output.svg", // {optional options},
+)
+```
+
 ## Install locally
 
 Some people are [having issues](https://github.com/mermaidjs/mermaid.cli/issues/15)
