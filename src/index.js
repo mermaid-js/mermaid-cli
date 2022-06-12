@@ -1,4 +1,4 @@
-import { Command } from 'commander'
+import { Command, Option } from 'commander'
 import chalk from 'chalk'
 import fs from 'fs'
 import path from 'path'
@@ -64,19 +64,19 @@ async function cli () {
   const commander = new Command()
   commander
     .version(pkg.version)
-    .option('-t, --theme [theme]', 'Theme of the chart, could be default, forest, dark or neutral. Optional. Default: default', /^default|forest|dark|neutral$/, 'default')
-    .option('-w, --width [width]', 'Width of the page. Optional. Default: 800', /^\d+$/, '800')
-    .option('-H, --height [height]', 'Height of the page. Optional. Default: 600', /^\d+$/, '600')
+    .addOption(new Option('-t, --theme [theme]', 'Theme of the chart').choices(['default', 'forest', 'dark', 'neutral']).default('default'))
+    .addOption(new Option('-w, --width [width]', 'Width of the page').default(800))
+    .addOption(new Option('-H, --height [height]', 'Height of the page').default(600))
     .option('-i, --input <input>', 'Input mermaid file. Files ending in .md will be treated as Markdown and all charts (e.g. ```mermaid (...)```) will be extracted and generated. Required.')
     .option('-o, --output [output]', 'Output file. It should be either md, svg, png or pdf. Optional. Default: input + ".svg"')
     .option('-e, --outputFormat <format>', 'Output format for the generated image. It should be either svg, png or pdf. Optional. Default: output file extension')
-    .option('-b, --backgroundColor [backgroundColor]', 'Background color for pngs/svgs (not pdfs). Example: transparent, red, \'#F0F0F0\'. Optional. Default: white')
-    .option('-c, --configFile [configFile]', 'JSON configuration file for mermaid. Optional')
-    .option('-C, --cssFile [cssFile]', 'CSS file for the page. Optional')
-    .option('-s, --scale [scale]', 'Puppeteer scale factor, default 1. Optional')
+    .addOption(new Option('-b, --backgroundColor [backgroundColor]', 'Background color for pngs/svgs (not pdfs). Example: transparent, red, \'#F0F0F0\'.').default('white'))
+    .option('-c, --configFile [configFile]', 'JSON configuration file for mermaid.')
+    .option('-C, --cssFile [cssFile]', 'CSS file for the page.')
+    .addOption(new Option('-s, --scale [scale]', 'Puppeteer scale factor').default(1))
     .option('-f, --pdfFit [pdfFit]', 'Scale PDF to fit chart')
     .option('-q, --quiet', 'Suppress log output')
-    .option('-p --puppeteerConfigFile [puppeteerConfigFile]', 'JSON configuration file for puppeteer. Optional')
+    .option('-p --puppeteerConfigFile [puppeteerConfigFile]', 'JSON configuration file for puppeteer.')
     .parse(process.argv)
 
   const options = commander.opts()
@@ -136,7 +136,6 @@ async function cli () {
   // normalize args
   width = parseInt(width)
   height = parseInt(height)
-  backgroundColor = backgroundColor || 'white'
   const deviceScaleFactor = parseInt(scale || 1, 10)
 
   await run(
