@@ -10,8 +10,6 @@ WORKDIR /app
 COPY . /app/
 
 RUN yarn \
-    && chmod 755 copy_modules.sh \
-    && /bin/sh copy_modules.sh \
     && yarn pack
 
 FROM node:alpine AS mermaid-cli-current

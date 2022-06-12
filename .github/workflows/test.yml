@@ -21,7 +21,5 @@ jobs:
           cache: 'yarn'
       # throws an error if yarn.lock is out-of-date
       - run: yarn install --frozen-lockfile
-      - run: |
-          bash copy_modules.sh
       # runs jest unittests
       - run: yarn test

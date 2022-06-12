@@ -28,11 +28,9 @@ jobs:
         run: npm i yarn --global
 
       - name: Build the package
-        run: |
-          yarn
-          chmod 755 copy_modules.sh
-          ./copy_modules.sh
-
+        # throws an error if yarn.lock is out-of-date
+        # `yarn install` automatically builds the package
+        run: yarn install --frozen-lockfile
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v0.9.13
         with:
