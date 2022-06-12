@@ -23,5 +23,5 @@ yarn
 3. Run the script like below:
 
 ```sh
-node src/index.js -i test/state1.mmd
+node src/cli.js -i test/state1.mmd
 ```

@@ -7,11 +7,12 @@
   "type": "module",
   "author": "Tyler Long <tyler4long@gmail.com>",
   "bin": {
-    "mmdc": "./src/index.js"
+    "mmdc": "./src/cli.js"
   },
   "engines": {
     "node": ">=14.1.0"
   },
+  "exports": "./src/index.js",
   "scripts": {
     "upgrade": "yarn-upgrade-all && source copy_modules.sh",
     "test": "jest"
