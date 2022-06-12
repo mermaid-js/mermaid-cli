@@ -15,7 +15,9 @@
   "exports": "./src/index.js",
   "scripts": {
     "upgrade": "yarn-upgrade-all && source copy_modules.sh",
-    "test": "yarn node --experimental-vm-modules $(yarn bin jest)"
+    "test": "standard && yarn node --experimental-vm-modules $(yarn bin jest)",
+    "lint": "standard",
+    "lint-fix": "standard --fix"
   },
   "dependencies": {
     "chalk": "^5.0.1",
@@ -39,5 +41,10 @@
     "moduleNameMapper": {
       "#(.*)": "<rootDir>/node_modules/$1"
     }
+  },
+  "standard": {
+    "ignore": [
+      "mermaid.min.js"
+    ]
   }
 }
