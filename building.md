@@ -18,9 +18,7 @@ Instead of creating a .npmrc file on your own you can also use npm login --regis
 yarn
 ```
 
-2. Run the bash script copy_modules.sh
-
-3. Run the script like below:
+2. Run the script like below:
 
 ```sh
 node src/cli.js -i test/state1.mmd
