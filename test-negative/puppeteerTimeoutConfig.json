@@ -1,0 +1,4 @@
+{
+    "//comment": "setting a timeout of 1ms means puppeteer should always fail",
+    "timeout": 1
+}

@@ -148,12 +148,29 @@ async function compileAllStdin() {
   })
 }
 
+async function shouldErrorOnFailure() {
+  await compileDiagram("sequence.mmd", "svg"); // should work with default puppeteerConfigFile
+  try {
+    await compileDiagram("sequence.mmd", "svg", {puppeteerConfigFile: "../test-negative/puppeteerTimeoutConfig.json"});
+  } catch (error) {
+    console.log(`compiling with invalid puppeteerConfigFile file produced an error, which is well`);
+    return;
+  }
+  throw new Error(`Expected compling invalid puppeteerConfigFile file to fail, but it succeeded`);
+}
+
 module.exports = {
+  shouldErrorOnFailure,
   compileAll,
   compileAllStdin
 };
 
 if (require.main === module) {
+  shouldErrorOnFailure().catch(err => {
+    console.warn("Compilation failed", err)
+    process.exit(1);
+  });
+
   compileAll().catch(err => {
     console.warn("Compilation failed", err)
     process.exit(1);
