@@ -14,9 +14,9 @@
   },
   "exports": "./src/index.js",
   "scripts": {
-    "upgrade": "yarn-upgrade-all && bash copy_modules.sh",
-    "prepare": "bash copy_modules.sh",
-    "prepack": "bash copy_modules.sh",
+    "upgrade": "yarn-upgrade-all && sh copy_modules.sh",
+    "prepare": "sh copy_modules.sh",
+    "prepack": "sh copy_modules.sh",
     "test": "standard && yarn node --experimental-vm-modules $(yarn bin jest)",
     "lint": "standard",
     "lint-fix": "standard --fix"

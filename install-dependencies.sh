@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Install chromium and required fonts
 # available fonts https://wiki.alpinelinux.org/wiki/Fonts
