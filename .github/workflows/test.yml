@@ -1,0 +1,28 @@
+name: Test
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        node: [ 14, 16, 18 ]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.JS ${{ matrix.node }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'yarn'
+      # throws an error if yarn.lock is out-of-date
+      - run: yarn install --frozen-lockfile
+      - run: |
+          bash copy_modules.sh
+          yarn run prepublishOnly
+      # runs jest unittests
+      - run: yarn test
