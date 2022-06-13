@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 INPUT_DATA=$1
 IMAGETAG=$2
 
@@ -19,7 +19,7 @@ cat $INPUT_DATA/flowchart1.mmd | docker run --rm -i -v $(pwd):/data $IMAGETAG -o
 # Test if mmdc crashes on Markdown files containing no mermaid charts
 OUTPUT=$(docker run --rm -v $(pwd):/data $IMAGETAG -i /data/test-positive/no-charts.md)
 EXPECTED_OUTPUT="No mermaid charts found in Markdown input"
-[[ "$OUTPUT" == "$EXPECTED_OUTPUT" ]] || echo "Expected output to be '$EXPECTED_OUTPUT', got '$OUTPUT'"
+[ "$OUTPUT" = "$EXPECTED_OUTPUT" ] || echo "Expected output to be '$EXPECTED_OUTPUT', got '$OUTPUT'"
 
 # Test if mmdc does not replace <br> with <br/>
 docker run --rm -v $(pwd):/data $IMAGETAG -i /data/test-positive/graph-with-br.mmd -w 800;

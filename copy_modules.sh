@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 cp ./node_modules/mermaid/dist/mermaid.min.js .
 
 mkdir -p fontawesome/css/
