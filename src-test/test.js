@@ -1,6 +1,6 @@
 "use strict";
 
-const fs = require("fs");
+const fs = require("fs/promises");
 const { execSync, spawnSync } = require("child_process");
 
 // Joins together directory/file names in a OS independent way
@@ -43,7 +43,7 @@ async function compileDiagramFromStdin(file, format) {
  * @throws {Error} if mmdc fails to launch, or if it has exitCode != 0
  */
 async function compileDiagram(file, format, {puppeteerConfigFile} = {}) {
-  return new Promise(async function(resolve, reject) {
+  return new Promise(function(resolve, reject) {
     const result = file.replace(/\.(?:mmd|md)$/, "." + format);
     // eslint-disable-next-line no-console
     console.warn(`Compiling ${file} into ${result}`);
@@ -87,13 +87,10 @@ async function compileDiagram(file, format, {puppeteerConfigFile} = {}) {
  * Process all workflows into files
  */
 async function compileAll() {
-  if (!fs.existsSync(out)) {
-    fs.mkdirSync(out, { recursive: true });
-  }
+  await fs.mkdir(out, { recursive: true });
 
-  return new Promise(async function (resolve, reject) {
-    fs.readdir(workflows, async (err, files) => {
-      resolve(Promise.all(
+  const files = await fs.readdir(workflows);
+  await Promise.all(
         files.map(async file => {
           if (!(file.endsWith(".mmd") | /\.md$/.test(file)) && file !== 'markdown-output.out.md') {
             return Promise.resolve();
@@ -114,22 +111,17 @@ async function compileAll() {
           }
           throw new Error(`Expected ${file} to fail, but it succeeded`);
         })
-      ));
-    });
-  })
+  )
 }
 
 /**
  * Process all workflows for stdin into files
  */
 async function compileAllStdin() {
-  if (!fs.existsSync(out)) {
-    fs.mkdirSync(out, { recursive: true });
-  }
+  await fs.mkdir(out, { recursive: true });
 
-  return new Promise(async function (resolve, reject) {
-    fs.readdir(workflows, async (err, files) => {
-      resolve(Promise.all(
+  const files = await fs.readdir(workflows);
+  await Promise.all(
         files.map(async file => {
           // currently, piping markdown through stdin is not supported
           // as mermaid-cli has no idea it's markdown, not mermaid code
@@ -147,9 +139,7 @@ async function compileAllStdin() {
           }
           throw new Error(`Expected ${file} from stdin to fail, but it succeeded`);
         })
-      ));
-    });
-  })
+  )
 }
 
 async function shouldErrorOnFailure() {

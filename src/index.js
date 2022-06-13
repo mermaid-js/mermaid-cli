@@ -180,8 +180,8 @@ const parseMMD = async (browser, definition, output) => {
       }
       return container.innerHTML
     }, backgroundColor)
-    const svg_xml = convertToValidXML(svg)
-    fs.writeFileSync(output, svg_xml)
+    const svgXML = convertToValidXML(svg)
+    fs.writeFileSync(output, svgXML)
   } else if (output.endsWith('png')) {
     const clip = await page.$eval('svg', svg => {
       const react = svg.getBoundingClientRect()
