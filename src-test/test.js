@@ -2,6 +2,10 @@
 
 const fs = require("fs");
 const { execSync, spawnSync } = require("child_process");
+
+// Joins together directory/file names in a OS independent way
+const {join} = require("path");
+
 const workflows = "test-positive";
 const out = "test-positive";
 
@@ -28,13 +32,21 @@ async function compileDiagramFromStdin(file, format) {
 
 /**
  * Process workflow into specified format file
+ * 
+ * @param {string} file - Name of mermaid input file relative to workflow folder.
+ * @param {"svg" | "pdf" | "png"} format - Format of output file.
+ * @param {Object} [options] - Optional options.
+ * @param {string} [options.puppeteerConfigFile] - If set, puppeteerConfigFile.
+ * Must be relative to workflow folder.
+ * @throws {Error} if mmdc fails to launch, or if it has exitCode != 0
  */
-async function compileDiagram(file, format) {
+async function compileDiagram(file, format, {puppeteerConfigFile} = {}) {
   return new Promise(async function(resolve, reject) {
     const result = file.replace(/\.(?:mmd|md)$/, "." + format);
     // eslint-disable-next-line no-console
     console.warn(`Compiling ${file} into ${result}`);
-    const child = spawnSync("node", [
+
+    const args = [
       "index.bundle.js",
       "-i",
       workflows + "/" + file,
@@ -44,7 +56,13 @@ async function compileDiagram(file, format) {
       workflows + "/config.json",
       "-b",
       "lightgray"
-    ], { timeout: 5000 });
+    ];
+
+    if (puppeteerConfigFile) {
+      args.push("--puppeteerConfigFile", join(workflows, puppeteerConfigFile));
+    }
+
+    const child = spawnSync("node", args, { timeout: 5000 });
 
     const stdout = child.stdout.toString('utf8').trim()
     if (stdout !== "") {
@@ -56,9 +74,7 @@ async function compileDiagram(file, format) {
     }
 
     if (child.status !== 0 || child.error) {
-      // eslint-disable-next-line no-console
-      console.warn(`${file}: child process exited with code ${child.status}, error ${child.error}`);
-      reject(child.status);
+      reject(new Error(`${file}: child process exited with code ${child.status}, error ${child.error}`));
     } else {
       resolve(child.status);
     }
@@ -132,12 +148,29 @@ async function compileAllStdin() {
   })
 }
 
+async function shouldErrorOnFailure() {
+  await compileDiagram("sequence.mmd", "svg"); // should work with default puppeteerConfigFile
+  try {
+    await compileDiagram("sequence.mmd", "svg", {puppeteerConfigFile: "../test-negative/puppeteerTimeoutConfig.json"});
+  } catch (error) {
+    console.log(`compiling with invalid puppeteerConfigFile file produced an error, which is well`);
+    return;
+  }
+  throw new Error(`Expected compling invalid puppeteerConfigFile file to fail, but it succeeded`);
+}
+
 module.exports = {
+  shouldErrorOnFailure,
   compileAll,
   compileAllStdin
 };
 
 if (require.main === module) {
+  shouldErrorOnFailure().catch(err => {
+    console.warn("Compilation failed", err)
+    process.exit(1);
+  });
+
   compileAll().catch(err => {
     console.warn("Compilation failed", err)
     process.exit(1);
