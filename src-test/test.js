@@ -19,7 +19,9 @@ async function compileDiagramFromStdin(file, format) {
       // eslint-disable-next-line no-console
       console.warn(`Compiling ${file} into ${result}`);
       execSync(`cat ${workflows}/${file} | \
-        node index.bundle.js -o ${out}/${result} -c ${workflows}/config.json`);
+        node index.bundle.js -o ${out}/${result} -c ${workflows}/config.json`, {
+          "encoding": "utf8", // execSync has buffer as default, unlike exec
+        });
 
       resolve();
     } catch (err) {
