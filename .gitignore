@@ -9,3 +9,5 @@ fontawesome/
 .npmrc
 yarn-error.log
 test-positive/*.out.md
+test-output/
+
