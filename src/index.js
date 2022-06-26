@@ -9,7 +9,7 @@ import puppeteer from 'puppeteer'
 import pkg from './package.json'
 
 const error = message => {
-  console.log(chalk.red(`\n${message}\n`))
+  console.error(chalk.red(`\n${message}\n`))
   process.exit(1)
 }
 
