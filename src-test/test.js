@@ -131,8 +131,10 @@ async function compileAllStdin() {
     fs.readdir(workflows, async (err, files) => {
       resolve(Promise.all(
         files.map(async file => {
-          if (!(file.endsWith(".mmd") | /\.md$/.test(file))) {
-            return Promise.resolve();
+          // currently, piping markdown through stdin is not supported
+          // as mermaid-cli has no idea it's markdown, not mermaid code
+          if (!(file.endsWith(".mmd"))) {
+            return `Skipping ${file}, as it does not end with .mmd`;
           }
           const expectError = /expect-error/.test(file);
           const resultP = compileDiagramFromStdin(file, "svg")
