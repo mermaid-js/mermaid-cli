@@ -83,9 +83,9 @@ let { theme, width, height, input, output, backgroundColor, configFile, cssFile,
 
 // check input file
 if (!(input || inputPipedFromStdin())) {
-  console.log(chalk.red(`\nPlease specify input file: -i <input>\n`))
-  commander.help()
-  process.exit(1)
+  console.error(chalk.red(`\nPlease specify input file: -i <input>\n`))
+  // Log to stderr, and return with error exitCode
+  commander.help({error: true})
 }
 if (input && !fs.existsSync(input)) {
   error(`Input file "${input}" doesn't exist`)
