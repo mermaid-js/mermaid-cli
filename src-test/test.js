@@ -1,10 +1,11 @@
 "use strict";
 
 const fs = require("fs/promises");
-const { execSync, spawnSync } = require("child_process");
+const { execSync, spawnSync, execFile } = require("child_process");
 
 // Joins together directory/file names in a OS independent way
 const {join} = require("path");
+const {promisify} = require("util");
 
 const workflows = ["test-positive", "test-negative"];
 const out = "test-output";
@@ -161,13 +162,29 @@ async function shouldErrorOnFailure() {
   throw new Error(`Expected compling invalid puppeteerConfigFile file to fail, but it succeeded`);
 }
 
+async function shouldErrorOnEmptyInput() {
+  try {
+    await promisify(execFile)('node', ['index.bundle.js'])
+  } catch (error) {
+    console.log(`✅compiling with no input produced an error, which is well`)
+    return
+  }
+  throw new Error('Expected compiling with no input to fail, but it succeeded')
+}
+
 module.exports = {
   shouldErrorOnFailure,
+  shouldErrorOnEmptyInput,
   compileAll,
   compileAllStdin
 };
 
 if (require.main === module) {
+  shouldErrorOnEmptyInput().catch(err => {
+    console.warn("Compilation failed", err)
+    process.exit(1);
+  });
+
   shouldErrorOnFailure().catch(err => {
     console.warn("Compilation failed", err)
     process.exit(1);
