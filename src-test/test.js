@@ -1,7 +1,7 @@
 "use strict";
 
 const fs = require("fs/promises");
-const { execSync, spawnSync, execFile } = require("child_process");
+const { exec, execFile } = require("child_process");
 
 // Joins together directory/file names in a OS independent way
 const {join} = require("path");
@@ -12,25 +12,20 @@ const out = "test-output";
 
 /**
  * Process workflow from stdin into specified format file
+ *
+ * @param {string} workflow - Workflow folder.
+ * @param {string} file - Name of mermaid input file relative to workflow folder.
+ * @param {"svg" | "pdf" | "png" | "md"} format - Format of output file.
+ * @throws {Error} if mmdc fails to launch, or if it has exitCode != 0
  */
 async function compileDiagramFromStdin(workflow, file, format) {
-  return new Promise(function (resolve, reject) {
-    try {
-      const result = file.replace(/\.(?:mmd|md)$/, "-stdin." + format);
-      // eslint-disable-next-line no-console
-      console.warn(`Compiling ${file} into ${result}`);
-      execSync(`cat ${workflow}/${file} | \
-        node index.bundle.js -o ${out}/${result} -c ${workflow}/config.json`, {
-          "encoding": "utf8", // execSync has buffer as default, unlike exec
-        });
-
-      resolve();
-    } catch (err) {
-      console.warn(`${file}: child process failed with error: ${err.message}`);
-
-      reject(err);
-    }
-  });
+  const result = file.replace(/\.(?:mmd|md)$/, "-stdin." + format);
+  // eslint-disable-next-line no-console
+  console.warn(`Compiling ${file} into ${result}`);
+  // exec will throw with stderr if there is a non-zero exit code
+  return await promisify(exec)(`cat ${workflow}/${file} | \
+    node index.bundle.js -o ${out}/${result} -c ${workflow}/config.json`
+  );
 }
 
 /**
@@ -38,14 +33,13 @@ async function compileDiagramFromStdin(workflow, file, format) {
  *
  * @param {string} workflow - Workflow folder.
  * @param {string} file - Name of mermaid input file relative to workflow folder.
- * @param {"svg" | "pdf" | "png"} format - Format of output file.
+ * @param {"svg" | "pdf" | "png" | "md"} format - Format of output file.
  * @param {Object} [options] - Optional options.
  * @param {string} [options.puppeteerConfigFile] - If set, puppeteerConfigFile.
  * Must be relative to workflow folder.
  * @throws {Error} if mmdc fails to launch, or if it has exitCode != 0
  */
 async function compileDiagram(workflow, file, format, {puppeteerConfigFile} = {}) {
-  return new Promise(function(resolve, reject) {
     const result = file.replace(/\.(?:mmd|md)$/, "." + format);
     // eslint-disable-next-line no-console
     console.warn(`Compiling ${file} into ${result}`);
@@ -66,23 +60,16 @@ async function compileDiagram(workflow, file, format, {puppeteerConfigFile} = {}
       args.push("--puppeteerConfigFile", join(workflow, puppeteerConfigFile));
     }
 
-    const child = spawnSync("node", args, { timeout: 5000 });
+    // execFile will throw with stderr if there is a non-zero exit code
+    const output = await promisify(execFile)("node", args, { timeout: 5000 });
 
-    const stdout = child.stdout.toString('utf8').trim()
-    if (stdout !== "") {
-      console.info(stdout)
+    if (output.stdout) {
+      console.info(output.stdout);
     }
-    const stderr = child.stderr.toString('utf8').trim()
-    if (stderr !== "") {
-      console.warn(stderr)
+    if (output.stderr) {
+      console.warn(output.stderr);
     }
-
-    if (child.status !== 0 || child.error) {
-      reject(new Error(`${file}: child process exited with code ${child.status}, error ${child.error}`));
-    } else {
-      resolve(child.status);
-    }
-  });
+    return output;
 }
 
 /**
