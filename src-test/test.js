@@ -25,8 +25,6 @@ const out = "test-output";
  */
 async function compileDiagramFromStdin(workflow, file, format) {
   const result = file.replace(/\.(?:mmd|md)$/, "-stdin." + format);
-  // eslint-disable-next-line no-console
-  console.warn(`Compiling ${file} into ${result}`);
   // exec will throw with stderr if there is a non-zero exit code
   return await promisify(exec)(`cat ${workflow}/${file} | \
     node index.bundle.js -o ${out}/${result} -c ${workflow}/config.json`
@@ -46,8 +44,6 @@ async function compileDiagramFromStdin(workflow, file, format) {
  */
 async function compileDiagram(workflow, file, format, {puppeteerConfigFile} = {}) {
     const result = file.replace(/\.(?:mmd|md)$/, "." + format);
-    // eslint-disable-next-line no-console
-    console.warn(`Compiling ${file} into ${result}`);
 
     const args = [
       "index.bundle.js",
