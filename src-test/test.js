@@ -115,15 +115,21 @@ describe("mermaid-cli", () => {
     }
   });
 
-  test("should error on mermaid failure", async() => {
+  test("should error on mmdc failure", async() => {
     // should work with default puppeteerConfigFile
     await compileDiagram("test-positive", "sequence.mmd", "svg");
     await expect(
       compileDiagram("test-positive", "sequence.mmd", "svg", {puppeteerConfigFile: "../test-negative/puppeteerTimeoutConfig.json"})
-    ).rejects.toThrow();
+    ).rejects.toThrow("TimeoutError: Timed out after 1 ms");
   });
 
   test("should error on missing input", async() => {
     await expect(promisify(execFile)('node', ['index.bundle.js'])).rejects.toThrow();
+  });
+
+  test("should error on mermaid syntax error", async() => {
+    await expect(
+      compileDiagram("test-negative", "invalid.expect-error.mmd", "svg")
+    ).rejects.toThrow("Parse error on line 2");
   });
 });
