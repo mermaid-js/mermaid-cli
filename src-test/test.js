@@ -64,11 +64,9 @@ async function compileDiagram(workflow, file, format, {puppeteerConfigFile} = {}
     // execFile will throw with stderr if there is a non-zero exit code
     const output = await promisify(execFile)("node", args);
 
-    if (output.stdout) {
-      console.info(output.stdout);
-    }
-    if (output.stderr) {
-      console.warn(output.stderr);
+    if (output.stderr) { // should never happen, so log it if it does happen
+      // eslint-disable-next-line no-console
+      console.warn(`Running ${args} succeeded but output the following to stderr: ${output.stderr}`);
     }
     return output;
 }
