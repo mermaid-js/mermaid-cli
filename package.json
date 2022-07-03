@@ -11,11 +11,12 @@
   "scripts": {
     "upgrade": "yarn-upgrade-all && source copy_modules.sh",
     "prepublishOnly": "babel ./src/index.js --out-file ./index.bundle.js",
-    "test": "node ./src-test/test.js"
+    "test": "jest"
   },
   "dependencies": {
     "chalk": "^4.1.0",
     "commander": "^9.0.0",
+    "jest": "^28.1.2",
     "mermaid": "^9.1.2",
     "puppeteer": "^15.1.1"
   },
