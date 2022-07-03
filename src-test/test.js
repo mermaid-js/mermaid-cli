@@ -91,7 +91,7 @@ describe("mermaid-cli", () => {
         formats.push("md");
       }
       const shouldError = /expect-error/.test(file);
-      test.each(formats)(`${shouldError ? "should fail": "should compile"} ${file} to format %s`, async(format) => {
+      test.concurrent.each(formats)(`${shouldError ? "should fail": "should compile"} ${file} to format %s`, async(format) => {
         const promise = compileDiagram(workflow, file, format);
         if (shouldError) {
           await expect(promise).rejects.toThrow();
@@ -102,7 +102,7 @@ describe("mermaid-cli", () => {
       if (!/\.md$/.test(file)) {
         // currently, piping markdown through stdin is not supported
         // as mermaid-cli has no idea it's markdown, not mermaid code
-        test.each(formats)(`${shouldError ? "should fail": "should compile"} ${file} from stdin to format %s`,
+        test.concurrent.each(formats)(`${shouldError ? "should fail": "should compile"} ${file} from stdin to format %s`,
           async(format) => {
           const promise = compileDiagramFromStdin(workflow, file, format);
           if (shouldError) {
