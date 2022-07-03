@@ -1,11 +1,16 @@
 "use strict";
 
 const fs = require("fs/promises");
+// Can't use async to load workflow entries, see https://github.com/facebook/jest/issues/2235
+const {readdirSync} = require("fs");
 const { exec, execFile } = require("child_process");
 
 // Joins together directory/file names in a OS independent way
 const {join} = require("path");
 const {promisify} = require("util");
+
+// optional (automatically added by jest), but useful to have for your code editor/autocomplete
+const { expect, beforeAll, describe, test } = require("@jest/globals");
 
 const workflows = ["test-positive", "test-negative"];
 const out = "test-output";
@@ -72,118 +77,56 @@ async function compileDiagram(workflow, file, format, {puppeteerConfigFile} = {}
     return output;
 }
 
-/**
- * Process all workflows into files
- */
-async function compileAll() {
-  await fs.mkdir(out, { recursive: true });
+describe("mermaid-cli", () => {
+  beforeAll(async() => {
+    await fs.mkdir(out, { recursive: true });
+  });
 
-  await Promise.all(workflows.map(async(workflow) => {
-    const files = await fs.readdir(workflow);
-    await Promise.all(
-        files.map(async file => {
-          if (!(file.endsWith(".mmd") | /\.md$/.test(file)) && file !== 'markdown-output.out.md') {
-            return Promise.resolve();
-          }
-          let resultP;
-          if (file === 'markdown-output.md') {
-            resultP = compileDiagram(workflow, file, "out.md");
+  describe.each(workflows)("testing workflow %s", (workflow) => {
+    // Can't use async to load workflow entries, see https://github.com/facebook/jest/issues/2235
+    for (const file of readdirSync(workflow)) {
+      // only test .md and .mmd files in workflow
+      if (!(file.endsWith(".mmd") | /\.md$/.test(file))) {
+        continue;
+      }
+      const formats = ["png", "svg"];
+      if (/\.md$/.test(file)) {
+        formats.push("md");
+      }
+      const shouldError = /expect-error/.test(file);
+      test.each(formats)(`${shouldError ? "should fail": "should compile"} ${file} to format %s`, async(format) => {
+        const promise = compileDiagram(workflow, file, format);
+        if (shouldError) {
+          await expect(promise).rejects.toThrow();
+        } else {
+          await promise;
+        }
+      });
+      if (!/\.md$/.test(file)) {
+        // currently, piping markdown through stdin is not supported
+        // as mermaid-cli has no idea it's markdown, not mermaid code
+        test.each(formats)(`${shouldError ? "should fail": "should compile"} ${file} from stdin to format %s`,
+          async(format) => {
+          const promise = compileDiagramFromStdin(workflow, file, format);
+          if (shouldError) {
+            await expect(promise).rejects.toThrow();
           } else {
-            resultP = compileDiagram(workflow, file, "svg")
-              .then(() => compileDiagram(workflow, file, "png"));
+            await promise;
           }
-          const expectError = /expect-error/.test(file);
-          if (!expectError) return resultP;
-          try {
-            await resultP;
-          } catch (err) {
-            console.log(`✅ compiling ${file} produced an error, which is well`);
-            return;
-          }
-          throw new Error(`Expected ${file} to fail, but it succeeded`);
-        })
-    )
-  }))
-}
-
-/**
- * Process all workflows for stdin into files
- */
-async function compileAllStdin() {
-  await fs.mkdir(out, { recursive: true });
-
-  await Promise.all(workflows.map(async(workflow) => {
-    const files = await fs.readdir(workflow);
-    await Promise.all(
-        files.map(async file => {
-          // currently, piping markdown through stdin is not supported
-          // as mermaid-cli has no idea it's markdown, not mermaid code
-          if (!(file.endsWith(".mmd"))) {
-            return `Skipping ${file}, as it does not end with .mmd`;
-          }
-          const expectError = /expect-error/.test(file);
-          const resultP = compileDiagramFromStdin(workflow, file, "svg")
-            .then(() => compileDiagramFromStdin(workflow, file, "png"));
-          if (!expectError) return resultP;
-          try {
-            await resultP;
-          } catch (err) {
-            console.log(`✅ compiling ${file} from stdin produced an error, which is well`);
-            return;
-          }
-          throw new Error(`Expected ${file} from stdin to fail, but it succeeded`);
-        })
-    )
-  }))
-}
-
-async function shouldErrorOnFailure() {
-  await fs.mkdir(out, { recursive: true });
-  await compileDiagram("test-positive", "sequence.mmd", "svg"); // should work with default puppeteerConfigFile
-  try {
-    await compileDiagram("test-positive", "sequence.mmd", "svg", {puppeteerConfigFile: "../test-negative/puppeteerTimeoutConfig.json"});
-  } catch (error) {
-    console.log(`compiling with invalid puppeteerConfigFile file produced an error, which is well`);
-    return;
-  }
-  throw new Error(`Expected compling invalid puppeteerConfigFile file to fail, but it succeeded`);
-}
-
-async function shouldErrorOnEmptyInput() {
-  try {
-    await promisify(execFile)('node', ['index.bundle.js'])
-  } catch (error) {
-    console.log(`✅compiling with no input produced an error, which is well`)
-    return
-  }
-  throw new Error('Expected compiling with no input to fail, but it succeeded')
-}
-
-module.exports = {
-  shouldErrorOnFailure,
-  shouldErrorOnEmptyInput,
-  compileAll,
-  compileAllStdin
-};
-
-if (require.main === module) {
-  shouldErrorOnEmptyInput().catch(err => {
-    console.warn("Compilation failed", err)
-    process.exit(1);
+        });
+      }
+    }
   });
 
-  shouldErrorOnFailure().catch(err => {
-    console.warn("Compilation failed", err)
-    process.exit(1);
+  test("should error on mermaid failure", async() => {
+    // should work with default puppeteerConfigFile
+    await compileDiagram("test-positive", "sequence.mmd", "svg");
+    await expect(
+      compileDiagram("test-positive", "sequence.mmd", "svg", {puppeteerConfigFile: "../test-negative/puppeteerTimeoutConfig.json"})
+    ).rejects.toThrow();
   });
 
-  compileAll().catch(err => {
-    console.warn("Compilation failed", err)
-    process.exit(1);
+  test("should error on missing input", async() => {
+    await expect(promisify(execFile)('node', ['index.bundle.js'])).rejects.toThrow();
   });
-
-  compileAllStdin().catch(err => {
-    console.warn("Compilation failed", err)
-    process.exit(1);
-  });
-}
+});
