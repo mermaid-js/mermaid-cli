@@ -86,7 +86,7 @@ describe("mermaid-cli", () => {
       if (!(file.endsWith(".mmd") | /\.md$/.test(file))) {
         continue;
       }
-      const formats = ["png", "svg"];
+      const formats = ["png", "svg", "pdf"];
       if (/\.md$/.test(file)) {
         formats.push("md");
       }
