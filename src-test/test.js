@@ -66,7 +66,7 @@ async function compileDiagram(workflow, file, format, {puppeteerConfigFile} = {}
     }
 
     // execFile will throw with stderr if there is a non-zero exit code
-    const output = await promisify(execFile)("node", args, { timeout: 5000 });
+    const output = await promisify(execFile)("node", args);
 
     if (output.stdout) {
       console.info(output.stdout);
@@ -81,6 +81,9 @@ describe("mermaid-cli", () => {
   beforeAll(async() => {
     await fs.mkdir(out, { recursive: true });
   });
+
+  // 20 second timeout, this needs to be set higher than normal since CI is slow
+  const timeout = 20000;
 
   describe.each(workflows)("testing workflow %s", (workflow) => {
     // Can't use async to load workflow entries, see https://github.com/facebook/jest/issues/2235
@@ -101,7 +104,7 @@ describe("mermaid-cli", () => {
         } else {
           await promise;
         }
-      });
+      }, timeout);
       if (!/\.md$/.test(file)) {
         // currently, piping markdown through stdin is not supported
         // as mermaid-cli has no idea it's markdown, not mermaid code
@@ -113,7 +116,7 @@ describe("mermaid-cli", () => {
           } else {
             await promise;
           }
-        });
+        }, timeout);
       }
     }
   });
