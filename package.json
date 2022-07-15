@@ -16,7 +16,6 @@
   "dependencies": {
     "chalk": "^4.1.0",
     "commander": "^9.0.0",
-    "jest": "^28.1.2",
     "puppeteer": "^15.1.1"
   },
   "devDependencies": {
@@ -25,6 +24,7 @@
     "@babel/preset-env": "^7.0.0",
     "@fortawesome/fontawesome-free-webfonts": "^1.0.9",
     "mermaid": "^9.1.2",
+    "jest": "^28.1.2",
     "standard": "^17.0.0",
     "yarn-upgrade-all": "^0.7.0"
   },
