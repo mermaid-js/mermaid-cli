@@ -1,4 +1,4 @@
-import { Command, Option } from 'commander'
+import { Command, Option, InvalidArgumentError } from 'commander'
 import chalk from 'chalk'
 import fs from 'fs'
 import path from 'path'
@@ -60,20 +60,37 @@ const getInputData = async inputFile => new Promise((resolve, reject) => {
   })
 })
 
+/**
+ * Commander parser that converts a string to an integer.
+ *
+ * @param {string} value - The value from commander.
+ * @param {*} _unused - Unused.
+ * @returns {number} The value parsed as a number.
+ * @throws {InvalidArgumentError} If the arg is not valid.
+ * @see https://github.com/tj/commander.js/wiki/Class:-Option#argparserfn
+ */
+function parseCommanderInt (value, _unused) {
+  const parsedValue = parseInt(value, 10)
+  if (isNaN(parsedValue) || parsedValue < 1) {
+    throw new InvalidArgumentError('Not an positive integer.')
+  }
+  return parsedValue
+}
+
 async function cli () {
   const commander = new Command()
   commander
     .version(pkg.version)
     .addOption(new Option('-t, --theme [theme]', 'Theme of the chart').choices(['default', 'forest', 'dark', 'neutral']).default('default'))
-    .addOption(new Option('-w, --width [width]', 'Width of the page').default(800))
-    .addOption(new Option('-H, --height [height]', 'Height of the page').default(600))
+    .addOption(new Option('-w, --width [width]', 'Width of the page').argParser(parseCommanderInt).default(800))
+    .addOption(new Option('-H, --height [height]', 'Height of the page').argParser(parseCommanderInt).default(600))
     .option('-i, --input <input>', 'Input mermaid file. Files ending in .md will be treated as Markdown and all charts (e.g. ```mermaid (...)```) will be extracted and generated. Required.')
     .option('-o, --output [output]', 'Output file. It should be either md, svg, png or pdf. Optional. Default: input + ".svg"')
     .option('-e, --outputFormat <format>', 'Output format for the generated image. It should be either svg, png or pdf. Optional. Default: output file extension')
     .addOption(new Option('-b, --backgroundColor [backgroundColor]', 'Background color for pngs/svgs (not pdfs). Example: transparent, red, \'#F0F0F0\'.').default('white'))
     .option('-c, --configFile [configFile]', 'JSON configuration file for mermaid.')
     .option('-C, --cssFile [cssFile]', 'CSS file for the page.')
-    .addOption(new Option('-s, --scale [scale]', 'Puppeteer scale factor').default(1))
+    .addOption(new Option('-s, --scale [scale]', 'Puppeteer scale factor').argParser(parseCommanderInt).default(1))
     .option('-f, --pdfFit [pdfFit]', 'Scale PDF to fit chart')
     .option('-q, --quiet', 'Suppress log output')
     .option('-p --puppeteerConfigFile [puppeteerConfigFile]', 'JSON configuration file for puppeteer.')
@@ -133,18 +150,13 @@ async function cli () {
     myCSS = fs.readFileSync(cssFile, 'utf-8')
   }
 
-  // normalize args
-  width = parseInt(width)
-  height = parseInt(height)
-  const deviceScaleFactor = parseInt(scale || 1, 10)
-
   await run(
     input, output, {
       puppeteerConfig,
       quiet,
       outputFormat,
       parseMMDOptions: {
-        mermaidConfig, backgroundColor, myCSS, pdfFit, viewport: { width, height, deviceScaleFactor }
+        mermaidConfig, backgroundColor, myCSS, pdfFit, viewport: { width, height, deviceScaleFactor: scale }
       }
     }
   )
