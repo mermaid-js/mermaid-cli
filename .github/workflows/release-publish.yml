@@ -32,7 +32,6 @@ jobs:
           yarn
           chmod 755 copy_modules.sh
           ./copy_modules.sh
-          yarn prepublishOnly
 
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v0.9.13
