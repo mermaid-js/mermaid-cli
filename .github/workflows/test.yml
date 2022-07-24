@@ -23,6 +23,5 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: |
           bash copy_modules.sh
-          yarn run prepublishOnly
       # runs jest unittests
       - run: yarn test

@@ -4,13 +4,16 @@
   "description": "Command-line interface for mermaid",
   "license": "MIT",
   "repository": "git@github.com:mermaid-js/mermaid-cli.git",
+  "type": "module",
   "author": "Tyler Long <tyler4long@gmail.com>",
   "bin": {
-    "mmdc": "./index.bundle.js"
+    "mmdc": "./src/index.js"
+  },
+  "engines": {
+    "node": ">=14.1.0"
   },
   "scripts": {
     "upgrade": "yarn-upgrade-all && source copy_modules.sh",
-    "prepublishOnly": "babel ./src/index.js --out-file ./index.bundle.js",
     "test": "jest"
   },
   "dependencies": {
@@ -19,9 +22,6 @@
     "puppeteer": "^16.1.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.0.0",
-    "@babel/core": "^7.0.0",
-    "@babel/preset-env": "^7.0.0",
     "@fortawesome/fontawesome-free-webfonts": "^1.0.9",
     "mermaid": "^9.1.2",
     "jest": "^28.1.2",
@@ -29,14 +29,9 @@
     "yarn-upgrade-all": "^0.7.0"
   },
   "files": [
-    "index.bundle.js",
+    "src/",
     "mermaid.min.js",
     "index.html",
     "fontawesome/*"
-  ],
-  "standard": {
-    "ignore": [
-      "index.bundle.js"
-    ]
-  }
+  ]
 }

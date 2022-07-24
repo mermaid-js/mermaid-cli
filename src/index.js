@@ -1,12 +1,18 @@
 #!/usr/bin/env node
 process.title = "mmdc"
-import commander from 'commander'
+import { Command } from 'commander'
 import chalk from 'chalk'
 import fs from 'fs'
 import path from 'path'
 import puppeteer from 'puppeteer'
+import url from "url"
 
-import pkg from './package.json'
+// importing JSON is still experimental in Node.JS https://nodejs.org/docs/latest-v16.x/api/esm.html#json-modules
+import { createRequire } from 'module'
+const require = createRequire(import.meta.url)
+const pkg = require("../package.json")
+// __dirname is not available in ESM modules by default
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
 const error = message => {
   console.error(chalk.red(`\n${message}\n`))
@@ -61,6 +67,7 @@ const convertToValidXML = html => {
   return html.replace(/<br>/gi, '<br/>')
 }
 
+const commander = new Command()
 commander
   .version(pkg.version)
   .option('-t, --theme [theme]', 'Theme of the chart, could be default, forest, dark or neutral. Optional. Default: default', /^default|forest|dark|neutral$/, 'default')
@@ -142,7 +149,8 @@ const deviceScaleFactor = parseInt(scale || 1, 10);
 const parseMMD = async (browser, definition, output) => {
   const page = await browser.newPage()
   page.setViewport({ width, height, deviceScaleFactor })
-  await page.goto(`file://${path.join(__dirname, 'index.html')}`)
+  const mermaidHTMLPath = path.join(__dirname, "..", "index.html")
+  await page.goto(url.pathToFileURL(mermaidHTMLPath))
   await page.evaluate(`document.body.style.background = '${backgroundColor}'`)
   const result = await page.$eval('#container', (container, definition, mermaidConfig, myCSS) => {
     container.textContent = definition
