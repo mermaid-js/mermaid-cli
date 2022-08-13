@@ -132,4 +132,18 @@ describe("mermaid-cli", () => {
       compileDiagram("test-negative", "invalid.expect-error.mmd", "svg")
     ).rejects.toThrow("Parse error on line 2");
   });
+
+  test('should write multiple SVGs for default .md input by default', async () => {
+    const expectedOutputFiles = [1, 2, 3].map((i) => join('test-positive', `mermaid.md-${i}.svg`))
+    // delete any files from previous test (fs.rm added in Node v14.14.0)
+    await Promise.all(expectedOutputFiles.map((file) => fs.rm(file, { force: true })))
+
+    await promisify(execFile)('node', ['src/index.js', '-i', 'test-positive/mermaid.md'])
+
+    // files should exist, and they should be SVGs
+    await Promise.all(expectedOutputFiles.map(async (file) => {
+      const svgFile = await fs.readFile(file, { encoding: 'utf8' })
+      expect(svgFile).toMatch(/^<svg/)
+    }))
+  })
 });

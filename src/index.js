@@ -236,7 +236,7 @@ const parseMMD = async (browser, definition, output) => {
       //     I.e. if "out.png", use "out-1.png", "out-2.png", etc
       //   If it is an output `.md` file, use that to base .svg numbered diagrams on
       //     I.e. if "out.md". use "out-1.svg", "out-2.svg", etc
-      const outputFile = output.replace(/(\.(md|png))$/,`-${diagrams.length + 1}$1`).replace(/(\.md)$/, '.svg');
+      const outputFile = output.replace(/(\.(md|png|svg|pdf))$/,`-${diagrams.length + 1}$1`).replace(/(\.md)$/, '.svg');
       const outputFileRelative = `./${path.relative(path.dirname(path.resolve(output)), path.resolve(outputFile))}`;
       diagrams.push([outputFile, md]);
       return `![diagram](${outputFileRelative})`;
