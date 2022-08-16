@@ -270,6 +270,8 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, parseM
   const mermaidChartsInMarkdownRegexGlobal = new RegExp(mermaidChartsInMarkdown, 'gm')
   const mermaidChartsInMarkdownRegex = new RegExp(mermaidChartsInMarkdown)
   const browser = await puppeteer.launch(puppeteerConfig)
+  try {
+  // TODO: indent this (currently unindented to make `git diff` smaller)
   const definition = await getInputData(input)
   if (/\.md$/.test(input)) {
 
@@ -309,7 +311,9 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, parseM
     const data = await parseMMD(browser, definition, path.extname(output).replace('.', ''), parseMMDOptions)
     await fs.promises.writeFile(output, data)
   }
-  await browser.close()
+  } finally {
+    await browser.close()
+  }
 }
 
 export { run, parseMMD, cli, error }
