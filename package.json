@@ -15,7 +15,7 @@
   "exports": "./src/index.js",
   "scripts": {
     "upgrade": "yarn-upgrade-all && source copy_modules.sh",
-    "test": "jest"
+    "test": "yarn node --experimental-vm-modules $(yarn bin jest)"
   },
   "dependencies": {
     "chalk": "^5.0.1",
@@ -34,5 +34,10 @@
     "mermaid.min.js",
     "index.html",
     "fontawesome/*"
-  ]
+  ],
+  "jest": {
+    "moduleNameMapper": {
+      "#(.*)": "<rootDir>/node_modules/$1"
+    }
+  }
 }

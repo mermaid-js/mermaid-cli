@@ -1,16 +1,14 @@
-"use strict";
-
-const fs = require("fs/promises");
+import fs from 'fs/promises'
 // Can't use async to load workflow entries, see https://github.com/facebook/jest/issues/2235
-const {readdirSync} = require("fs");
-const { exec, execFile } = require("child_process");
+import { readdirSync } from 'fs'
+import { exec, execFile } from 'child_process'
 
 // Joins together directory/file names in a OS independent way
-const {join} = require("path");
-const {promisify} = require("util");
+import { join, relative } from 'path'
+import { promisify } from 'util'
 
 // optional (automatically added by jest), but useful to have for your code editor/autocomplete
-const { expect, beforeAll, describe, test } = require("@jest/globals");
+import { expect, beforeAll, describe, test } from '@jest/globals'
 
 const workflows = ["test-positive", "test-negative"];
 const out = "test-output";
