@@ -67,10 +67,10 @@ jobs:
           name: output
           path: ./${{env.INPUT_DATA}}
 
-      - name: Upload diagrams for automatic inspection
-        uses: MindaugasLaganeckas/percy-upload@v1.0.0
-        with:
-          inFolder: ${{env.INPUT_DATA}}
+      - name: Upload diagrams to percy for automatic inspection
+        # copied from https://docs.percy.io/docs/github-actions
+        # should automatically upload `.png`
+        run: npx @percy/cli upload "$INPUT_DATA"
 
       - name: Login to GitHub Container Registry
         if: github.ref == 'refs/heads/master'
