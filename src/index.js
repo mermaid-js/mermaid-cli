@@ -225,7 +225,7 @@ async function parseMMD (browser, definition, outputFormat, { viewport, backgrou
       const react = svg.getBoundingClientRect()
       return { x: Math.floor(react.left), y: Math.floor(react.top), width: Math.ceil(react.width), height: Math.ceil(react.height) }
     })
-    await page.setViewport({ width: clip.x + clip.width, height: clip.y + clip.height, deviceScaleFactor: viewport.deviceScaleFactor })
+    await page.setViewport({...viewport, width: clip.x + clip.width, height: clip.y + clip.height})
     return await page.screenshot({ clip, omitBackground: backgroundColor === 'transparent' })
   } else { // pdf
     if (pdfFit) {
