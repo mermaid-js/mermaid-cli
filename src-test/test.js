@@ -8,7 +8,10 @@ import { join, relative } from 'path'
 import { promisify } from 'util'
 
 // optional (automatically added by jest), but useful to have for your code editor/autocomplete
-import { expect, beforeAll, describe, test } from '@jest/globals'
+import { expect, beforeAll, afterAll, describe, test } from '@jest/globals'
+
+import { run, parseMMD } from '../src/index.js'
+import puppeteer from 'puppeteer'
 
 const workflows = ["test-positive", "test-negative"];
 const out = "test-output";
@@ -69,13 +72,33 @@ async function compileDiagram(workflow, file, format, {puppeteerConfigFile} = {}
     return output;
 }
 
+/**
+ * Confirms the filetype of the given bytes
+ *
+ * @param {Buffer} bytes - The bytes of the file to check
+ * @param {"png"|"pdf"|"svg"} fileType - The filetype to check for
+ */
+function expectBytesAreFormat (bytes, fileType) {
+  switch (fileType) {
+    // see https://en.wikipedia.org/wiki/List_of_file_signatures
+    case 'png':
+      return expect(bytes.subarray(0, 8)).toEqual(Buffer.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]))
+    case 'pdf':
+      return expect(bytes.subarray(0, 5)).toEqual(Buffer.from('%PDF-', 'utf8'))
+    case 'svg':
+      return expect(bytes.subarray(0, 4)).toEqual(Buffer.from('<svg', 'utf8'))
+    default:
+      throw new Error('Unsupported filetype')
+  }
+}
+
+// 20 second timeout, this needs to be set higher than normal since CI is slow
+const timeout = 20000
+
 describe("mermaid-cli", () => {
   beforeAll(async() => {
     await fs.mkdir(out, { recursive: true });
   });
-
-  // 20 second timeout, this needs to be set higher than normal since CI is slow
-  const timeout = 20000;
 
   describe.each(workflows)("testing workflow %s", (workflow) => {
     // Can't use async to load workflow entries, see https://github.com/facebook/jest/issues/2235
@@ -119,17 +142,17 @@ describe("mermaid-cli", () => {
     await expect(
       compileDiagram("test-positive", "sequence.mmd", "svg", {puppeteerConfigFile: "../test-negative/puppeteerTimeoutConfig.json"})
     ).rejects.toThrow("TimeoutError: Timed out after 1 ms");
-  });
+  }, timeout)
 
   test("should error on missing input", async() => {
     await expect(promisify(execFile)('node', ['src/cli.js'])).rejects.toThrow();
-  });
+  }, timeout)
 
   test("should error on mermaid syntax error", async() => {
     await expect(
       compileDiagram("test-negative", "invalid.expect-error.mmd", "svg")
     ).rejects.toThrow("Parse error on line 2");
-  });
+  }, timeout)
 
   test('should write multiple SVGs for default .md input by default', async () => {
     const expectedOutputFiles = [1, 2, 3].map((i) => join('test-positive', `mermaid.md-${i}.svg`))
@@ -140,8 +163,117 @@ describe("mermaid-cli", () => {
 
     // files should exist, and they should be SVGs
     await Promise.all(expectedOutputFiles.map(async (file) => {
-      const svgFile = await fs.readFile(file, { encoding: 'utf8' })
-      expect(svgFile).toMatch(/^<svg/)
+      expectBytesAreFormat(await fs.readFile(file), 'svg')
     }))
-  })
+  }, timeout)
 });
+
+describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
+  describe('run()', () => {
+    test('should write markdown output', async () => {
+      const expectedOutputMd = 'test-output/mermaid-run-output-test.md'
+      const expectedOutputSvgs = [1, 2, 3].map((i) => `test-output/mermaid-run-output-test-${i}.svg`)
+      // delete any files from previous test (fs.rm added in Node v14.14.0)
+      await Promise.all(
+        [
+          expectedOutputMd,
+          ...expectedOutputSvgs
+        ].map((file) => fs.rm(file, { force: true }))
+      )
+
+      await run(
+        'test-positive/mermaid.md', expectedOutputMd, { quiet: true }
+      )
+
+      const markdownFile = await fs.readFile(expectedOutputMd, { encoding: 'utf8' })
+
+      // files should exist, and they should be SVGs
+      await Promise.all(expectedOutputSvgs.map(async (expectedOutputSvg) => {
+        // markdown file should point to png relative to md file
+        expect(markdownFile).toContain(relative('test-output', expectedOutputSvg))
+
+        const svgFile = await fs.readFile(expectedOutputSvg, { encoding: 'utf8' })
+        expect(svgFile).toMatch(/^<svg/)
+      }))
+    }, timeout)
+
+    test.each(['svg', 'png', 'pdf'])('should write %s from .mmd input', async (format) => {
+      const expectedOutput = `test-output/flowchart1-run-output-test.${format}`
+      await fs.rm(expectedOutput, { force: true })
+      await run(
+        'test-positive/flowchart1.mmd',
+        expectedOutput,
+        { quiet: true }
+      )
+      expectBytesAreFormat(await fs.readFile(expectedOutput), format)
+    }, timeout)
+
+    describe.each(workflows)('testing workflow %s', (workflow) => {
+      // Can't use async to load workflow entries, see https://github.com/facebook/jest/issues/2235
+      for (const file of readdirSync(workflow)) {
+        // only test .md and .mmd files in workflow
+        if (!(file.endsWith('.mmd') | /\.md$/.test(file))) {
+          continue
+        }
+        const formats = ['png', 'svg', 'pdf']
+        if (/\.md$/.test(file)) {
+          formats.push('md')
+        }
+        const shouldError = /expect-error/.test(file)
+        test.concurrent.each(formats)(`${shouldError ? 'should fail' : 'should compile'} ${file} to format %s`, async (format) => {
+          const result = file.replace(/\.(?:mmd|md)$/, `-run.${format}`)
+          const promise = run(join(workflow, file), join(out, result), { quiet: true })
+          if (shouldError) {
+            await expect(promise).rejects.toThrow()
+          } else {
+            await promise
+          }
+        }, timeout)
+      }
+    })
+  })
+
+  describe('parseMMD()', () => {
+    const browserPromise = puppeteer.launch()
+    afterAll(async () => {
+      const browser = await browserPromise
+      await browser.close()
+    })
+
+    test('should return bytes from mmd', async () => {
+      const mmdInput = 'graph TD;\n    nA-->B;\n'
+      const bytes = await parseMMD(await browserPromise, mmdInput, 'svg')
+      expect(bytes).toBeInstanceOf(Buffer)
+      expectBytesAreFormat(bytes, 'svg')
+    })
+
+    test('should throw exception for invalid mmd', async () => {
+      const invalidMMDInput = 'this is not a valid mermaid file'
+      expect(
+        parseMMD(await browserPromise, invalidMMDInput, 'svg')
+      ).rejects.toThrow('Parse error')
+    })
+
+    describe.each(workflows)('testing workflow %s', (workflow) => {
+      // Can't use async to load workflow entries, see https://github.com/facebook/jest/issues/2235
+      for (const file of readdirSync(workflow)) {
+        // only test .mmd files are supported by parseMMD
+        if (!(file.endsWith('.mmd'))) {
+          continue
+        }
+        const formats = ['png', 'svg', 'pdf']
+        const shouldError = /expect-error/.test(file)
+        test.concurrent.each(formats)(`${shouldError ? 'should fail' : 'should compile'} ${file} to format %s`, async (format) => {
+          const mmd = await fs.readFile(join(workflow, file), { encoding: 'utf8' })
+          const promise = parseMMD(await browserPromise, mmd, format)
+          if (shouldError) {
+            await expect(promise).rejects.toThrow()
+          } else {
+            const outputFileBytes = await promise
+            expectBytesAreFormat(outputFileBytes, format)
+          }
+        }, timeout)
+      }
+    })
+  })
+})
