@@ -62,6 +62,7 @@ jobs:
           $(npm bin)/convert-svg-to-png ${{env.INPUT_DATA}}/graph-with-br.mmd-stdin.svg
           # svg file is named `-svg` so it doesn't overwrite .png file
           $(npm bin)/convert-svg-to-png ${{env.INPUT_DATA}}/flowchart1-red-background-svg.svg
+          $(npm bin)/convert-svg-to-png ${{env.INPUT_DATA}}/flowchart1-with-css-svg.svg
 
       - name: Upload diagrams for manual inspection
         uses: actions/upload-artifact@v3

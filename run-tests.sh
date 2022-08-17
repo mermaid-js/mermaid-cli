@@ -20,6 +20,13 @@ for format in "svg" "png"; do
   docker run --rm -v $(pwd):/data $IMAGETAG -i /data/$INPUT_DATA/flowchart1.mmd --backgroundColor "red" -o "$outputFileName"
 done
 
+# Test if passing CSS styles works
+for format in "svg" "png"; do
+  # must have different names, since we convert .svg to .png for percy upload
+  outputFileName="/data/$INPUT_DATA/flowchart1-with-css-${format}.${format}"
+  docker run --rm -v $(pwd):/data $IMAGETAG -i /data/$INPUT_DATA/flowchart1.mmd --cssFile /data/$INPUT_DATA/flowchart1.css -o "$outputFileName"
+done
+
 # Test if a diagram from STDIN can be understood
 cat $INPUT_DATA/flowchart1.mmd | docker run --rm -i -v $(pwd):/data $IMAGETAG -o /data/$INPUT_DATA/flowchart1-stdin.png -w 800
 
