@@ -179,21 +179,9 @@ async function parseMMD (browser, definition, outputFormat, { viewport, backgrou
   await page.$eval('body', (body, backgroundColor) => {
     body.style.background = backgroundColor
   }, backgroundColor)
-  await page.$eval('#container', (container, definition, mermaidConfig, myCSS) => {
+  await page.$eval('#container', (container, definition, mermaidConfig, myCSS, backgroundColor) => {
     container.textContent = definition
     window.mermaid.initialize(mermaidConfig)
-    if (myCSS) {
-      const head = window.document.head || window.document.getElementsByTagName('head')[0]
-      const style = document.createElement('style')
-      style.type = 'text/css'
-      if (style.styleSheet) {
-        style.styleSheet.cssText = myCSS
-      } else {
-        style.appendChild(document.createTextNode(myCSS))
-      }
-      head.appendChild(style)
-    }
-
     // should throw an error if mmd diagram is invalid
     try {
       window.mermaid.initThrowsErrors(undefined, container)
@@ -206,18 +194,27 @@ async function parseMMD (browser, definition, outputFormat, { viewport, backgrou
         throw new Error(error?.message ?? 'Unknown mermaid render error')
       }
     }
-  }, definition, mermaidConfig, myCSS)
+
+    const svg = container.getElementsByTagName?.('svg')?.[0]
+    if (svg?.style) {
+      svg.style.backgroundColor = backgroundColor
+    } else {
+      warn("svg not found. Not applying background color.")
+      return
+    }
+    if (myCSS) {
+      // add CSS as a <svg>...<style>... element
+      // see https://developer.mozilla.org/en-US/docs/Web/API/SVGStyleElement
+      const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+      style.appendChild(document.createTextNode(myCSS));
+      svg.appendChild(style);
+    }
+  }, definition, mermaidConfig, myCSS, backgroundColor)
 
   if (outputFormat === 'svg') {
-    const svg = await page.$eval('#container', (container, backgroundColor) => {
-      const svg = container.getElementsByTagName?.('svg')?.[0]
-      if (svg.style) {
-        svg.style.backgroundColor = backgroundColor
-      } else {
-        warn("svg not found. Not applying background color.")
-      }
+    const svg = await page.$eval('#container', (container) => {
       return container.innerHTML
-    }, backgroundColor)
+    })
     const svgXML = convertToValidXML(svg)
     return Buffer.from(svgXML, 'utf8')
   } else if (outputFormat === 'png') {
