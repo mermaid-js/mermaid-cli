@@ -172,7 +172,7 @@ await run(
 async function parseMMD (browser, definition, outputFormat, { viewport, backgroundColor = "white", mermaidConfig = {}, myCSS, pdfFit } = {}) {
   const page = await browser.newPage()
   if (viewport) {
-    page.setViewport(viewport)
+    await page.setViewport(viewport)
   }
   const mermaidHTMLPath = path.join(__dirname, "..", "index.html")
   await page.goto(url.pathToFileURL(mermaidHTMLPath))

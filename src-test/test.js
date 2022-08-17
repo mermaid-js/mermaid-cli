@@ -92,6 +92,16 @@ function expectBytesAreFormat (bytes, fileType) {
   }
 }
 
+let browser
+beforeAll(async() => {
+  browser = await puppeteer.launch()
+})
+afterAll(async () => {
+  if (browser) {
+    await browser.close()
+  }
+})
+
 // 30 second timeout, this needs to be set higher than normal since CI is slow
 const timeout = 30000
 
@@ -234,15 +244,9 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
   })
 
   describe('parseMMD()', () => {
-    const browserPromise = puppeteer.launch()
-    afterAll(async () => {
-      const browser = await browserPromise
-      await browser.close()
-    })
-
     test('should return bytes from mmd', async () => {
       const mmdInput = 'graph TD;\n    nA-->B;\n'
-      const bytes = await parseMMD(await browserPromise, mmdInput, 'svg')
+      const bytes = await parseMMD(browser, mmdInput, 'svg')
       expect(bytes).toBeInstanceOf(Buffer)
       expectBytesAreFormat(bytes, 'svg')
     })
@@ -250,7 +254,7 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
     test('should throw exception for invalid mmd', async () => {
       const invalidMMDInput = 'this is not a valid mermaid file'
       expect(
-        parseMMD(await browserPromise, invalidMMDInput, 'svg')
+        parseMMD(browser, invalidMMDInput, 'svg')
       ).rejects.toThrow('Parse error')
     })
 
@@ -265,7 +269,7 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
         const shouldError = /expect-error/.test(file)
         test.concurrent.each(formats)(`${shouldError ? 'should fail' : 'should compile'} ${file} to format %s`, async (format) => {
           const mmd = await fs.readFile(join(workflow, file), { encoding: 'utf8' })
-          const promise = parseMMD(await browserPromise, mmd, format)
+          const promise = parseMMD(browser, mmd, format)
           if (shouldError) {
             await expect(promise).rejects.toThrow()
           } else {
