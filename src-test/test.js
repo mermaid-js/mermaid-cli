@@ -176,6 +176,13 @@ describe("mermaid-cli", () => {
       expectBytesAreFormat(await fs.readFile(file), 'svg')
     }))
   }, timeout)
+
+  test.concurrent.each(['svg', 'png', 'pdf'])('should set red background to %s', async (format) => {
+    await promisify(execFile)('node', [
+      'src/cli.js', '-i', 'test-positive/flowchart1.mmd', '-o', `test-output/flowchart1-red-background.${format}`,
+      '--backgroundColor', 'red'
+    ])
+  }, timeout)
 });
 
 describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {

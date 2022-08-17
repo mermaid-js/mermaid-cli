@@ -13,6 +13,13 @@ for i in $(ls $INPUT_DATA/*.md); do docker run --rm -v $(pwd):/data $IMAGETAG -i
 # Test if the CLI actually works (PDF)
 for i in $(ls $INPUT_DATA/*.mmd); do docker run --rm -v $(pwd):/data $IMAGETAG -i /data/$i -o /data/$i.pdf; done
 
+# Test if passing background colors works
+for format in "svg" "png"; do
+  # must have different names, since we convert .svg to .png for percy upload
+  outputFileName="/data/$INPUT_DATA/flowchart1-red-background-${format}.${format}"
+  docker run --rm -v $(pwd):/data $IMAGETAG -i /data/$INPUT_DATA/flowchart1.mmd --backgroundColor "red" -o "$outputFileName"
+done
+
 # Test if a diagram from STDIN can be understood
 cat $INPUT_DATA/flowchart1.mmd | docker run --rm -i -v $(pwd):/data $IMAGETAG -o /data/$INPUT_DATA/flowchart1-stdin.png -w 800
 
