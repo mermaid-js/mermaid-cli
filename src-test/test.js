@@ -92,8 +92,8 @@ function expectBytesAreFormat (bytes, fileType) {
   }
 }
 
-// 20 second timeout, this needs to be set higher than normal since CI is slow
-const timeout = 20000
+// 30 second timeout, this needs to be set higher than normal since CI is slow
+const timeout = 30000
 
 describe("mermaid-cli", () => {
   beforeAll(async() => {
