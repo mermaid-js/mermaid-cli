@@ -58,8 +58,9 @@ jobs:
           npm install convert-svg-to-png
           ls -la ${{env.INPUT_DATA}}
           # This will overwite any PNG files with the same name that have been created by run-tests.sh
-          $(npm bin)/convert-svg-to-png ${{env.INPUT_DATA}}/graph-with-br.mmd.svg
-          $(npm bin)/convert-svg-to-png ${{env.INPUT_DATA}}/graph-with-br.mmd-stdin.svg
+          # Width less than 100 will give an error when processing with Persey
+          $(npm bin)/convert-svg-to-png ${{env.INPUT_DATA}}/graph-with-br.mmd.svg --width 120
+          $(npm bin)/convert-svg-to-png ${{env.INPUT_DATA}}/graph-with-br.mmd-stdin.svg --width 120
 
       - name: Upload diagrams for manual inspection
         uses: actions/upload-artifact@v3
