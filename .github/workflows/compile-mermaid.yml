@@ -1,5 +1,5 @@
 name: "Build, test and deploy mermaid-cli Docker image"
-on: [push, pull_request]
+on: [push, pull_request_target]
 concurrency: ci-${{ github.ref }}
 jobs:
   build:
