@@ -55,14 +55,17 @@ jobs:
 
       - name: Convert all svg files to png before uploading for automatic inspection
         run: |
-          npm install convert-svg-to-png
-          ls -la ${{env.INPUT_DATA}}
+          ls -la "$INPUT_DATA"
+          svg_files_to_convert=(
+            "$INPUT_DATA"/graph-with-br.mmd.svg
+            "$INPUT_DATA"/graph-with-br.mmd-stdin.svg
+            # svg file is named `-svg` so it doesn't overwrite .png file
+            "$INPUT_DATA"/flowchart1-red-background-svg.svg
+            "$INPUT_DATA"/flowchart1-with-css-svg.svg
+          )
           # This will overwite any PNG files with the same name that have been created by run-tests.sh
-          $(npm bin)/convert-svg-to-png ${{env.INPUT_DATA}}/graph-with-br.mmd.svg
-          $(npm bin)/convert-svg-to-png ${{env.INPUT_DATA}}/graph-with-br.mmd-stdin.svg
-          # svg file is named `-svg` so it doesn't overwrite .png file
-          $(npm bin)/convert-svg-to-png ${{env.INPUT_DATA}}/flowchart1-red-background-svg.svg
-          $(npm bin)/convert-svg-to-png ${{env.INPUT_DATA}}/flowchart1-with-css-svg.svg
+          # v0.5.0 is the last version to correctly convert our SVG files to PNG
+          npx --yes convert-svg-to-png@0.5.0 "${svg_files_to_convert[@]}"
 
       - name: Upload diagrams for manual inspection
         uses: actions/upload-artifact@v3
