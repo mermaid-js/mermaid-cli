@@ -1,0 +1,70 @@
+# Uploads created PR artifacts to percy
+#
+# Uploading to percy requires access to our secret PERCY_TOKEN environment
+# variable.
+# However, PRs from forks do not normally have access to GitHub Actions secrets
+# as otherwise, they could just add an `echo "TOKEN"` to their PR to view the secret.
+#
+# Instead, we create a separate workflow_run action that runs after PRs without
+# looking at any PR code, that then uploads to percy.
+# This follows GitHub's recommended security guide,
+# see https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
+name: Upload to Percy
+
+on:
+  workflow_run:
+    workflows: ["Build, test and deploy mermaid-cli Docker image"]
+    types:
+      - completed
+
+jobs:
+  upload:
+    if: >
+      ${{ github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      # disable unused permissions
+      actions: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Download artifact'
+        # this is the artifact created by
+        # "Upload diagrams for manual inspection"
+        uses: actions/github-script@v6.1.1
+        with:
+          script: |
+            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               run_id: ${{github.event.workflow_run.id }},
+            });
+            const matchArtifact = artifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "output"
+            })[0];
+            const download = await github.rest.actions.downloadArtifact({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               artifact_id: matchArtifact.id,
+               archive_format: 'zip',
+            });
+            const fs = require('fs');
+            fs.writeFileSync('${{github.workspace}}/mmdc-output.zip', Buffer.from(download.data));
+      - run: unzip mmdc-output.zip
+      - name: 'Upload to Percy'
+        # copied from https://docs.percy.io/docs/github-actions
+        # should automatically upload `.png`
+        run: npx @percy/cli upload ./
+        env:
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+          # Because we are not running on pull_request, but from a workflow_run,
+          # we need to manually set the percy env vars,
+          # se https://docs.percy.io/docs/environment-variables
+          #
+          # Is it possible for there to be multiple PRs in the workflow_run event??
+          PERCY_PULL_REQUEST: ${{ github.event.workflow_run.pull_requests[0].number }}
+          PERCY_COMMIT: ${{ github.event.workflow_run.head_sha }}
+          PERCY_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          # this env should not be needed, since Percy will automatically use
+          # GitHub's API to figure it out from the PULL_REQUEST number
+          # PERCY_TARGET_BRANCH: ${{ github.event.workflow_run.pull_requests[0].base.ref }}
+          # PERCY_TARGET_COMMIT: ${{ github.event.workflow_run.pull_requests[0].base.sha }}

@@ -11,7 +11,6 @@ jobs:
       IMAGENAME: mermaid-cli
       DOCKER_IO_REPOSITORY: minlag/mermaid-cli
       INPUT_DATA: test-positive
-      PERCY_TOKEN: ${{secrets.PERCY_TOKEN}}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -68,15 +67,20 @@ jobs:
           npx --yes convert-svg-to-png@0.5.0 "${svg_files_to_convert[@]}"
 
       - name: Upload diagrams for manual inspection
+        # also uploads for `upload-percy.yml` action
         uses: actions/upload-artifact@v3
         with:
           name: output
           path: ./${{env.INPUT_DATA}}
-
       - name: Upload diagrams to percy for automatic inspection
+        # only run on push
+        # For PRs, the ./upload-percy.yml file is used instead
+        if: github.event_name == 'push'
         # copied from https://docs.percy.io/docs/github-actions
         # should automatically upload `.png`
         run: npx @percy/cli upload "$INPUT_DATA"
+        env:
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
 
       - name: Login to GitHub Container Registry
         if: github.ref == 'refs/heads/master'
