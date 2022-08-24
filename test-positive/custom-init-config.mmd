@@ -1,0 +1,17 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#ff0000'}}}%%
+%% Example taken from https://mermaid-js.github.io/mermaid/#/./theming?id=customizing-themes-with-themevariables
+graph TD
+    A[Christmas] -->|Get money| B(Go shopping)
+    B --> C{Let me think}
+    B --> G[/Another/]
+    C ==>|One| D[Laptop]
+    C -->|Two| E[iPhone]
+    %% Uses font-awesome for the car icon here
+    C -->|Three| F[fa:fa-car Car]
+    subgraph section
+    C
+    D
+    E
+    F
+    G
+    end
