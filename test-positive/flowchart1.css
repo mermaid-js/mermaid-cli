@@ -3,6 +3,16 @@
   animation: dash 30s linear infinite;
 }
 
+.label {
+  /*
+   * If you want to override mermaid's `themeCSS`, it's recommended to instead
+   * set `themeCSS` in your mermaid `configFile.json`
+   *
+   * However, sometimes `!important` can also be used to override `themeCSS`.
+   */
+  font-family: "fantasy" !important;
+}
+
 @keyframes dash {
   0% {
     stroke-dashoffset: 1000;

@@ -187,8 +187,15 @@ describe('mermaid-cli', () => {
   test.concurrent.each(['svg', 'png', 'pdf'])('should add css to %s', async (format) => {
     await promisify(execFile)('node', [
       'src/cli.js', '-i', 'test-positive/flowchart1.mmd', '-o', `test-output/flowchart1-with-css.${format}`,
+      // we want to add an SVG file to git, so make sure it's always the same
+      '--configFile', 'test-positive/config-deterministic.json',
       '--cssFile', 'test-positive/flowchart1.css'
     ])
+
+    if (format === 'svg') {
+      // this file is used in the README.md, so we want to keep it updated if possible
+      await fs.copyFile(`test-output/flowchart1-with-css.${format}`, 'docs/animated-flowchart.svg')
+    }
   }, timeout)
 })
 
