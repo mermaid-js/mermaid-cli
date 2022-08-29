@@ -30,7 +30,7 @@ jobs:
       - name: 'Download artifact'
         # this is the artifact created by
         # "Upload diagrams for manual inspection"
-        uses: actions/github-script@v6.1.1
+        uses: actions/github-script@v6.2.0
         with:
           script: |
             const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
