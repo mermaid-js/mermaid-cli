@@ -170,76 +170,80 @@ async function cli () {
  */
 async function parseMMD (browser, definition, outputFormat, { viewport, backgroundColor = 'white', mermaidConfig = {}, myCSS, pdfFit } = {}) {
   const page = await browser.newPage()
-  if (viewport) {
-    await page.setViewport(viewport)
-  }
-  const mermaidHTMLPath = path.join(__dirname, '..', 'index.html')
-  await page.goto(url.pathToFileURL(mermaidHTMLPath))
-  await page.$eval('body', (body, backgroundColor) => {
-    body.style.background = backgroundColor
-  }, backgroundColor)
-  await page.$eval('#container', (container, definition, mermaidConfig, myCSS, backgroundColor) => {
-    container.textContent = definition
-    window.mermaid.initialize(mermaidConfig)
-    // should throw an error if mmd diagram is invalid
-    try {
-      window.mermaid.initThrowsErrors(undefined, container)
-    } catch (error) {
-      if (error instanceof Error) {
-        // mermaid-js doesn't currently throws JS Errors, but let's leave this
-        // here in case it does in the future
-        throw error
-      } else {
-        throw new Error(error?.message ?? 'Unknown mermaid render error')
+  try {
+    if (viewport) {
+      await page.setViewport(viewport)
+    }
+    const mermaidHTMLPath = path.join(__dirname, '..', 'index.html')
+    await page.goto(url.pathToFileURL(mermaidHTMLPath))
+    await page.$eval('body', (body, backgroundColor) => {
+      body.style.background = backgroundColor
+    }, backgroundColor)
+    await page.$eval('#container', (container, definition, mermaidConfig, myCSS, backgroundColor) => {
+      container.textContent = definition
+      window.mermaid.initialize(mermaidConfig)
+      // should throw an error if mmd diagram is invalid
+      try {
+        window.mermaid.initThrowsErrors(undefined, container)
+      } catch (error) {
+        if (error instanceof Error) {
+          // mermaid-js doesn't currently throws JS Errors, but let's leave this
+          // here in case it does in the future
+          throw error
+        } else {
+          throw new Error(error?.message ?? 'Unknown mermaid render error')
+        }
       }
-    }
 
-    const svg = container.getElementsByTagName?.('svg')?.[0]
-    if (svg?.style) {
-      svg.style.backgroundColor = backgroundColor
-    } else {
-      warn('svg not found. Not applying background color.')
-      return
-    }
-    if (myCSS) {
-      // add CSS as a <svg>...<style>... element
-      // see https://developer.mozilla.org/en-US/docs/Web/API/SVGStyleElement
-      const style = document.createElementNS('http://www.w3.org/2000/svg', 'style')
-      style.appendChild(document.createTextNode(myCSS))
-      svg.appendChild(style)
-    }
-  }, definition, mermaidConfig, myCSS, backgroundColor)
+      const svg = container.getElementsByTagName?.('svg')?.[0]
+      if (svg?.style) {
+        svg.style.backgroundColor = backgroundColor
+      } else {
+        warn('svg not found. Not applying background color.')
+        return
+      }
+      if (myCSS) {
+        // add CSS as a <svg>...<style>... element
+        // see https://developer.mozilla.org/en-US/docs/Web/API/SVGStyleElement
+        const style = document.createElementNS('http://www.w3.org/2000/svg', 'style')
+        style.appendChild(document.createTextNode(myCSS))
+        svg.appendChild(style)
+      }
+    }, definition, mermaidConfig, myCSS, backgroundColor)
 
-  if (outputFormat === 'svg') {
-    const svg = await page.$eval('#container', (container) => {
-      return container.innerHTML
-    })
-    const svgXML = convertToValidXML(svg)
-    return Buffer.from(svgXML, 'utf8')
-  } else if (outputFormat === 'png') {
-    const clip = await page.$eval('svg', svg => {
-      const react = svg.getBoundingClientRect()
-      return { x: Math.floor(react.left), y: Math.floor(react.top), width: Math.ceil(react.width), height: Math.ceil(react.height) }
-    })
-    await page.setViewport({ ...viewport, width: clip.x + clip.width, height: clip.y + clip.height })
-    return await page.screenshot({ clip, omitBackground: backgroundColor === 'transparent' })
-  } else { // pdf
-    if (pdfFit) {
+    if (outputFormat === 'svg') {
+      const svg = await page.$eval('#container', (container) => {
+        return container.innerHTML
+      })
+      const svgXML = convertToValidXML(svg)
+      return Buffer.from(svgXML, 'utf8')
+    } else if (outputFormat === 'png') {
       const clip = await page.$eval('svg', svg => {
         const react = svg.getBoundingClientRect()
-        return { x: react.left, y: react.top, width: react.width, height: react.height }
+        return { x: Math.floor(react.left), y: Math.floor(react.top), width: Math.ceil(react.width), height: Math.ceil(react.height) }
       })
-      return await page.pdf({
-        omitBackground: backgroundColor === 'transparent',
-        width: (Math.ceil(clip.width) + clip.x * 2) + 'px',
-        height: (Math.ceil(clip.height) + clip.y * 2) + 'px',
-        pageRanges: '1-1'
-      })
-    } else {
-      return await page.pdf({
-        omitBackground: backgroundColor === 'transparent'
-      })
+      await page.setViewport({ ...viewport, width: clip.x + clip.width, height: clip.y + clip.height })
+      return await page.screenshot({ clip, omitBackground: backgroundColor === 'transparent' })
+    } else { // pdf
+      if (pdfFit) {
+        const clip = await page.$eval('svg', svg => {
+          const react = svg.getBoundingClientRect()
+          return { x: react.left, y: react.top, width: react.width, height: react.height }
+        })
+        return await page.pdf({
+          omitBackground: backgroundColor === 'transparent',
+          width: (Math.ceil(clip.width) + clip.x * 2) + 'px',
+          height: (Math.ceil(clip.height) + clip.y * 2) + 'px',
+          pageRanges: '1-1'
+        })
+      } else {
+        return await page.pdf({
+          omitBackground: backgroundColor === 'transparent'
+        })
+      }
     }
+  } finally {
+    await page.close()
   }
 }
 
