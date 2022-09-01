@@ -66,7 +66,6 @@ const convertToValidXML = html => {
 }
 
 async function cli () {
-// TODO: This is currently unindented to make `git diff` easier for PR reviewers.
   const commander = new Command()
   commander
     .version(pkg.version)
@@ -268,7 +267,6 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, parseM
   const mermaidChartsInMarkdownRegex = new RegExp(mermaidChartsInMarkdown)
   const browser = await puppeteer.launch(puppeteerConfig)
   try {
-  // TODO: indent this (currently unindented to make `git diff` smaller)
     const definition = await getInputData(input)
     if (/\.md$/.test(input)) {
       const diagrams = []
