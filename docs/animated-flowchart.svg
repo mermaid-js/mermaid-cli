@@ -17,7 +17,10 @@
   0% {
     stroke-dashoffset: 1000;
   }
-
+  10% {
+    /* No animation for the first 10% for consistent visual testing screenshots */
+    stroke-dashoffset: 1000;
+  }
   100% {
   }
 }
