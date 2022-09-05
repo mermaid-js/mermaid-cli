@@ -24,7 +24,7 @@
   "dependencies": {
     "chalk": "^5.0.1",
     "commander": "^9.0.0",
-    "puppeteer": "^16.1.0"
+    "puppeteer": "^17.1.1"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free-webfonts": "^1.0.9",
