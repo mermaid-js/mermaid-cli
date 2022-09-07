@@ -61,8 +61,11 @@ const getInputData = async inputFile => new Promise((resolve, reject) => {
 })
 
 const convertToValidXML = html => {
+  // Add trailing slash inside img tags
+  const formattedHtml = html.replace(/<img(.*?)>/gi, '<img$1 />')
+
   // <br> tags in valid HTML (from innerHTML) look like <br>, but they must look like <br/> to be valid XML (such as SVG)
-  return html.replace(/<br>/gi, '<br/>')
+  return formattedHtml.replace(/<br>/gi, '<br/>')
 }
 
 async function cli () {
