@@ -60,11 +60,6 @@ const getInputData = async inputFile => new Promise((resolve, reject) => {
   })
 })
 
-const convertToValidXML = html => {
-  // <br> tags in valid HTML (from innerHTML) look like <br>, but they must look like <br/> to be valid XML (such as SVG)
-  return html.replace(/<br>/gi, '<br/>')
-}
-
 async function cli () {
   const commander = new Command()
   commander
@@ -212,10 +207,14 @@ async function parseMMD (browser, definition, outputFormat, { viewport, backgrou
     }, definition, mermaidConfig, myCSS, backgroundColor)
 
     if (outputFormat === 'svg') {
-      const svg = await page.$eval('#container', (container) => {
-        return container.innerHTML
+      const svgXML = await page.$eval('svg', (svg) => {
+        // SVG might have HTML <foreignObject> that are not valid XML
+        // E.g. <br> must be replaced with <br/>
+        // Luckily the DOM Web API has the XMLSerializer for this
+        // eslint-disable-next-line no-undef
+        const xmlSerializer = new XMLSerializer()
+        return xmlSerializer.serializeToString(svg)
       })
-      const svgXML = convertToValidXML(svg)
       return Buffer.from(svgXML, 'utf8')
     } else if (outputFormat === 'png') {
       const clip = await page.$eval('svg', svg => {
