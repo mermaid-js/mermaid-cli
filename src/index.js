@@ -282,7 +282,7 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, output
       outputFormat = 'svg'
     }
     if (!/(?:svg|png|pdf)$/.test(outputFormat)) {
-      error('Output format must be one of "svg", "png" or "pdf"')
+      throw new Error('Output format must be one of "svg", "png" or "pdf"')
     }
 
     const definition = await getInputData(input)
