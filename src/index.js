@@ -69,6 +69,7 @@ async function cli () {
     .option('-H, --height [height]', 'Height of the page. Optional. Default: 600', /^\d+$/, '600')
     .option('-i, --input <input>', 'Input mermaid file. Files ending in .md will be treated as Markdown and all charts (e.g. ```mermaid (...)```) will be extracted and generated. Required.')
     .option('-o, --output [output]', 'Output file. It should be either md, svg, png or pdf. Optional. Default: input + ".svg"')
+    .option('-e, --outputFormat <format>', 'Output format for the generated image. It should be either svg, png or pdf. Optional. Default: output file extension')
     .option('-b, --backgroundColor [backgroundColor]', 'Background color for pngs/svgs (not pdfs). Example: transparent, red, \'#F0F0F0\'. Optional. Default: white')
     .option('-c, --configFile [configFile]', 'JSON configuration file for mermaid. Optional')
     .option('-C, --cssFile [cssFile]', 'CSS file for the page. Optional')
@@ -80,7 +81,7 @@ async function cli () {
 
   const options = commander.opts()
 
-  let { theme, width, height, input, output, backgroundColor, configFile, cssFile, puppeteerConfigFile, scale, pdfFit, quiet } = options
+  let { theme, width, height, input, output, outputFormat, backgroundColor, configFile, cssFile, puppeteerConfigFile, scale, pdfFit, quiet } = options
 
   // check input file
   if (!(input || inputPipedFromStdin())) {
@@ -105,6 +106,17 @@ async function cli () {
   const outputDir = path.dirname(output)
   if (!fs.existsSync(outputDir)) {
     error(`Output directory "${outputDir}/" doesn't exist`)
+  }
+
+  if (!outputFormat) {
+    outputFormat = path.extname(output).replace('.', '')
+  }
+  if (outputFormat === 'md') {
+    // fallback to svg in case no outputFormat is given and output file is MD
+    outputFormat = 'svg'
+  }
+  if (!/(?:svg|png|pdf)$/.test(outputFormat)) {
+    error('Output format must be one of "svg", "png" or "pdf"')
   }
 
   // check config files
@@ -138,6 +150,7 @@ async function cli () {
     input, output, {
       puppeteerConfig,
       quiet,
+      outputFormat,
       parseMMDOptions: {
         mermaidConfig, backgroundColor, myCSS, pdfFit, viewport: { width, height, deviceScaleFactor }
       }
@@ -258,7 +271,7 @@ async function parseMMD (browser, definition, outputFormat, { viewport, backgrou
  * @param {boolean} [opts.quiet] - If set, suppress log output.
  * @param {ParseMDDOptions} [opts.parseMMDOptions] - Options to pass to {@link parseMMDOptions}.
  */
-async function run (input, output, { puppeteerConfig = {}, quiet = false, parseMMDOptions } = {}) {
+async function run (input, output, { puppeteerConfig = {}, quiet = false, outputFormat = 'svg', parseMMDOptions } = {}) {
   const info = message => {
     if (!quiet) {
       console.info(message)
@@ -281,7 +294,7 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, parseM
         //     I.e. if "out.png", use "out-1.png", "out-2.png", etc
         //   If it is an output `.md` file, use that to base .svg numbered diagrams on
         //     I.e. if "out.md". use "out-1.svg", "out-2.svg", etc
-        const outputFile = output.replace(/(\.(md|png|svg|pdf))$/, `-${diagrams.length + 1}$1`).replace(/(\.md)$/, '.svg')
+        const outputFile = output.replace(/(\.(md|png|svg|pdf))$/, `-${diagrams.length + 1}$1`).replace(/(\.md)$/, '.' + outputFormat)
         const outputFileRelative = `./${path.relative(path.dirname(path.resolve(output)), path.resolve(outputFile))}`
         diagrams.push([outputFile, md])
         return `![diagram](${outputFileRelative})`
@@ -290,7 +303,7 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, parseM
       if (diagrams.length) {
         info(`Found ${diagrams.length} mermaid charts in Markdown input`)
         await Promise.all(diagrams.map(async ([imgFile, md]) => {
-          const data = await parseMMD(browser, md, path.extname(imgFile).replace('.', ''), parseMMDOptions)
+          const data = await parseMMD(browser, md, outputFormat, parseMMDOptions)
           await fs.promises.writeFile(imgFile, data)
           info(` ✅ ${imgFile}`)
         })
@@ -305,7 +318,7 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, parseM
       }
     } else {
       info('Generating single mermaid chart')
-      const data = await parseMMD(browser, definition, path.extname(output).replace('.', ''), parseMMDOptions)
+      const data = await parseMMD(browser, definition, outputFormat, parseMMDOptions)
       await fs.promises.writeFile(output, data)
     }
   } finally {

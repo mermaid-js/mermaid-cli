@@ -201,9 +201,9 @@ describe('mermaid-cli', () => {
 
 describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
   describe('run()', () => {
-    test('should write markdown output', async () => {
-      const expectedOutputMd = 'test-output/mermaid-run-output-test.md'
-      const expectedOutputSvgs = [1, 2, 3].map((i) => `test-output/mermaid-run-output-test-${i}.svg`)
+    test('should write markdown output with svg images', async () => {
+      const expectedOutputMd = 'test-output/mermaid-run-output-test-svg.md'
+      const expectedOutputSvgs = [1, 2, 3].map((i) => `test-output/mermaid-run-output-test-svg-${i}.svg`)
       // delete any files from previous test (fs.rm added in Node v14.14.0)
       await Promise.all(
         [
@@ -213,7 +213,7 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       )
 
       await run(
-        'test-positive/mermaid.md', expectedOutputMd, { quiet: true }
+        'test-positive/mermaid.md', expectedOutputMd, { quiet: true, outputFormat: 'svg' }
       )
 
       const markdownFile = await fs.readFile(expectedOutputMd, { encoding: 'utf8' })
@@ -228,13 +228,40 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       }))
     }, timeout)
 
+    test('should write markdown output with png images', async () => {
+      const expectedOutputMd = 'test-output/mermaid-run-output-test-png.md'
+      const expectedOutputPngs = [1, 2, 3].map((i) => `test-output/mermaid-run-output-test-png-${i}.png`)
+      // delete any files from previous test (fs.rm added in Node v14.14.0)
+      await Promise.all(
+        [
+          expectedOutputMd,
+          ...expectedOutputPngs
+        ].map((file) => fs.rm(file, { force: true }))
+      )
+
+      await run(
+        'test-positive/mermaid.md', expectedOutputMd, { quiet: true, outputFormat: 'png' }
+      )
+
+      const markdownFile = await fs.readFile(expectedOutputMd, { encoding: 'utf8' })
+
+      // files should exist, and they should be SVGs
+      await Promise.all(expectedOutputPngs.map(async (expectedOutputPng) => {
+        // markdown file should point to png relative to md file
+        expect(markdownFile).toContain(relative('test-output', expectedOutputPng))
+
+        const pngFile = await fs.readFile(expectedOutputPng, { encoding: 'utf8' })
+        expect(pngFile).toMatch(/^.*PNG/)
+      }))
+    }, timeout)
+
     test.each(['svg', 'png', 'pdf'])('should write %s from .mmd input', async (format) => {
       const expectedOutput = `test-output/flowchart1-run-output-test.${format}`
       await fs.rm(expectedOutput, { force: true })
       await run(
         'test-positive/flowchart1.mmd',
         expectedOutput,
-        { quiet: true }
+        { quiet: true, outputFormat: format }
       )
       expectBytesAreFormat(await fs.readFile(expectedOutput), format)
     }, timeout)
