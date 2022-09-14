@@ -108,17 +108,6 @@ async function cli () {
     error(`Output directory "${outputDir}/" doesn't exist`)
   }
 
-  if (!outputFormat) {
-    outputFormat = path.extname(output).replace('.', '')
-  }
-  if (outputFormat === 'md') {
-    // fallback to svg in case no outputFormat is given and output file is MD
-    outputFormat = 'svg'
-  }
-  if (!/(?:svg|png|pdf)$/.test(outputFormat)) {
-    error('Output format must be one of "svg", "png" or "pdf"')
-  }
-
   // check config files
   let mermaidConfig = { theme }
   if (configFile) {
@@ -269,9 +258,11 @@ async function parseMMD (browser, definition, outputFormat, { viewport, backgrou
  * @param {Object} [opts] - Options
  * @param {puppeteer.LaunchOptions} [opts.puppeteerConfig] - Puppeteer launch options.
  * @param {boolean} [opts.quiet] - If set, suppress log output.
+ * @param {"svg" | "png" | "pdf"} [opts.outputFormat] - Mermaid output format.
+ * Defaults to `output` extension. Overrides `output` extension if set.
  * @param {ParseMDDOptions} [opts.parseMMDOptions] - Options to pass to {@link parseMMDOptions}.
  */
-async function run (input, output, { puppeteerConfig = {}, quiet = false, outputFormat = 'svg', parseMMDOptions } = {}) {
+async function run (input, output, { puppeteerConfig = {}, quiet = false, outputFormat, parseMMDOptions } = {}) {
   const info = message => {
     if (!quiet) {
       console.info(message)
@@ -283,6 +274,17 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, output
   const mermaidChartsInMarkdownRegex = new RegExp(mermaidChartsInMarkdown)
   const browser = await puppeteer.launch(puppeteerConfig)
   try {
+    if (!outputFormat) {
+      outputFormat = path.extname(output).replace('.', '')
+    }
+    if (outputFormat === 'md') {
+      // fallback to svg in case no outputFormat is given and output file is MD
+      outputFormat = 'svg'
+    }
+    if (!/(?:svg|png|pdf)$/.test(outputFormat)) {
+      error('Output format must be one of "svg", "png" or "pdf"')
+    }
+
     const definition = await getInputData(input)
     if (/\.md$/.test(input)) {
       const diagrams = []
@@ -294,7 +296,7 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, output
         //     I.e. if "out.png", use "out-1.png", "out-2.png", etc
         //   If it is an output `.md` file, use that to base .svg numbered diagrams on
         //     I.e. if "out.md". use "out-1.svg", "out-2.svg", etc
-        const outputFile = output.replace(/(\.(md|png|svg|pdf))$/, `-${diagrams.length + 1}$1`).replace(/(\.md)$/, '.' + outputFormat)
+        const outputFile = output.replace(/(\.(md|png|svg|pdf))$/, `-${diagrams.length + 1}$1`).replace(/(\.md)$/, `.${outputFormat}`)
         const outputFileRelative = `./${path.relative(path.dirname(path.resolve(output)), path.resolve(outputFile))}`
         diagrams.push([outputFile, md])
         return `![diagram](${outputFileRelative})`
