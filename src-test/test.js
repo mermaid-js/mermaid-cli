@@ -245,13 +245,13 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
 
       const markdownFile = await fs.readFile(expectedOutputMd, { encoding: 'utf8' })
 
-      // files should exist, and they should be SVGs
+      // files should exist, and they should be PNGs
       await Promise.all(expectedOutputPngs.map(async (expectedOutputPng) => {
         // markdown file should point to png relative to md file
         expect(markdownFile).toContain(relative('test-output', expectedOutputPng))
 
-        const pngFile = await fs.readFile(expectedOutputPng, { encoding: 'utf8' })
-        expect(pngFile).toMatch(/^.*PNG/)
+        const pngFile = await fs.readFile(expectedOutputPng)
+        expectBytesAreFormat(pngFile, 'png')
       }))
     }, timeout)
 
