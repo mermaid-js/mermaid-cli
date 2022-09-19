@@ -139,3 +139,29 @@ stateDiagram
     Choose --> Crash
     Crash --> [*]
 ```
+10. indented.mmd
+    ```mermaid
+    stateDiagram
+        state Choose <<fork>>
+        [*] --> Still
+        Still --> [*]
+
+        Still --> Moving
+        Moving --> Choose
+        Choose --> Still
+        Choose --> Crash
+        Crash --> [*]
+    ```
+11. space-appended.mmd
+```mermaid
+stateDiagram
+    state Choose <<fork>>
+    [*] --> Still
+    Still --> [*]
+
+    Still --> Moving
+    Moving --> Choose
+    Choose --> Still
+    Choose --> Crash
+    Crash --> [*]
+```   
