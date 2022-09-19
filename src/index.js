@@ -269,7 +269,7 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, output
     }
   }
 
-  const mermaidChartsInMarkdown = /^```(?:mermaid)(\r?\n([\s\S]*?))```$/
+  const mermaidChartsInMarkdown = /^\s*```(?:mermaid)(\r?\n([\s\S]*?))```\s*$/
   const mermaidChartsInMarkdownRegexGlobal = new RegExp(mermaidChartsInMarkdown, 'gm')
   const mermaidChartsInMarkdownRegex = new RegExp(mermaidChartsInMarkdown)
   const browser = await puppeteer.launch(puppeteerConfig)
