@@ -113,33 +113,7 @@ loop D-1 before deadline at 7:45
     Note over HII,FGG: D-1 before deadline
 end
 ```
-8. state1.mmd
-```mermaid
-stateDiagram
-    state Choose <<fork>>
-    [*] --> Still
-    Still --> [*]
-
-    Still --> Moving
-    Moving --> Choose
-    Choose --> Still
-    Choose --> Crash
-    Crash --> [*]
-```
-9. state2.mmd
-```mermaid
-stateDiagram
-    state Choose <<fork>>
-    [*] --> Still
-    Still --> [*]
-
-    Still --> Moving
-    Moving --> Choose
-    Choose --> Still
-    Choose --> Crash
-    Crash --> [*]
-```
-10. indented.mmd
+8. indented.mmd
     ```mermaid
     stateDiagram
         state Choose <<fork>>
@@ -152,7 +126,9 @@ stateDiagram
         Choose --> Crash
         Crash --> [*]
     ```
-11. space-appended.mmd
+9. space-appended.mmd
+%% ↑↑↑↑↑↑↑↑↑ used as regex-entry point in test.js
+%% ↓↓↓↓↓↓↓↓↓ should still find mermaid code even with trailing spaces after the ```
 ```mermaid
 stateDiagram
     state Choose <<fork>>
@@ -165,3 +141,4 @@ stateDiagram
     Choose --> Crash
     Crash --> [*]
 ```   
+%% ↑↑↑↑↑↑↑↑↑ should still find mermaid code even with trailing spaces after the ```
