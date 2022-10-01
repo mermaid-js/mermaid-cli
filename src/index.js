@@ -159,13 +159,31 @@ async function cli () {
 /**
  * Parse and render a mermaid diagram.
  *
+ * @deprecated Prefer {@link renderMermaid}, as it also returns useful metadata.
+ *
  * @param {puppeteer.Browser} browser - Puppeteer Browser
  * @param {string} definition - Mermaid diagram definition
  * @param {"svg" | "png" | "pdf"} outputFormat - Mermaid output format.
  * @param {ParseMDDOptions} [opt] - Options, see {@link ParseMDDOptions} for details.
+ *
  * @returns {Promise<Buffer>} The output file in bytes.
  */
-async function parseMMD (browser, definition, outputFormat, { viewport, backgroundColor = 'white', mermaidConfig = {}, myCSS, pdfFit } = {}) {
+async function parseMMD (...args) {
+  const { data } = await renderMermaid(...args)
+  return data
+}
+
+/**
+ * Render a mermaid diagram.
+ *
+ * @param {puppeteer.Browser} browser - Puppeteer Browser
+ * @param {string} definition - Mermaid diagram definition
+ * @param {"svg" | "png" | "pdf"} outputFormat - Mermaid output format.
+ * @param {ParseMDDOptions} [opt] - Options, see {@link ParseMDDOptions} for details.
+ * @returns {Promise<{title?: string, desc?: string, data: Buffer}>} The output file in bytes,
+ * with optional metadata.
+ */
+async function renderMermaid (browser, definition, outputFormat, { viewport, backgroundColor = 'white', mermaidConfig = {}, myCSS, pdfFit } = {}) {
   const page = await browser.newPage()
   try {
     if (viewport) {
@@ -176,7 +194,7 @@ async function parseMMD (browser, definition, outputFormat, { viewport, backgrou
     await page.$eval('body', (body, backgroundColor) => {
       body.style.background = backgroundColor
     }, backgroundColor)
-    await page.$eval('#container', (container, definition, mermaidConfig, myCSS, backgroundColor) => {
+    const metadata = await page.$eval('#container', (container, definition, mermaidConfig, myCSS, backgroundColor) => {
       container.textContent = definition
       window.mermaid.initialize(mermaidConfig)
       // should throw an error if mmd diagram is invalid
@@ -197,7 +215,6 @@ async function parseMMD (browser, definition, outputFormat, { viewport, backgrou
         svg.style.backgroundColor = backgroundColor
       } else {
         warn('svg not found. Not applying background color.')
-        return
       }
       if (myCSS) {
         // add CSS as a <svg>...<style>... element
@@ -205,6 +222,26 @@ async function parseMMD (browser, definition, outputFormat, { viewport, backgrou
         const style = document.createElementNS('http://www.w3.org/2000/svg', 'style')
         style.appendChild(document.createTextNode(myCSS))
         svg.appendChild(style)
+      }
+
+      // Finds SVG metadata for accessibility purposes
+      /** SVG title */
+      let title = null
+      // If <title> exists, it must be the first child Node,
+      // see https://www.w3.org/TR/SVG11/struct.html#DescriptionAndTitleElements
+      /* global SVGTitleElement, SVGDescElement */ // These exist in browser-based code
+      if (svg.firstChild instanceof SVGTitleElement) {
+        title = svg.firstChild.textContent
+      }
+      /** SVG description. According to SVG spec, we should use the first one we find */
+      let desc = null
+      for (const svgNode of svg.children) {
+        if (svgNode instanceof SVGDescElement) {
+          desc = svgNode.textContent
+        }
+      }
+      return {
+        title, desc
       }
     }, definition, mermaidConfig, myCSS, backgroundColor)
 
@@ -217,34 +254,66 @@ async function parseMMD (browser, definition, outputFormat, { viewport, backgrou
         const xmlSerializer = new XMLSerializer()
         return xmlSerializer.serializeToString(svg)
       })
-      return Buffer.from(svgXML, 'utf8')
+      return {
+        ...metadata,
+        data: Buffer.from(svgXML, 'utf8')
+      }
     } else if (outputFormat === 'png') {
       const clip = await page.$eval('svg', svg => {
         const react = svg.getBoundingClientRect()
         return { x: Math.floor(react.left), y: Math.floor(react.top), width: Math.ceil(react.width), height: Math.ceil(react.height) }
       })
       await page.setViewport({ ...viewport, width: clip.x + clip.width, height: clip.y + clip.height })
-      return await page.screenshot({ clip, omitBackground: backgroundColor === 'transparent' })
+      return {
+        ...metadata,
+        data: await page.screenshot({ clip, omitBackground: backgroundColor === 'transparent' })
+      }
     } else { // pdf
       if (pdfFit) {
         const clip = await page.$eval('svg', svg => {
           const react = svg.getBoundingClientRect()
           return { x: react.left, y: react.top, width: react.width, height: react.height }
         })
-        return await page.pdf({
-          omitBackground: backgroundColor === 'transparent',
-          width: (Math.ceil(clip.width) + clip.x * 2) + 'px',
-          height: (Math.ceil(clip.height) + clip.y * 2) + 'px',
-          pageRanges: '1-1'
-        })
+        return {
+          ...metadata,
+          data: await page.pdf({
+            omitBackground: backgroundColor === 'transparent',
+            width: (Math.ceil(clip.width) + clip.x * 2) + 'px',
+            height: (Math.ceil(clip.height) + clip.y * 2) + 'px',
+            pageRanges: '1-1'
+          })
+        }
       } else {
-        return await page.pdf({
-          omitBackground: backgroundColor === 'transparent'
-        })
+        return {
+          ...metadata,
+          data: await page.pdf({
+            omitBackground: backgroundColor === 'transparent'
+          })
+        }
       }
     }
   } finally {
     await page.close()
+  }
+}
+
+/**
+ * Creates a markdown image syntax.
+ *
+ * @param {object} params - Parameters.
+ * @param {string} params.url - Path to image.
+ * @param {string} params.alt - Image alt text, required.
+ * @param {string} [params.title] - Image title text.
+ * @returns {`![${string}](${string})`} The markdown image text.
+ */
+function markdownImage ({ url, title, alt }) {
+  // we can't use String.prototype.replaceAll since it's not supported in Node v14
+  const altEscaped = alt.replace(/[[\]\\]/g, '\\$&')
+  if (title) {
+    const titleEscaped = title.replace(/["\\]/g, '\\$&')
+    return `![${altEscaped}](${url} "${titleEscaped}")`
+  } else {
+    return `![${altEscaped}](${url})`
   }
 }
 
@@ -271,7 +340,6 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, output
 
   const mermaidChartsInMarkdown = /^\s*```(?:mermaid)(\r?\n([\s\S]*?))```\s*$/
   const mermaidChartsInMarkdownRegexGlobal = new RegExp(mermaidChartsInMarkdown, 'gm')
-  const mermaidChartsInMarkdownRegex = new RegExp(mermaidChartsInMarkdown)
   const browser = await puppeteer.launch(puppeteerConfig)
   try {
     if (!outputFormat) {
@@ -287,34 +355,46 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, output
 
     const definition = await getInputData(input)
     if (/\.md$/.test(input)) {
-      const diagrams = []
-      const outDefinition = definition.replace(mermaidChartsInMarkdownRegexGlobal, (mermaidMd) => {
-        const md = mermaidChartsInMarkdownRegex.exec(mermaidMd)[1]
+      const imagePromises = []
+      for (const mermaidCodeblockMatch of definition.matchAll(mermaidChartsInMarkdownRegexGlobal)) {
+        const mermaidDefinition = mermaidCodeblockMatch[1]
 
         // Output can be either a template image file, or a `.md` output file.
         //   If it is a template image file, use that to created numbered diagrams
         //     I.e. if "out.png", use "out-1.png", "out-2.png", etc
         //   If it is an output `.md` file, use that to base .svg numbered diagrams on
         //     I.e. if "out.md". use "out-1.svg", "out-2.svg", etc
-        const outputFile = output.replace(/(\.(md|png|svg|pdf))$/, `-${diagrams.length + 1}$1`).replace(/(\.md)$/, `.${outputFormat}`)
+        const outputFile = output.replace(/(\.(md|png|svg|pdf))$/, `-${imagePromises.length + 1}$1`).replace(/(\.md)$/, `.${outputFormat}`)
         const outputFileRelative = `./${path.relative(path.dirname(path.resolve(output)), path.resolve(outputFile))}`
-        diagrams.push([outputFile, md])
-        return `![diagram](${outputFileRelative})`
-      })
 
-      if (diagrams.length) {
-        info(`Found ${diagrams.length} mermaid charts in Markdown input`)
-        await Promise.all(diagrams.map(async ([imgFile, md]) => {
-          const data = await parseMMD(browser, md, outputFormat, parseMMDOptions)
-          await fs.promises.writeFile(imgFile, data)
-          info(` ✅ ${imgFile}`)
-        })
-        )
+        const imagePromise = (async () => {
+          const { title, desc, data } = await renderMermaid(browser, mermaidDefinition, outputFormat, parseMMDOptions)
+          await fs.promises.writeFile(outputFile, data)
+          info(` ✅ ${outputFileRelative}`)
+
+          return {
+            url: outputFileRelative,
+            title,
+            alt: desc
+          }
+        })()
+        imagePromises.push(imagePromise)
+      }
+
+      if (imagePromises.length) {
+        info(`Found ${imagePromises.length} mermaid charts in Markdown input`)
       } else {
         info('No mermaid charts found in Markdown input')
       }
 
+      const images = await Promise.all(imagePromises)
+
       if (/\.md$/.test(output)) {
+        const outDefinition = definition.replace(mermaidChartsInMarkdownRegexGlobal, (_mermaidMd) => {
+          // pop first image from front of array
+          const { url, title, alt } = images.shift()
+          return markdownImage({ url, title, alt: alt || 'diagram' })
+        })
         await fs.promises.writeFile(output, outDefinition, 'utf-8')
         info(` ✅ ${output}`)
       }
@@ -328,4 +408,4 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, output
   }
 }
 
-export { run, parseMMD, cli, error }
+export { run, renderMermaid, parseMMD, cli, error }
