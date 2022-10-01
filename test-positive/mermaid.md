@@ -113,7 +113,8 @@ loop D-1 before deadline at 7:45
     Note over HII,FGG: D-1 before deadline
 end
 ```
-8. indented.mmd
+8. Should still find mermaid code even when code-block is indented.
+
     ```mermaid
     stateDiagram
         state Choose <<fork>>
@@ -126,9 +127,9 @@ end
         Choose --> Crash
         Crash --> [*]
     ```
-9. space-appended.mmd
-%% ↑↑↑↑↑↑↑↑↑ used as regex-entry point in test.js
-%% ↓↓↓↓↓↓↓↓↓ should still find mermaid code even with trailing spaces after the ```
+
+9. Should still find mermaid code even with trailing spaces after the \`\`\`
+
 ```mermaid
 stateDiagram
     state Choose <<fork>>
@@ -140,5 +141,7 @@ stateDiagram
     Choose --> Still
     Choose --> Crash
     Crash --> [*]
+%% ↓↓↓ should still find mermaid code even with trailing spaces after the ```
 ```   
-%% ↑↑↑↑↑↑↑↑↑ should still find mermaid code even with trailing spaces after the ```
+
+**Warning**: do not delete the trailing spaces after the \`\`\`
