@@ -167,7 +167,7 @@ describe('mermaid-cli', () => {
   test('should have 3 trailing spaces after ``` in test-positive/mermaid.md for case 9.', async () => {
     // test if test case 9. for the next test is in required state
     const data = await fs.readFile('test-positive/mermaid.md', { encoding: 'utf8' })
-    const regex = /9\.\s+space-appended\.mmd(.+)%%\s↑↑↑↑↑↑↑↑↑ should still find mermaid code even with trailing spaces after the/sg
+    const regex = /9\.\s+Should still find mermaid code even with trailing spaces after the(.+)do not delete the trailing spaces after the/sg
     const matches = data.match(regex)
     await expect(matches.length).toBeGreaterThan(0)
     await expect(matches[0].includes('```   ')).toBeTruthy()
