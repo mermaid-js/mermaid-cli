@@ -10,7 +10,7 @@ import { promisify } from 'util'
 // optional (automatically added by jest), but useful to have for your code editor/autocomplete
 import { expect, beforeAll, afterAll, describe, test } from '@jest/globals'
 
-import { run, parseMMD } from '../src/index.js'
+import { run, renderMermaid, parseMMD } from '../src/index.js'
 import puppeteer from 'puppeteer'
 
 const workflows = ['test-positive', 'test-negative']
@@ -254,6 +254,14 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
 
       const markdownFile = await fs.readFile(expectedOutputMd, { encoding: 'utf8' })
 
+      // check whether mermaid-cli loads the accTitle/accDescr title/description to the markdown file
+      const markdownImageWithCustomTitle = (
+        // should escape `[]` in alt text
+        '![State diagram describing movement states and containing \\[\\] square brackets and \\\\\\[\\]]' +
+        // should escape `"` in image title text
+        '(./mermaid-run-output-test-png-8.png "State diagram example with \\\\\\"double-quotes\\"")')
+      expect(markdownFile).toContain(markdownImageWithCustomTitle)
+
       // files should exist, and they should be PNGs
       await Promise.all(expectedOutputPngs.map(async (expectedOutputPng) => {
         // markdown file should point to png relative to md file
@@ -335,6 +343,15 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
           }
         }, timeout)
       }
+    })
+  })
+
+  describe('renderMermaid()', () => {
+    test('should return title/desc from mmd', async () => {
+      const mmdInput = 'graph TD;\n    accTitle: Hi\n    accDescr: World\n    nA-->B;\n'
+      const result = await renderMermaid(browser, mmdInput, 'svg')
+      expect(result).toMatchObject({ title: 'Hi', desc: 'World' })
+      expectBytesAreFormat(result.data, 'svg')
     })
   })
 })

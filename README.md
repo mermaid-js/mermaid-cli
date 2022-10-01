@@ -63,6 +63,14 @@ graph
 sequenceDiagram
    [....]
 ```
+
+### Mermaid with custom title/desc
+```mermaid
+graph
+   accTitle: My title here
+   accDescr: My description here
+   A-->B
+```
 ~~~
 
 Becomes:
@@ -73,6 +81,9 @@ Becomes:
 
 ### Some more markdown
 ![diagram](./readme-2.svg)
+
+### Mermaid with custom title/desc
+![My description here](./readme-3.svg "My title here")
 ```
 
 ### Piping from stdin

@@ -116,6 +116,9 @@ end
 8. indented.mmd
     ```mermaid
     stateDiagram
+        accTitle: State diagram example with \"double-quotes"
+        accDescr: State diagram describing movement states and containing [] square brackets and \[]
+
         state Choose <<fork>>
         [*] --> Still
         Still --> [*]
