@@ -1,0 +1,34 @@
+{
+    "//comment": "Our CI/Percy tests use convert-svg-to-png, which needs explicit width, not useMaxWidth",
+    "//comment2": "Not recommended normally, since browsers may render SVGs slightly differently",
+    "flowchart": {
+        "useMaxWidth": false
+    },
+    "sequence": {
+        "useMaxWidth": false
+    },
+    "gantt": {
+        "useMaxWidth": false
+    },
+    "journey": {
+        "useMaxWidth": false
+    },
+    "class": {
+        "useMaxWidth": false
+    },
+    "state": {
+        "useMaxWidth": false
+    },
+    "er": {
+        "useMaxWidth": false
+    },
+    "pie": {
+        "useMaxWidth": false
+    },
+    "requirement": {
+        "useMaxWidth": false
+    },
+    "c4": {
+        "useMaxWidth": false
+    }
+}

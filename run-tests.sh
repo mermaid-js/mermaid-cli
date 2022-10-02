@@ -4,6 +4,9 @@ IMAGETAG=$2
 
 set -e
 
+# we must set `useMaxWidth: false` in config` to convert-svg-to-png for Percy CI
+config_noUseMaxWidth="$INPUT_DATA/config-noUseMaxWidth.json"
+
 # Test if the CLI actually works (PNG)
 for i in $(ls $INPUT_DATA/*.mmd); do docker run --rm -v $(pwd):/data $IMAGETAG -i /data/$i -o /data/$i.png -w 800; done
 
@@ -17,14 +20,24 @@ for i in $(ls $INPUT_DATA/*.mmd); do docker run --rm -v $(pwd):/data $IMAGETAG -
 for format in "svg" "png"; do
   # must have different names, since we convert .svg to .png for percy upload
   outputFileName="/data/$INPUT_DATA/flowchart1-red-background-${format}.${format}"
-  docker run --rm -v $(pwd):/data $IMAGETAG -i /data/$INPUT_DATA/flowchart1.mmd --backgroundColor "red" -o "$outputFileName"
+
+  docker run --rm -v $(pwd):/data $IMAGETAG \
+    -i /data/$INPUT_DATA/flowchart1.mmd \
+    --configFile "/data/$config_noUseMaxWidth" \
+    --backgroundColor "red" \
+    -o "$outputFileName"
 done
 
 # Test if passing CSS styles works
 for format in "svg" "png"; do
   # must have different names, since we convert .svg to .png for percy upload
   outputFileName="/data/$INPUT_DATA/flowchart1-with-css-${format}.${format}"
-  docker run --rm -v $(pwd):/data $IMAGETAG -i /data/$INPUT_DATA/flowchart1.mmd --cssFile /data/$INPUT_DATA/flowchart1.css -o "$outputFileName"
+
+  docker run --rm -v $(pwd):/data $IMAGETAG \
+    -i /data/$INPUT_DATA/flowchart1.mmd \
+    --configFile "/data/$config_noUseMaxWidth" \
+    --cssFile /data/$INPUT_DATA/flowchart1.css \
+    -o "$outputFileName"
 done
 
 # Test if a diagram from STDIN can be understood
@@ -36,7 +49,10 @@ EXPECTED_OUTPUT="No mermaid charts found in Markdown input"
 [ "$OUTPUT" = "$EXPECTED_OUTPUT" ] || echo "Expected output to be '$EXPECTED_OUTPUT', got '$OUTPUT'"
 
 # Test if mmdc does not replace <br> with <br/>
-docker run --rm -v $(pwd):/data $IMAGETAG -i /data/test-positive/graph-with-br.mmd -w 800;
+docker run --rm -v $(pwd):/data $IMAGETAG \
+  -i /data/test-positive/graph-with-br.mmd \
+  --width 800 \
+  --configFile "/data/$config_noUseMaxWidth"
 if grep -q "<br>" "./test-positive/graph-with-br.mmd.svg"; then
   echo "<br> has not been replaced with <br/>";
   exit 1;
