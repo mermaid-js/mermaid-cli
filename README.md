@@ -185,6 +185,7 @@ it installs (`mmdc`).  `npx -p @mermaid-js/mermaid-cli mmdc -h`
 
 1. [Linux sandbox issue](docs/linux-sandbox-issue.md)
 2. [Docker permission denied issue](docs/docker-permission-denied.md)
+3. [How to setup up mermaid to use already installed chromium?](docs/already-installed-chromium.md)
 
 ## For contributors
 
