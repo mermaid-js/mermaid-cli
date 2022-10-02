@@ -1,3 +1,5 @@
+The text below is taken from Issue #331.
+
 If you run mermaid-cli with the --help flag, there's an option for --puppeteerConfigFile, which is a JSON configuration file for puppeteer.
 
 These are options passed to puppeteer.launch.
@@ -13,6 +15,8 @@ You'll probably want a file called puppeteerConfigFile.json with contents:
 {
   "executablePath": "C:\\path\\to\\your\\chrome.exe"
 }
+
+An example from mermaid-cli https://github.com/mermaid-js/mermaid-cli/blob/master/puppeteer-config.json
 
 Then run mermaid-cli with option mmdc --puppeteerConfigFile puppeteerConfigFile.json.
 
