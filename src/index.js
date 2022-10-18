@@ -98,7 +98,11 @@ async function cli () {
   // if an input file is defined, it should take precedence, otherwise, input is
   // coming from stdin and just name the file out.svg, if it hasn't been
   // specified with the '-o' option
-    output = input ? (input + '.svg') : 'out.svg'
+    if(outputFormat) {
+      output = input ? (input + '.' + outputFormat) : 'out' + '.' + outputFormat
+    } else {
+      output = input ? (input + '.svg') : 'out.svg'
+    }
   }
   if (!/\.(?:svg|png|pdf|md)$/.test(output)) {
     error('Output file must end with ".md", ".svg", ".png" or ".pdf"')
