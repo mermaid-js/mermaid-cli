@@ -186,7 +186,7 @@ describe('mermaid-cli', () => {
     }))
   }, timeout)
 
-  test('should use png output', async () => {
+  test('should write png extension in output', async () => {
     const expectedOutputFiles = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => join('test-positive', `mermaid.md-${i}.png`))
     await Promise.all(expectedOutputFiles.map((file) => fs.rm(file, { force: true })))
     await promisify(execFile)('node', ['src/cli.js', '-e', 'png', '-i', 'test-positive/mermaid.md'])
@@ -196,7 +196,7 @@ describe('mermaid-cli', () => {
     }))
   }, timeout)
 
-  test('should use svg output', async () => {
+  test('should write svg extension in output', async () => {
     const expectedOutputFiles = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => join('test-positive', `mermaid.md-${i}.svg`))
     await Promise.all(expectedOutputFiles.map((file) => fs.rm(file, { force: true })))
     await promisify(execFile)('node', ['src/cli.js', '-e', 'svg', '-i', 'test-positive/mermaid.md'])
@@ -206,7 +206,7 @@ describe('mermaid-cli', () => {
     }))
   }, timeout)
 
-  test('should use pdf output', async () => {
+  test('should write pdf extension in output', async () => {
     const expectedOutputFiles = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => join('test-positive', `mermaid.md-${i}.pdf`))
     await Promise.all(expectedOutputFiles.map((file) => fs.rm(file, { force: true })))
     await promisify(execFile)('node', ['src/cli.js', '-e', 'pdf', '-i', 'test-positive/mermaid.md'])
@@ -239,10 +239,6 @@ describe('mermaid-cli', () => {
 })
 
 describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
-  describe('cli()', () => {
-    test('If no output specified, and no outputFormat')
-  })
-
   describe('run()', () => {
     test('should write markdown output with svg images', async () => {
       const expectedOutputMd = 'test-output/mermaid-run-output-test-svg.md'
