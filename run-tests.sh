@@ -7,9 +7,6 @@ set -e
 # we must set `useMaxWidth: false` in config` to convert-svg-to-png for Percy CI
 config_noUseMaxWidth="$INPUT_DATA/config-noUseMaxWidth.json"
 
-# Test mindmap
-docker run --rm -v $(pwd):/data $IMAGETAG -i /data/knsv2.html
-
 # Test if the CLI actually works (PNG)
 for i in $(ls $INPUT_DATA/*.mmd); do docker run --rm -v $(pwd):/data $IMAGETAG -i /data/$i -o /data/$i.png -w 800; done
 
