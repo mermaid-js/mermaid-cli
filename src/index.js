@@ -99,9 +99,9 @@ async function cli () {
   // coming from stdin and just name the file out.svg, if it hasn't been
   // specified with the '-o' option
     if(outputFormat) {
-      output = input ? (input + '.' + outputFormat) : 'out' + '.' + outputFormat
+      output = input ? (`${input}.${outputFormat}`) : `out.${outputFormat}`
     } else {
-      output = input ? (input + '.svg') : 'out.svg'
+      output = input ? (`${input}.svg`) : 'out.svg'
     }
   }
   if (!/\.(?:svg|png|pdf|md)$/.test(output)) {
