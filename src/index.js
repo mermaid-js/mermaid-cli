@@ -197,12 +197,18 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
     await page.$eval('body', (body, backgroundColor) => {
       body.style.background = backgroundColor
     }, backgroundColor)
-    const metadata = await page.$eval('#container', (container, definition, mermaidConfig, myCSS, backgroundColor) => {
+    const metadata = await page.$eval('#container', async (container, definition, mermaidConfig, myCSS, backgroundColor) => {
       container.textContent = definition
-      window.mermaid.initialize(mermaidConfig)
+      window.mermaid.initialize({
+        lazyLoadedDiagrams: [
+          // TODO: bundle mermaid-mindmap instead of downloading from CDN
+          'https://cdn.jsdelivr.net/npm/@mermaid-js/mermaid-mindmap@9.2.0-rc5/dist/mermaid-mindmap-detector.esm.mjs'
+        ],
+        ...mermaidConfig
+      })
       // should throw an error if mmd diagram is invalid
       try {
-        window.mermaid.initThrowsErrors(undefined, container)
+        await window.mermaid.initThrowsErrorsAsync(undefined, container)
       } catch (error) {
         if (error instanceof Error) {
           // mermaid-js doesn't currently throws JS Errors, but let's leave this
