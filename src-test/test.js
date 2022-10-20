@@ -320,7 +320,7 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       const invalidMMDInput = 'this is not a valid mermaid file'
       expect(
         parseMMD(browser, invalidMMDInput, 'svg')
-      ).rejects.toThrow('Parse error')
+      ).rejects.toThrow('Error: No diagram type detected')
     })
 
     describe.each(workflows)('testing workflow %s', (workflow) => {
