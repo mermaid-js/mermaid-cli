@@ -20,4 +20,4 @@ git push git@github.com:mermaid-js/mermaid-cli.git "<NAME_OF_YOUR_BRANCH>"
 ```
 
 After pushing, CI should re-run on that commit, and Percy should show up on the
-PR after a few minutes, **as long as both branchs have the same commit hash**.
+PR after a few minutes, **as long as both branches have the same commit hash**.

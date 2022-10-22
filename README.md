@@ -170,7 +170,7 @@ permission issues.
 
 ## Install with [brew](https://brew.sh)
 This method of installation is no longer supported.
-For more details, see the [discussion](https://github.com/mermaid-js/mermaid-cli/issues/288)
+For more details, see the [discussion](https://github.com/mermaid-js/mermaid-cli/issues/288).
 An old version of mermaid-cli can be installed with brew.
 ```
 brew install mermaid-cli
