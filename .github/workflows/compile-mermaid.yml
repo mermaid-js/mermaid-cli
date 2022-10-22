@@ -62,7 +62,7 @@ jobs:
             "$INPUT_DATA"/flowchart1-red-background-svg.svg
             "$INPUT_DATA"/flowchart1-with-css-svg.svg
           )
-          # This will overwite any PNG files with the same name that have been created by run-tests.sh
+          # This will overwrite any PNG files with the same name that have been created by run-tests.sh
           # v0.5.0 is the last version to correctly convert our SVG files to PNG
           npx --yes convert-svg-to-png@0.5.0 "${svg_files_to_convert[@]}"
 
