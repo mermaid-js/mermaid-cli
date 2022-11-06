@@ -13,7 +13,7 @@ import { expect, beforeAll, afterAll, describe, test } from '@jest/globals'
 import { run, renderMermaid, parseMMD } from '../src/index.js'
 import puppeteer from 'puppeteer'
 
-const workflows = ['test/__fixtures__/test-positive', 'test/__fixtures__/test-negative']
+const workflows = ['test/__fixtures__/test-positive', 'test/__fixtures__/test-negative', 'test/__fixtures__/test-mindmap']
 const out = 'test-output'
 
 /**
@@ -411,22 +411,7 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
     })
 
     test('should support lazyLoadedDiagrams (mermaid-mindmap) (requires internet)', async () => {
-      const mindmapMMD = `
-        mindmap
-        root
-          child1((Circle))
-              grandchild 1
-              grandchild 2
-          child2(Round rectangle)
-              grandchild 3
-              grandchild 4
-          child3[Square]
-              grandchild 5
-              ::icon(mdi mdi-fire)
-              gc6((grand<br/>child 6))
-              ::icon(mdi mdi-fire)
-                gc7((grand<br/>grand<br/>child 8))
-      `
+      const mindmapMMD = await fs.readFile('test/__fixtures__/test-mindmap/mindmap.mmd', { encoding: 'utf8' })
       // TODO: remove this test if we ever support mermaid-mindmap by default
       await expect(renderMermaid(browser, mindmapMMD, 'svg')).rejects.toThrow('No diagram type detected for text: mindmap')
 
