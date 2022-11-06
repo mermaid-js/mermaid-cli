@@ -21,6 +21,26 @@ mmdc -i input.mmd -o output.svg
 mmdc -i input.mmd -o output.png -t dark -b transparent
 ```
 
+### Using a custom mermaidConfig file
+
+A custom mermaid config JSON file can be loaded in using the `-c`/`--configFile` option:
+
+```sh
+mmdc -i test/__fixtures__/test-mindmap/mindmap.mmd --configFile test/__fixtures__/test-mindmap/config.json -o mindmap.png
+```
+
+This can be used to enable custom diagrams.
+
+For example, for mermaid-mindmap support, you can pass in the following:
+
+```json
+{
+   "lazyLoadedDiagrams": [
+      "https://cdn.jsdelivr.net/npm/@mermaid-js/mermaid-mindmap@9.2.0/dist/mermaid-mindmap-detector.esm.mjs"
+   ]
+}
+```
+
 ### Animating an SVG file with custom CSS
 
 The `--cssFile` option can be used to inline some custom CSS.

@@ -407,5 +407,35 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       expect(result).toMatchObject({ title: 'Hi', desc: 'World' })
       expectBytesAreFormat(result.data, 'svg')
     })
+
+    test('should support lazyLoadedDiagrams (mermaid-mindmap) (requires internet)', async () => {
+      const mindmapMMD = `
+        mindmap
+        root
+          child1((Circle))
+              grandchild 1
+              grandchild 2
+          child2(Round rectangle)
+              grandchild 3
+              grandchild 4
+          child3[Square]
+              grandchild 5
+              ::icon(mdi mdi-fire)
+              gc6((grand<br/>child 6))
+              ::icon(mdi mdi-fire)
+                gc7((grand<br/>grand<br/>child 8))
+      `
+      // TODO: remove this test if we ever support mermaid-mindmap by default
+      await expect(renderMermaid(browser, mindmapMMD, 'svg')).rejects.toThrow('No diagram type detected for text: mindmap')
+
+      const mermaidConfig = {
+        lazyLoadedDiagrams: [
+          'https://cdn.jsdelivr.net/npm/@mermaid-js/mermaid-mindmap@9.2.0/dist/mermaid-mindmap-detector.esm.mjs'
+        ]
+      }
+      const { data } = await renderMermaid(browser, mindmapMMD, 'svg', { mermaidConfig })
+      expect(data).toBeInstanceOf(Buffer)
+      expectBytesAreFormat(data, 'svg')
+    }, timeout)
   })
 })
