@@ -13,7 +13,7 @@ import { expect, beforeAll, afterAll, describe, test } from '@jest/globals'
 import { run, renderMermaid, parseMMD } from '../src/index.js'
 import puppeteer from 'puppeteer'
 
-const workflows = ['test-positive', 'test-negative']
+const workflows = ['test/__fixtures__/test-positive', 'test/__fixtures__/test-negative']
 const out = 'test-output'
 
 /**
@@ -148,9 +148,9 @@ describe('mermaid-cli', () => {
 
   test('should error on mmdc failure', async () => {
     // should work with default puppeteerConfigFile
-    await compileDiagram('test-positive', 'sequence.mmd', 'svg')
+    await compileDiagram('test/__fixtures__/test-positive', 'sequence.mmd', 'svg')
     await expect(
-      compileDiagram('test-positive', 'sequence.mmd', 'svg', { puppeteerConfigFile: '../test-negative/puppeteerTimeoutConfig.json' })
+      compileDiagram('test/__fixtures__/test-positive', 'sequence.mmd', 'svg', { puppeteerConfigFile: '../test-negative/puppeteerTimeoutConfig.json' })
     ).rejects.toThrow('TimeoutError: Timed out after 1 ms')
   }, timeout)
 
@@ -160,13 +160,13 @@ describe('mermaid-cli', () => {
 
   test('should error on mermaid syntax error', async () => {
     await expect(
-      compileDiagram('test-negative', 'invalid.expect-error.mmd', 'svg')
+      compileDiagram('test/__fixtures__/test-negative', 'invalid.expect-error.mmd', 'svg')
     ).rejects.toThrow('Parse error on line 2')
   }, timeout)
 
   test('should have 3 trailing spaces after ``` in test-positive/mermaid.md for case 9.', async () => {
     // test if test case 9. for the next test is in required state
-    const data = await fs.readFile('test-positive/mermaid.md', { encoding: 'utf8' })
+    const data = await fs.readFile('test/__fixtures__/test-positive/mermaid.md', { encoding: 'utf8' })
     const regex = /9\.\s+Should still find mermaid code even with trailing spaces after the(.+)do not delete the trailing spaces after the/sg
     const matches = data.match(regex)
     await expect(matches.length).toBeGreaterThan(0)
@@ -174,11 +174,11 @@ describe('mermaid-cli', () => {
   }, timeout)
 
   test('should write multiple SVGs for default .md input by default', async () => {
-    const expectedOutputFiles = [1, 2, 3, 8, 9].map((i) => join('test-positive', `mermaid.md-${i}.svg`))
+    const expectedOutputFiles = [1, 2, 3, 8, 9].map((i) => join('test/__fixtures__/test-positive', `mermaid.md-${i}.svg`))
     // delete any files from previous test (fs.rm added in Node v14.14.0)
     await Promise.all(expectedOutputFiles.map((file) => fs.rm(file, { force: true })))
 
-    await promisify(execFile)('node', ['src/cli.js', '-i', 'test-positive/mermaid.md'])
+    await promisify(execFile)('node', ['src/cli.js', '-i', 'test/__fixtures__/test-positive/mermaid.md'])
 
     // files should exist, and they should be SVGs
     await Promise.all(expectedOutputFiles.map(async (file) => {
@@ -187,9 +187,9 @@ describe('mermaid-cli', () => {
   }, timeout)
 
   test('the .png extension should be added to .md files', async () => {
-    const expectedOutputFiles = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => join('test-positive', `mermaid.md-${i}.png`))
+    const expectedOutputFiles = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => join('test/__fixtures__/test-positive', `mermaid.md-${i}.png`))
     await Promise.all(expectedOutputFiles.map((file) => fs.rm(file, { force: true })))
-    await promisify(execFile)('node', ['src/cli.js', '-e', 'png', '-i', 'test-positive/mermaid.md'])
+    await promisify(execFile)('node', ['src/cli.js', '-e', 'png', '-i', 'test/__fixtures__/test-positive/mermaid.md'])
 
     await Promise.all(expectedOutputFiles.map(async (file) => {
       expectBytesAreFormat(await fs.readFile(file), 'png')
@@ -197,9 +197,9 @@ describe('mermaid-cli', () => {
   }, timeout)
 
   test('the .svg extension should be added to .md files', async () => {
-    const expectedOutputFiles = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => join('test-positive', `mermaid.md-${i}.svg`))
+    const expectedOutputFiles = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => join('test/__fixtures__/test-positive', `mermaid.md-${i}.svg`))
     await Promise.all(expectedOutputFiles.map((file) => fs.rm(file, { force: true })))
-    await promisify(execFile)('node', ['src/cli.js', '-e', 'svg', '-i', 'test-positive/mermaid.md'])
+    await promisify(execFile)('node', ['src/cli.js', '-e', 'svg', '-i', 'test/__fixtures__/test-positive/mermaid.md'])
 
     await Promise.all(expectedOutputFiles.map(async (file) => {
       expectBytesAreFormat(await fs.readFile(file), 'svg')
@@ -207,9 +207,9 @@ describe('mermaid-cli', () => {
   }, timeout)
 
   test('the .pdf extension should be added to .md files', async () => {
-    const expectedOutputFiles = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => join('test-positive', `mermaid.md-${i}.pdf`))
+    const expectedOutputFiles = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => join('test/__fixtures__/test-positive', `mermaid.md-${i}.pdf`))
     await Promise.all(expectedOutputFiles.map((file) => fs.rm(file, { force: true })))
-    await promisify(execFile)('node', ['src/cli.js', '-e', 'pdf', '-i', 'test-positive/mermaid.md'])
+    await promisify(execFile)('node', ['src/cli.js', '-e', 'pdf', '-i', 'test/__fixtures__/test-positive/mermaid.md'])
 
     await Promise.all(expectedOutputFiles.map(async (file) => {
       expectBytesAreFormat(await fs.readFile(file), 'pdf')
@@ -217,42 +217,42 @@ describe('mermaid-cli', () => {
   }, timeout)
 
   test('the extension .pdf should be added for .mmd file', async () => {
-    const expectedOutputFile = 'test-positive/flowchart1.mmd.pdf'
+    const expectedOutputFile = 'test/__fixtures__/test-positive/flowchart1.mmd.pdf'
     await fs.rm(expectedOutputFile, { force: true })
-    await promisify(execFile)('node', ['src/cli.js', '-e', 'pdf', '-i', 'test-positive/flowchart1.mmd'])
+    await promisify(execFile)('node', ['src/cli.js', '-e', 'pdf', '-i', 'test/__fixtures__/test-positive/flowchart1.mmd'])
 
     expectBytesAreFormat(await fs.readFile(expectedOutputFile), 'pdf')
   }, timeout)
 
   test('the extension .svg should be added for .mmd file', async () => {
-    const expectedOutputFile = 'test-positive/flowchart1.mmd.svg'
+    const expectedOutputFile = 'test/__fixtures__/test-positive/flowchart1.mmd.svg'
     await fs.rm(expectedOutputFile, { force: true })
-    await promisify(execFile)('node', ['src/cli.js', '-e', 'svg', '-i', 'test-positive/flowchart1.mmd'])
+    await promisify(execFile)('node', ['src/cli.js', '-e', 'svg', '-i', 'test/__fixtures__/test-positive/flowchart1.mmd'])
 
     expectBytesAreFormat(await fs.readFile(expectedOutputFile), 'svg')
   }, timeout)
 
   test('the extension .png should be added for .mmd file', async () => {
-    const expectedOutputFile = 'test-positive/flowchart1.mmd.png'
+    const expectedOutputFile = 'test/__fixtures__/test-positive/flowchart1.mmd.png'
     await fs.rm(expectedOutputFile, { force: true })
-    await promisify(execFile)('node', ['src/cli.js', '-e', 'png', '-i', 'test-positive/flowchart1.mmd'])
+    await promisify(execFile)('node', ['src/cli.js', '-e', 'png', '-i', 'test/__fixtures__/test-positive/flowchart1.mmd'])
 
     expectBytesAreFormat(await fs.readFile(expectedOutputFile), 'png')
   }, timeout)
 
   test.concurrent.each(['svg', 'png', 'pdf'])('should set red background to %s', async (format) => {
     await promisify(execFile)('node', [
-      'src/cli.js', '-i', 'test-positive/flowchart1.mmd', '-o', `test-output/flowchart1-red-background.${format}`,
+      'src/cli.js', '-i', 'test/__fixtures__/test-positive/flowchart1.mmd', '-o', `test-output/flowchart1-red-background.${format}`,
       '--backgroundColor', 'red'
     ])
   }, timeout)
 
   test.concurrent.each(['svg', 'png', 'pdf'])('should add css to %s', async (format) => {
     await promisify(execFile)('node', [
-      'src/cli.js', '-i', 'test-positive/flowchart1.mmd', '-o', `test-output/flowchart1-with-css.${format}`,
+      'src/cli.js', '-i', 'test/__fixtures__/test-positive/flowchart1.mmd', '-o', `test-output/flowchart1-with-css.${format}`,
       // we want to add an SVG file to git, so make sure it's always the same
-      '--configFile', 'test-positive/config-deterministic.json',
-      '--cssFile', 'test-positive/flowchart1.css'
+      '--configFile', 'test/__fixtures__/test-positive/config-deterministic.json',
+      '--cssFile', 'test/__fixtures__/test-positive/flowchart1.css'
     ])
 
     if (format === 'svg') {
@@ -276,7 +276,7 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       )
 
       await run(
-        'test-positive/mermaid.md', expectedOutputMd, { quiet: true, outputFormat: 'svg' }
+        'test/__fixtures__/test-positive/mermaid.md', expectedOutputMd, { quiet: true, outputFormat: 'svg' }
       )
 
       const markdownFile = await fs.readFile(expectedOutputMd, { encoding: 'utf8' })
@@ -303,7 +303,7 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       )
 
       await run(
-        'test-positive/mermaid.md', expectedOutputMd, { quiet: true, outputFormat: 'png' }
+        'test/__fixtures__/test-positive/mermaid.md', expectedOutputMd, { quiet: true, outputFormat: 'png' }
       )
 
       const markdownFile = await fs.readFile(expectedOutputMd, { encoding: 'utf8' })
@@ -330,7 +330,7 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       const expectedOutput = `test-output/flowchart1-run-output-test.${format}`
       await fs.rm(expectedOutput, { force: true })
       await run(
-        'test-positive/flowchart1.mmd',
+        'test/__fixtures__/test-positive/flowchart1.mmd',
         expectedOutput,
         { quiet: true, outputFormat: format }
       )

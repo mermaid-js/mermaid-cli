@@ -10,7 +10,7 @@ jobs:
       DOCKERFILE: DockerfileBuild
       IMAGENAME: mermaid-cli
       DOCKER_IO_REPOSITORY: minlag/mermaid-cli
-      INPUT_DATA: test-positive
+      INPUT_DATA: test/__fixtures__/test-positive
     steps:
       - uses: actions/checkout@v3
         with:

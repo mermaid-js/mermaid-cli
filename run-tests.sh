@@ -44,16 +44,18 @@ done
 cat $INPUT_DATA/flowchart1.mmd | docker run --rm -i -v $(pwd):/data $IMAGETAG -o /data/$INPUT_DATA/flowchart1-stdin.png -w 800
 
 # Test if mmdc crashes on Markdown files containing no mermaid charts
-OUTPUT=$(docker run --rm -v $(pwd):/data $IMAGETAG -i /data/test-positive/no-charts.md)
+OUTPUT=$(docker run --rm -v $(pwd):/data $IMAGETAG -i /data/$INPUT_DATA/no-charts.md)
 EXPECTED_OUTPUT="No mermaid charts found in Markdown input"
 [ "$OUTPUT" = "$EXPECTED_OUTPUT" ] || echo "Expected output to be '$EXPECTED_OUTPUT', got '$OUTPUT'"
 
 # Test if mmdc does not replace <br> with <br/>
+outputFileName="graph-with-br.svg"
 docker run --rm -v $(pwd):/data $IMAGETAG \
-  -i /data/test-positive/graph-with-br.mmd \
+  -i "/data/$INPUT_DATA/graph-with-br.mmd" \
   --width 800 \
-  --configFile "/data/$config_noUseMaxWidth"
-if grep -q "<br>" "./test-positive/graph-with-br.mmd.svg"; then
+  --configFile "/data/$config_noUseMaxWidth" \
+  -o "$outputFileName"
+if grep -q "<br>" "$outputFileName"; then
   echo "<br> has not been replaced with <br/>";
   exit 1;
 fi

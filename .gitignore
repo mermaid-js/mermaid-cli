@@ -8,6 +8,5 @@ fontawesome/
 .DS_Store
 .npmrc
 yarn-error.log
-test-positive/*.out.md
+test/__fixtures/*/*.out.md
 test-output/
-

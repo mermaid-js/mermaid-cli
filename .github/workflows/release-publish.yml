@@ -12,6 +12,7 @@ jobs:
       DOCKERFILE: Dockerfile
       IMAGENAME: mermaid-cli
       DOCKER_IO_REPOSITORY: minlag/mermaid-cli
+      INPUT_DATA: test/__fixtures__/test-positive
 
     steps:
       - uses: actions/checkout@v3
@@ -95,8 +96,8 @@ jobs:
 
       - name: Post deployment tests
         run: |
-          for i in $(ls test-positive/*.mmd); do docker run -v $(pwd):/data ${{env.DOCKER_IO_REPOSITORY}}:${{env.RELEASE_VERSION}} -i /data/$i; done
-          for i in $(ls test-positive/*.mmd); do cat $i | docker run -i -v $(pwd):/data ${{env.DOCKER_IO_REPOSITORY}}:${{env.RELEASE_VERSION}} -o /data/$i-stdin.svg; done
+          for i in $(ls $INPUT_DATA/*.mmd); do docker run -v $(pwd):/data ${{env.DOCKER_IO_REPOSITORY}}:${{env.RELEASE_VERSION}} -i /data/$i; done
+          for i in $(ls $INPUT_DATA/*.mmd); do cat $i | docker run -i -v $(pwd):/data ${{env.DOCKER_IO_REPOSITORY}}:${{env.RELEASE_VERSION}} -o /data/$i-stdin.svg; done
 
       - name: Commit new version to the repository
         run: |
@@ -109,4 +110,4 @@ jobs:
       - uses: actions/upload-artifact@v3.1.1
         with:
           name: output
-          path: ./test-positive
+          path: ${{ env.INPUT_DATA }}
