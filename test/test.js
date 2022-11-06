@@ -351,7 +351,8 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
         const shouldError = /expect-error/.test(file)
         test.concurrent.each(formats)(`${shouldError ? 'should fail' : 'should compile'} ${file} to format %s`, async (format) => {
           const result = file.replace(/\.(?:mmd|md)$/, `-run.${format}`)
-          const promise = run(join(workflow, file), join(out, result), { quiet: true })
+          const mermaidConfig = JSON.parse(await fs.readFile(join(workflow, 'config.json'), { encoding: 'utf-8' }))
+          const promise = run(join(workflow, file), join(out, result), { quiet: true, parseMMDOptions: { mermaidConfig } })
           if (shouldError) {
             await expect(promise).rejects.toThrow()
           } else {
@@ -388,7 +389,8 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
         const shouldError = /expect-error/.test(file)
         test.concurrent.each(formats)(`${shouldError ? 'should fail' : 'should compile'} ${file} to format %s`, async (format) => {
           const mmd = await fs.readFile(join(workflow, file), { encoding: 'utf8' })
-          const promise = parseMMD(browser, mmd, format)
+          const mermaidConfig = JSON.parse(await fs.readFile(join(workflow, 'config.json'), { encoding: 'utf-8' }))
+          const promise = parseMMD(browser, mmd, format, { mermaidConfig })
           if (shouldError) {
             await expect(promise).rejects.toThrow()
           } else {
