@@ -201,12 +201,20 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
     await page.$eval('body', (body, backgroundColor) => {
       body.style.background = backgroundColor
     }, backgroundColor)
-    const metadata = await page.$eval('#container', (container, definition, mermaidConfig, myCSS, backgroundColor) => {
+    const metadata = await page.$eval('#container', async (container, definition, mermaidConfig, myCSS, backgroundColor) => {
       container.textContent = definition
-      window.mermaid.initialize(mermaidConfig)
+
+      /** @type {import("mermaid")} Already imported mermaid instance */
+      const mermaid = globalThis.mermaid
+      /** @type {import("@mermaid-js/mermaid-mindmap")} */
+      const mermaidMindmap = globalThis.mermaidMindmap
+
+      await mermaid.registerExternalDiagrams([mermaidMindmap])
+
+      mermaid.initialize(mermaidConfig)
       // should throw an error if mmd diagram is invalid
       try {
-        window.mermaid.initThrowsErrors(undefined, container)
+        await mermaid.initThrowsErrorsAsync(undefined, container)
       } catch (error) {
         if (error instanceof Error) {
           // mermaid-js doesn't currently throws JS Errors, but let's leave this

@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free-webfonts": "^1.0.9",
+    "@mermaid-js/mermaid-mindmap": "^9.2.2",
     "mermaid": "^9.2.2",
     "jest": "^29.0.1",
     "standard": "^17.0.0",
