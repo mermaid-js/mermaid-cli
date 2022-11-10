@@ -1,13 +1,17 @@
 <!doctype html>
 <html>
-  <head>
-    <link rel="stylesheet" href="./fontawesome/css/fa-brands.css">
-    <link rel="stylesheet" href="./fontawesome/css/fa-regular.css">
-    <link rel="stylesheet" href="./fontawesome/css/fa-solid.css">
-    <link rel="stylesheet" href="./fontawesome/css/fontawesome.css">
-  </head>
   <body>
     <div id="container"></div>
-    <script src="./mermaid.min.js" charset="utf-8"></script>
+    <script type="module">
+      import faBrands from "@fortawesome/fontawesome-free-webfonts/css/fa-brands.css"
+      import faRegular from "@fortawesome/fontawesome-free-webfonts/css/fa-regular.css"
+      import faSolid from "@fortawesome/fontawesome-free-webfonts/css/fa-solid.css"
+      import fontawesome from "@fortawesome/fontawesome-free-webfonts/css/fontawesome.css"
+
+      import mermaid from "mermaid"
+
+      // expose mermaid to the global scope so that puppeteer can see it
+      globalThis.mermaid = mermaid
+    </script>
   </body>
 </html>

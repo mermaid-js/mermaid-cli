@@ -1,13 +1,15 @@
 node_modules/
 *.svg
 *.png
-*.min.js
-*.bundle.js
 *.pdf
-fontawesome/
+/dist
 .DS_Store
 .npmrc
 yarn-error.log
 test-positive/*.out.md
 test-output/
 
+# these are no longer used, but may still be in people's git folders
+fontawesome/
+*.min.js
+*.bundle.js
