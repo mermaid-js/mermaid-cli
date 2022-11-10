@@ -196,7 +196,7 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
     if (viewport) {
       await page.setViewport(viewport)
     }
-    const mermaidHTMLPath = path.join(__dirname, '..', 'index.html')
+    const mermaidHTMLPath = path.join(__dirname, '..', 'dist', 'index.html')
     await page.goto(url.pathToFileURL(mermaidHTMLPath))
     await page.$eval('body', (body, backgroundColor) => {
       body.style.background = backgroundColor
