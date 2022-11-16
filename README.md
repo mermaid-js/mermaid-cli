@@ -1,8 +1,13 @@
 # mermaid-cli
 
-This is a command-line interface (CLI) for [mermaid](https://mermaid-js.github.io/). It takes a mermaid definition file as input and generates an svg/png/pdf file as output.
+[![npm version](https://img.shields.io/npm/v/@mermaid-js/mermaid-cli)](https://www.npmjs.com/package/@mermaid-js/mermaid-cli)
+[![node-lts (scoped)](https://img.shields.io/node/v-lts/@mermaid-js/mermaid-cli)](https://www.npmjs.com/package/@mermaid-js/mermaid-cli)
+[![Docker Image Version (latest semver)](https://img.shields.io/docker/v/minlag/mermaid-cli?label=Dockerhub)](https://hub.docker.com/r/minlag/mermaid-cli)
+[![Build, test and deploy mermaid-cli Docker image](https://github.com/mermaid-js/mermaid-cli/actions/workflows/compile-mermaid.yml/badge.svg)](https://github.com/mermaid-js/mermaid-cli/actions/workflows/compile-mermaid.yml)
+[![This project is using Percy.io for visual regression testing.](https://percy.io/static/images/percy-badge.svg)](https://percy.io/Mermaid/mermaid-cli)
+[![Join our Slack!](https://img.shields.io/static/v1?message=join%20chat&color=9cf&logo=slack&label=slack)](https://join.slack.com/t/mermaid-talk/shared_invite/enQtNzc4NDIyNzk4OTAyLWVhYjQxOTI2OTg4YmE1ZmJkY2Y4MTU3ODliYmIwOTY3NDJlYjA0YjIyZTdkMDMyZTUwOGI0NjEzYmEwODcwOTE)
 
-[![Join our Slack!](https://img.shields.io/static/v1?message=join%20chat&color=9cf&logo=slack&label=slack)](https://join.slack.com/t/mermaid-talk/shared_invite/enQtNzc4NDIyNzk4OTAyLWVhYjQxOTI2OTg4YmE1ZmJkY2Y4MTU3ODliYmIwOTY3NDJlYjA0YjIyZTdkMDMyZTUwOGI0NjEzYmEwODcwOTE) [![This project is using Percy.io for visual regression testing.](https://percy.io/static/images/percy-badge.svg)](https://percy.io/Mermaid/mermaid-cli) ![Build, test and deploy](https://github.com/mermaid-js/mermaid-cli/workflows/Build,%20test%20and%20deploy%20mermaid-cli%20Docker%20image/badge.svg)
+This is a command-line interface (CLI) for [mermaid](https://mermaid-js.github.io/). It takes a mermaid definition file as input and generates an svg/png/pdf file as output.  
 
 ## Example Usage
 
