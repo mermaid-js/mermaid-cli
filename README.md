@@ -9,16 +9,28 @@
 
 This is a command-line interface (CLI) for [mermaid](https://mermaid-js.github.io/). It takes a mermaid definition file as input and generates an svg/png/pdf file as output.  
 
-## Example Usage
+## Installation
 
-Locate how to call the mmdc executable for your preferred method i.e. Docker,
-Yarn, NPM, global install, etc. Try these examples to get started quickly.
+```sh
+npm install -g @mermaid-js/mermaid-cli
+```
 
-### Convert Mermaid mmd Diagram File To SVG
+## Usage
+
+Convert Mermaid mmd Diagram File To SVG
 
 ```sh
 mmdc -i input.mmd -o output.svg
 ```
+
+> **Note**
+> 
+> See [Alternative installations](#alternative-installations) if you don't want to install the package globally.
+> 
+> Locate how to call the mmdc executable for your preferred method 
+> i.e. Docker, Yarn, NPM, local install, etc. 
+
+## Examples
 
 ### Create A PNG With A Dark Theme And Transparent Background
 
@@ -109,6 +121,8 @@ EOF
 mmdc -h
 ```
 
+# Alternative installations
+
 ## Use Docker:
 
 ```sh
@@ -166,27 +180,25 @@ npm install @mermaid-js/mermaid-cli
 ./node_modules/.bin/mmdc -h
 ```
 
-## Install globally
-
-❗️ We do **NOT** recommend installing it globally because both YARN and NPM
-could fail to install a command-line tool globally properly due to weird
-permission issues.
-`yarn global add @mermaid-js/mermaid-cli` or `npm install -g @mermaid-js/mermaid-cli`
-
-## Install with [brew](https://brew.sh)
-This method of installation is no longer supported.
-For more details, see the [discussion](https://github.com/mermaid-js/mermaid-cli/issues/288).
-An old version of mermaid-cli can be installed with brew.
-```
-brew install mermaid-cli
-```
-
 ### Run with npx
 
 [`npx`](https://www.npmjs.com/package/npx) is installed by default with NPM. It
 downloads and runs commands at the same time.  To use Mermaid CLI with npx, you
 need to use the `-p` flag because the package name is different than the command
 it installs (`mmdc`).  `npx -p @mermaid-js/mermaid-cli mmdc -h`
+
+
+## Install with [brew](https://brew.sh)
+
+> **Warning**
+> 
+> This method of installation is no longer supported.
+> For more details, see the [discussion](https://github.com/mermaid-js/mermaid-cli/issues/288).
+> An old version of mermaid-cli can be installed with brew.
+> ```sh
+> brew install mermaid-cli
+> ```
+
 
 ## Known issues
 
