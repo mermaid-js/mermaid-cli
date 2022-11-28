@@ -7,7 +7,7 @@
 [![This project is using Percy.io for visual regression testing.](https://percy.io/static/images/percy-badge.svg)](https://percy.io/Mermaid/mermaid-cli)
 [![Join our Slack!](https://img.shields.io/static/v1?message=join%20chat&color=9cf&logo=slack&label=slack)](https://join.slack.com/t/mermaid-talk/shared_invite/enQtNzc4NDIyNzk4OTAyLWVhYjQxOTI2OTg4YmE1ZmJkY2Y4MTU3ODliYmIwOTY3NDJlYjA0YjIyZTdkMDMyZTUwOGI0NjEzYmEwODcwOTE)
 
-This is a command-line interface (CLI) for [mermaid](https://mermaid-js.github.io/). It takes a mermaid definition file as input and generates an svg/png/pdf file as output.  
+This is a command-line interface (CLI) for [mermaid](https://mermaid-js.github.io/). It takes a mermaid definition file as input and generates an svg/png/pdf file as output.
 
 ## Installation
 
@@ -24,11 +24,11 @@ mmdc -i input.mmd -o output.svg
 ```
 
 > **Note**
-> 
+>
 > See [Alternative installations](#alternative-installations) if you don't want to install the package globally.
-> 
-> Locate how to call the mmdc executable for your preferred method 
-> i.e. Docker, Yarn, NPM, local install, etc. 
+>
+> Locate how to call the mmdc executable for your preferred method
+> i.e. Docker, Yarn, NPM, local install, etc.
 
 ## Examples
 
@@ -131,7 +131,7 @@ docker pull minlag/mermaid-cli
 
 or pull from Github Container Registry
 
-```sh 
+```sh
 docker pull ghcr.io/mermaid-js/mermaid-cli/mermaid-cli
 ```
 
@@ -146,7 +146,7 @@ diagram defined on your system in `/path/to/diagrams/diagram.mmd`, you can use
 the container to generate an SVG file as follows:
 
 ```sh
-docker run -it -v /path/to/diagrams:/data minlag/mermaid-cli -i /data/diagram.mmd
+docker run --rm -u `id -u`:`id -g` -v /path/to/diagrams:/data minlag/mermaid-cli -i /data/diagram.mmd
 ```
 
 ## Use Node.JS API
@@ -191,7 +191,7 @@ it installs (`mmdc`).  `npx -p @mermaid-js/mermaid-cli mmdc -h`
 ## Install with [brew](https://brew.sh)
 
 > **Warning**
-> 
+>
 > This method of installation is no longer supported.
 > For more details, see the [discussion](https://github.com/mermaid-js/mermaid-cli/issues/288).
 > An old version of mermaid-cli can be installed with brew.
