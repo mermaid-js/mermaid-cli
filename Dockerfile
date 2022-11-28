@@ -14,5 +14,5 @@ WORKDIR /home/mermaidcli
 RUN yarn add @mermaid-js/mermaid-cli@$VERSION
 
 ADD puppeteer-config.json  /puppeteer-config.json
-ENTRYPOINT ["./node_modules/.bin/mmdc", "-p", "/puppeteer-config.json"]
+ENTRYPOINT ["/home/mermaidcli/node_modules/.bin/mmdc", "-p", "/puppeteer-config.json"]
 CMD [ "--help" ]
