@@ -4440,9 +4440,9 @@ v8-to-istanbul@^9.0.1:
     convert-source-map "^1.6.0"
 
 vite-plugin-singlefile@^0.13.1:
-  version "0.13.1"
-  resolved "https://registry.yarnpkg.com/vite-plugin-singlefile/-/vite-plugin-singlefile-0.13.1.tgz#7c91c1847950566472f02095cadd6780d86e033d"
-  integrity sha512-JS4pHPIEAdRtHPi1Aw4ro2KuzpSNR9R/7dFIgrOBwRSVIgbqtskTAidNm3bzlISf6VfGBYvkT+IOl4eJHYQ+lQ==
+  version "0.13.2"
+  resolved "https://registry.yarnpkg.com/vite-plugin-singlefile/-/vite-plugin-singlefile-0.13.2.tgz#f2c3d69f8cded833e9fdc31eddcd3a758c197166"
+  integrity sha512-HAvrU9mxasNMn/YF0Hb9NjsWDstCWe4iLQ6IR5ppOiNMvXjcyqU3C9SDQ32xnonx3Y04JUGjD2bGiT6q0S9T8w==
   dependencies:
     micromatch "^4.0.5"
 
