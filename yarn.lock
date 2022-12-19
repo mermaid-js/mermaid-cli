@@ -622,15 +622,16 @@
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
 "@mermaid-js/mermaid-mindmap@^9.2.2":
-  version "9.2.2"
-  resolved "https://registry.yarnpkg.com/@mermaid-js/mermaid-mindmap/-/mermaid-mindmap-9.2.2.tgz#106b06733748cf3a5b9e6a9bd6d11546020bed38"
-  integrity sha512-uzUY0PR/itxkQxpDRg95yDPJ++mRDUmGce4EVCKFebUCs0UNI/xi5mhvV6Oq8czM2ImY0W1gJu4MS2Xq3yiQug==
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/@mermaid-js/mermaid-mindmap/-/mermaid-mindmap-9.3.0.tgz#cfe10329198a0f37e27eef1dcc4a1cf21f187e2b"
+  integrity sha512-IhtYSVBBRYviH1Ehu8gk69pMDF8DSRqXBRDMWrEfHoaMruHeaP2DXA3PBnuwsMaCdPQhlUUcy/7DBLAEIXvCAw==
   dependencies:
     "@braintree/sanitize-url" "^6.0.0"
     cytoscape "^3.23.0"
     cytoscape-cose-bilkent "^4.1.0"
     cytoscape-fcose "^2.1.0"
     d3 "^7.0.0"
+    khroma "^2.0.0"
     non-layered-tidy-tree-layout "^2.0.2"
 
 "@sinclair/typebox@^0.24.1":
