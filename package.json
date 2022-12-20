@@ -10,7 +10,7 @@
     "mmdc": "./src/cli.js"
   },
   "engines": {
-    "node": ">=14.1.0"
+    "node": "^14.13 || >=16.0"
   },
   "exports": "./src/index.js",
   "scripts": {
