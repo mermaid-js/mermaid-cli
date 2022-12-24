@@ -364,7 +364,8 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, output
     }
   }
 
-  const mermaidChartsInMarkdown = /^\s*```(?:mermaid)(\r?\n([\s\S]*?))```\s*$/
+  // TODO: should we use a Markdown parser like remark instead of rolling our own parser?
+  const mermaidChartsInMarkdown = /^[^\S\n]*```(?:mermaid)(\r?\n([\s\S]*?))```[^\S\n]*$/
   const mermaidChartsInMarkdownRegexGlobal = new RegExp(mermaidChartsInMarkdown, 'gm')
   const browser = await puppeteer.launch(puppeteerConfig)
   try {

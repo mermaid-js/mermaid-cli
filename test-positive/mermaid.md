@@ -83,6 +83,9 @@ graph LR
     A -->|こんにちは| B
 ```
 7. sequence.mmd
+
+There should be an empty newline after this line, but before the Mermaid diagram:
+
 ```mermaid
 sequenceDiagram
 %% See https://mermaidjs.github.io/sequenceDiagram.html
@@ -103,6 +106,7 @@ loop D-1 before deadline at 7:45
     Note over HII,FGG: D-1 before deadline
 end
 ```
+
 8. Should still find mermaid code even when code-block is indented.
 
     ```mermaid
