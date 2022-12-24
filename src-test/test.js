@@ -316,6 +316,9 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
         '(./mermaid-run-output-test-png-8.png "State diagram example with \\\\\\"double-quotes\\"")')
       expect(markdownFile).toContain(markdownImageWithCustomTitle)
 
+      // check whether newlines before/after mermaid diagram are kept
+      expect(markdownFile).toContain('There should be an empty newline after this line, but before the Mermaid diagram:\n\n')
+
       // files should exist, and they should be PNGs
       await Promise.all(expectedOutputPngs.map(async (expectedOutputPng) => {
         // markdown file should point to png relative to md file
