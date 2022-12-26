@@ -33,7 +33,7 @@
     "standard": "^17.0.0",
     "vite": "^4.0.3",
     "vite-plugin-singlefile": "^0.13.1",
-    "vite-svg-loader": "^3.6.0",
+    "vite-svg-loader": "^4.0.0",
     "yarn-upgrade-all": "^0.7.0"
   },
   "files": [
