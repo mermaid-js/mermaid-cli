@@ -146,8 +146,16 @@ diagram defined on your system in `/path/to/diagrams/diagram.mmd`, you can use
 the container to generate an SVG file as follows:
 
 ```sh
-docker run --rm -u `id -u`:`id -g` -v /path/to/diagrams:/data minlag/mermaid-cli -i /data/diagram.mmd
+docker run --rm -u `id -u`:`id -g` -v /path/to/diagrams:/data minlag/mermaid-cli -i diagram.mmd
 ```
+
+In previous version, the input files were mounted in `/home/mermaidcli`. You can
+restore this behaviour with the `--workdir` option:
+
+```sh
+docker run [...] --workdir=/home/mermaidcli minlag/mermaid-cli [...]
+```
+
 
 ## Use Node.JS API
 
