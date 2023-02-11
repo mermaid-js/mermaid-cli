@@ -52,36 +52,38 @@ const checkConfigFile = file => {
  * If `undefined`, reads from `stdin` instead.
  * @returns {Promise<string>} The contents of `inputFile` parsed as `utf8`.
  */
-const getInputData = async inputFile => new Promise((resolve, reject) => {
+const getInputData = async inputFile => {
   // if an input file has been specified using '-i', it takes precedence over
   // piping from stdin
   if (typeof inputFile !== 'undefined') {
-    return fs.readFile(inputFile, 'utf-8', (err, data) => {
+    return new Promise((resolve, reject) => fs.readFile(inputFile, 'utf-8', (err, data) => {
       if (err) {
         return reject(err)
       }
 
       return resolve(data)
-    })
+    }))
   }
 
-  let data = ''
-  process.stdin.on('readable', function () {
-    const chunk = process.stdin.read()
+  return await new Promise((resolve, reject) => {
+    let data = ''
+    process.stdin.on('readable', function () {
+      const chunk = process.stdin.read()
 
-    if (chunk !== null) {
-      data += chunk
-    }
-  })
+      if (chunk !== null) {
+        data += chunk
+      }
+    })
 
-  process.stdin.on('error', function (err) {
-    reject(err)
-  })
+    process.stdin.on('error', function (err) {
+      reject(err)
+    })
 
-  process.stdin.on('end', function () {
-    resolve(data)
+    process.stdin.on('end', function () {
+      resolve(data)
+    })
   })
-})
+}
 
 /**
  * Commander parser that converts a string to an integer.
