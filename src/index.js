@@ -27,8 +27,6 @@ const checkConfigFile = file => {
   }
 }
 
-const inputPipedFromStdin = () => fs.fstatSync(0).isFIFO()
-
 const getInputData = async inputFile => new Promise((resolve, reject) => {
   // if an input file has been specified using '-i', it takes precedence over
   // piping from stdin
@@ -84,7 +82,7 @@ async function cli () {
     .addOption(new Option('-t, --theme [theme]', 'Theme of the chart').choices(['default', 'forest', 'dark', 'neutral']).default('default'))
     .addOption(new Option('-w, --width [width]', 'Width of the page').argParser(parseCommanderInt).default(800))
     .addOption(new Option('-H, --height [height]', 'Height of the page').argParser(parseCommanderInt).default(600))
-    .option('-i, --input <input>', 'Input mermaid file. Files ending in .md will be treated as Markdown and all charts (e.g. ```mermaid (...)```) will be extracted and generated. Required.')
+    .option('-i, --input <input>', 'Input mermaid file. Files ending in .md will be treated as Markdown and all charts (e.g. ```mermaid (...)```) will be extracted and generated. Use `-` to read from stdin.')
     .option('-o, --output [output]', 'Output file. It should be either md, svg, png or pdf. Optional. Default: input + ".svg"')
     .addOption(new Option('-e, --outputFormat [format]', 'Output format for the generated image.').choices(['svg', 'png', 'pdf']).default(null, 'Loaded from the output file extension'))
     .addOption(new Option('-b, --backgroundColor [backgroundColor]', 'Background color for pngs/svgs (not pdfs). Example: transparent, red, \'#F0F0F0\'.').default('white'))
@@ -101,12 +99,15 @@ async function cli () {
   let { theme, width, height, input, output, outputFormat, backgroundColor, configFile, cssFile, puppeteerConfigFile, scale, pdfFit, quiet } = options
 
   // check input file
-  if (!(input || inputPipedFromStdin())) {
-    console.error(chalk.red('\nPlease specify input file: -i <input>\n'))
-    // Log to stderr, and return with error exitCode
-    commander.help({ error: true })
-  }
-  if (input && !fs.existsSync(input)) {
+  if (!input) {
+    warn('No input file specfied, reading from stdin. ' +
+      'If you want to specify an input file, please use `-i <input>.` ' +
+      'You can use `-i -` to read from stdin and to suppress this warning.'
+    )
+  } else if (input === '-') {
+    // `--input -` means read from stdin, but suppress the above warning
+    input = undefined
+  } else if (!fs.existsSync(input)) {
     error(`Input file "${input}" doesn't exist`)
   }
 
