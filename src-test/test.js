@@ -1,6 +1,6 @@
 import fs from 'fs/promises'
 // Can't use async to load workflow entries, see https://github.com/facebook/jest/issues/2235
-import { readdirSync } from 'fs'
+import { readdirSync, createReadStream } from 'fs'
 import { exec, execFile } from 'child_process'
 
 // Joins together directory/file names in a OS independent way
@@ -12,6 +12,7 @@ import { expect, beforeAll, afterAll, describe, test } from '@jest/globals'
 
 import { run, renderMermaid, parseMMD } from '../src/index.js'
 import puppeteer from 'puppeteer'
+import { pipeline } from 'stream'
 
 const workflows = ['test-positive', 'test-negative']
 const out = 'test-output'
@@ -154,8 +155,24 @@ describe('mermaid-cli', () => {
     ).rejects.toThrow('TimeoutError: Timed out after 1 ms')
   }, timeout)
 
-  test('should error on missing input', async () => {
-    await expect(promisify(execFile)('node', ['src/cli.js'])).rejects.toThrow()
+  test('should warn when reading from stdin with missing --input', async () => {
+    const execFilePromise = promisify(execFile)('node', ['src/cli.js'])
+    await promisify(pipeline)(
+      createReadStream('test-positive/flowchart1.mmd'),
+      execFilePromise.child.stdin
+    )
+    const { stderr } = await execFilePromise
+    expect(stderr).toContain('No input file specfied, reading from stdin.')
+  }, timeout)
+
+  test('should not warn when reading from stdin with `--input -`', async () => {
+    const execFilePromise = promisify(execFile)('node', ['src/cli.js', '--input', '-'])
+    await promisify(pipeline)(
+      createReadStream('test-positive/flowchart1.mmd'),
+      execFilePromise.child.stdin
+    )
+    const { stderr } = await execFilePromise
+    expect(stderr).not.toContain('No input file specfied, reading from stdin.')
   }, timeout)
 
   test('should error on mermaid syntax error', async () => {

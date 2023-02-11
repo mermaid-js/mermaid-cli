@@ -109,7 +109,7 @@ You can easily pipe input from stdin. This example shows how to use a heredoc to
 send a diagram as stdin to mermaid-cli (mmdc).
 
 ```sh
-cat << EOF  | mmdc
+cat << EOF  | mmdc --input -
     graph TD
     A[Client] --> B[Load Balancer]
 EOF
