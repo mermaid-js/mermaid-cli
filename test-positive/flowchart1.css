@@ -1,5 +1,4 @@
-.path {
-  stroke-dasharray: 6;
+.flowchart-link {
   animation: dash 30s linear infinite;
 }
 
