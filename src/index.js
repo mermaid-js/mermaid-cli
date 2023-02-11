@@ -56,13 +56,7 @@ async function getInputData (inputFile) {
   // if an input file has been specified using '-i', it takes precedence over
   // piping from stdin
   if (typeof inputFile !== 'undefined') {
-    return new Promise((resolve, reject) => fs.readFile(inputFile, 'utf-8', (err, data) => {
-      if (err) {
-        return reject(err)
-      }
-
-      return resolve(data)
-    }))
+    return await fs.promises.readFile(inputFile, 'utf-8')
   }
 
   return await new Promise((resolve, reject) => {
