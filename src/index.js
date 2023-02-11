@@ -18,7 +18,7 @@ const error = message => {
 }
 
 const warn = message => {
-  console.log(chalk.yellow(`\n${message}\n`))
+  console.warn(chalk.yellow(`\n${message}\n`))
 }
 
 const checkConfigFile = file => {
