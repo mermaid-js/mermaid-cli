@@ -52,7 +52,7 @@ const checkConfigFile = file => {
  * If `undefined`, reads from `stdin` instead.
  * @returns {Promise<string>} The contents of `inputFile` parsed as `utf8`.
  */
-const getInputData = async inputFile => {
+async function getInputData (inputFile) {
   // if an input file has been specified using '-i', it takes precedence over
   // piping from stdin
   if (typeof inputFile !== 'undefined') {
