@@ -25,7 +25,7 @@ const out = 'test-output'
  * @throws {Error} if mmdc fails to launch, or if it has exitCode != 0
  */
 async function compileDiagramFromStdin (workflow, file, format) {
-  const result = file.replace(/\.(?:mmd|md)$/, '-stdin.' + format)
+  const result = file.replace(/\.(?:mmd|md|markdown)$/, '-stdin.' + format)
   // exec will throw with stderr if there is a non-zero exit code
   return await promisify(exec)(`cat ${workflow}/${file} | \
     node src/cli.js -o ${out}/${result} -c ${workflow}/config.json`
@@ -44,7 +44,7 @@ async function compileDiagramFromStdin (workflow, file, format) {
  * @throws {Error} if mmdc fails to launch, or if it has exitCode != 0
  */
 async function compileDiagram (workflow, file, format, { puppeteerConfigFile } = {}) {
-  const result = file.replace(/\.(?:mmd|md)$/, '.' + format)
+  const result = file.replace(/\.(?:mmd|md|markdown)$/, '.' + format)
 
   const args = [
     'src/cli.js',
@@ -113,13 +113,15 @@ describe('mermaid-cli', () => {
   describe.each(workflows)('testing workflow %s', (workflow) => {
     // Can't use async to load workflow entries, see https://github.com/facebook/jest/issues/2235
     for (const file of readdirSync(workflow)) {
-      // only test .md and .mmd files in workflow
-      if (!(file.endsWith('.mmd') | /\.md$/.test(file))) {
+      // only test .md/.markdown and .mmd files in workflow
+      if (!(file.endsWith('.mmd') | /\.(md|markdown)$/.test(file))) {
         continue
       }
       const formats = ['png', 'svg', 'pdf']
       if (/\.md$/.test(file)) {
         formats.push('md')
+      } else if (file.endsWith('.markdown')) {
+        formats.push('markdown')
       }
       const shouldError = /expect-error/.test(file)
       test.concurrent.each(formats)(`${shouldError ? 'should fail' : 'should compile'} ${file} to format %s`, async (format) => {
@@ -130,7 +132,7 @@ describe('mermaid-cli', () => {
           await promise
         }
       }, timeout)
-      if (!/\.md$/.test(file)) {
+      if (!/\.(md|markdown)$/.test(file)) {
         // currently, piping markdown through stdin is not supported
         // as mermaid-cli has no idea it's markdown, not mermaid code
         test.concurrent.each(formats)(`${shouldError ? 'should fail' : 'should compile'} ${file} from stdin to format %s`,
@@ -343,17 +345,19 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
     describe.each(workflows)('testing workflow %s', (workflow) => {
       // Can't use async to load workflow entries, see https://github.com/facebook/jest/issues/2235
       for (const file of readdirSync(workflow)) {
-        // only test .md and .mmd files in workflow
-        if (!(file.endsWith('.mmd') | /\.md$/.test(file))) {
+        // only test .md/.markdown and .mmd files in workflow
+        if (!(file.endsWith('.mmd') | /\.(md|markdown)$/.test(file))) {
           continue
         }
         const formats = ['png', 'svg', 'pdf']
         if (/\.md$/.test(file)) {
           formats.push('md')
+        } else if (file.endsWith('.markdown')) {
+          formats.push('markdown')
         }
         const shouldError = /expect-error/.test(file)
         test.concurrent.each(formats)(`${shouldError ? 'should fail' : 'should compile'} ${file} to format %s`, async (format) => {
-          const result = file.replace(/\.(?:mmd|md)$/, `-run.${format}`)
+          const result = file.replace(/\.(?:mmd|md|markdown)$/, `-run.${format}`)
           const promise = run(join(workflow, file), join(out, result), { quiet: true })
           if (shouldError) {
             await expect(promise).rejects.toThrow()
