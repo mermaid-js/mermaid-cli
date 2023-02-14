@@ -1,0 +1,36 @@
+{
+  // our minimum supported Node version is Node v14
+  "extends": "@tsconfig/node14/tsconfig.json",
+  "include": ["src/*"],
+
+  "compilerOptions": {
+    "strict": true,
+    // Tells TypeScript to read JS files, as
+    // normally they are ignored as source files
+    "allowJs": true,
+    "checkJs": true,
+    // Generate d.ts files
+    "declaration": true,
+    // This compiler run should
+    // only output d.ts files
+    "emitDeclarationOnly": true,
+    // Types should go into this directory.
+    // Removing this would place the .d.ts files
+    // next to the .js files
+    // We can't use `dist/` as Vite will automatically overwrite it.
+    "outDir": "dist-types",
+    // go to js file when using IDE functions like
+    // "Go to Definition" in VSCode
+    "declarationMap": true,
+    // we're using ESM modules
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    // required to get the version from package.json
+    "resolveJsonModule": true,
+    "lib": [
+      "es2020",
+      "DOM", // used by puppeteer functions
+      "DOM.Iterable", // means we can use `for/of` in HTMLCollection
+    ],
+  }
+}

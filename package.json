@@ -13,9 +13,10 @@
     "node": "^14.13 || >=16.0"
   },
   "exports": "./src/index.js",
+  "types": "./dist-types/src/index.d.ts",
   "scripts": {
-    "prepare": "vite build",
-    "prepack": "vite build",
+    "prepare": "tsc && vite build",
+    "prepack": "tsc && vite build",
     "test": "standard && yarn node --experimental-vm-modules $(yarn bin jest)",
     "lint": "standard",
     "lint-fix": "standard --fix"
@@ -28,9 +29,11 @@
   "devDependencies": {
     "@fortawesome/fontawesome-free-webfonts": "^1.0.9",
     "@mermaid-js/mermaid-mindmap": "^9.2.2",
-    "mermaid": "^10.0.0",
+    "@tsconfig/node14": "^1.0.3",
     "jest": "^29.0.1",
+    "mermaid": "^10.0.0",
     "standard": "^17.0.0",
+    "typescript": "^5.0.1-rc",
     "vite": "^4.0.3",
     "vite-plugin-singlefile": "^0.13.1",
     "vite-svg-loader": "^4.0.0",
@@ -38,7 +41,8 @@
   },
   "files": [
     "src/",
-    "dist/"
+    "dist/",
+    "dist-types/"
   ],
   "jest": {
     "moduleNameMapper": {
@@ -47,7 +51,8 @@
   },
   "standard": {
     "ignore": [
-      "/dist/"
+      "/dist/",
+      "/dist-types/"
     ]
   }
 }

@@ -10,23 +10,48 @@ import { createRequire } from 'module'
 const require = createRequire(import.meta.url)
 const pkg = require('../package.json')
 // __dirname is not available in ESM modules by default
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
+const __dirname = url.fileURLToPath(new url.URL('.', import.meta.url))
 
+/**
+ * Prints an error to stderr, then closes with exit code 1
+ *
+ * @param {string} message - The message to print to `stderr`.
+ * @returns {never} Quits Node.JS, so never returns.
+ */
 const error = message => {
   console.error(chalk.red(`\n${message}\n`))
   process.exit(1)
 }
 
+/**
+ * Prints a warning to stderr.
+ *
+ * @param {string} message - The message to print to `stderr`.
+ */
 const warn = message => {
   console.warn(chalk.yellow(`\n${message}\n`))
 }
 
+/**
+ * Checks if the given file exists.
+ *
+ * @param {string} file - The file to check.
+ * @returns {never | void} If the file doesn't exist, closes Node.JS with
+ * exit code 1.
+ */
 const checkConfigFile = file => {
   if (!fs.existsSync(file)) {
     error(`Configuration file "${file}" doesn't exist`)
   }
 }
 
+/**
+ * Gets the data in the given file.
+ *
+ * @param {string | undefined} inputFile - The file to read.
+ * If `undefined`, reads from `stdin` instead.
+ * @returns {Promise<string>} The contents of `inputFile` parsed as `utf8`.
+ */
 const getInputData = async inputFile => new Promise((resolve, reject) => {
   // if an input file has been specified using '-i', it takes precedence over
   // piping from stdin
@@ -42,7 +67,7 @@ const getInputData = async inputFile => new Promise((resolve, reject) => {
 
   let data = ''
   process.stdin.on('readable', function () {
-    const chunk = this.read()
+    const chunk = process.stdin.read()
 
     if (chunk !== null) {
       data += chunk
@@ -165,11 +190,11 @@ async function cli () {
 
 /**
  * @typedef {Object} ParseMDDOptions Options to pass to {@link parseMMD}
- * @property {puppeteer.Viewport} [viewport] - Puppeteer viewport (e.g. `width`, `height`, `deviceScaleFactor`)
+ * @property {import("puppeteer").Viewport} [viewport] - Puppeteer viewport (e.g. `width`, `height`, `deviceScaleFactor`)
  * @property {string | "transparent"} [backgroundColor] - Background color.
- * @property {Parameters<import("mermaid").Mermaid["initialize"]>[0]} [mermaidConfig] - Mermaid config.
+ * @property {Parameters<import("mermaid")["default"]["initialize"]>[0]} [mermaidConfig] - Mermaid config.
  * @property {CSSStyleDeclaration["cssText"]} [myCSS] - Optional CSS text.
- * @property {boolean} pdfFit - If set, scale PDF to fit chart.
+ * @property {boolean} [pdfFit] - If set, scale PDF to fit chart.
  */
 
 /**
@@ -177,26 +202,26 @@ async function cli () {
  *
  * @deprecated Prefer {@link renderMermaid}, as it also returns useful metadata.
  *
- * @param {puppeteer.Browser} browser - Puppeteer Browser
+ * @param {import("puppeteer").Browser} browser - Puppeteer Browser
  * @param {string} definition - Mermaid diagram definition
  * @param {"svg" | "png" | "pdf"} outputFormat - Mermaid output format.
  * @param {ParseMDDOptions} [opt] - Options, see {@link ParseMDDOptions} for details.
  *
  * @returns {Promise<Buffer>} The output file in bytes.
  */
-async function parseMMD (...args) {
-  const { data } = await renderMermaid(...args)
+async function parseMMD (browser, definition, outputFormat, opt) {
+  const { data } = await renderMermaid(browser, definition, outputFormat, opt)
   return data
 }
 
 /**
  * Render a mermaid diagram.
  *
- * @param {puppeteer.Browser} browser - Puppeteer Browser
+ * @param {import("puppeteer").Browser} browser - Puppeteer Browser
  * @param {string} definition - Mermaid diagram definition
  * @param {"svg" | "png" | "pdf"} outputFormat - Mermaid output format.
  * @param {ParseMDDOptions} [opt] - Options, see {@link ParseMDDOptions} for details.
- * @returns {Promise<{title?: string, desc?: string, data: Buffer}>} The output file in bytes,
+ * @returns {Promise<{title: string | null, desc: string | null, data: Buffer}>} The output file in bytes,
  * with optional metadata.
  */
 async function renderMermaid (browser, definition, outputFormat, { viewport, backgroundColor = 'white', mermaidConfig = {}, myCSS, pdfFit } = {}) {
@@ -209,17 +234,33 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
       await page.setViewport(viewport)
     }
     const mermaidHTMLPath = path.join(__dirname, '..', 'dist', 'index.html')
-    await page.goto(url.pathToFileURL(mermaidHTMLPath))
+    await page.goto(url.pathToFileURL(mermaidHTMLPath).href)
     await page.$eval('body', (body, backgroundColor) => {
       body.style.background = backgroundColor
     }, backgroundColor)
     const metadata = await page.$eval('#container', async (container, definition, mermaidConfig, myCSS, backgroundColor) => {
+      /**
+       * Checks to see if the given object is one of Mermaid's DetailedErrors.
+       *
+       * @param {unknown} error - The error to check
+       * @returns {error is import("mermaid").DetailedError} Returns `true` is the `error`
+       * is a `Mermaid.DetailedError`.
+       * @see https://github.com/mermaid-js/mermaid/blob/v10.0.1/packages/mermaid/src/utils.ts#L927-L930
+       */
+      function isDetailedError (error) {
+        return typeof error === 'object' && error !== null && 'str' in error
+      }
+
       container.textContent = definition
 
-      /** @type {import("mermaid")} Already imported mermaid instance */
-      const mermaid = globalThis.mermaid
-      /** @type {import("@mermaid-js/mermaid-mindmap")} */
-      const mermaidMindmap = globalThis.mermaidMindmap
+      /**
+       * @typedef {Object} GlobalThisWithMermaid
+       * We've already imported these modules in our `index.html` file, so that they
+       * get correctly bundled.
+       * @property {import("mermaid")["default"]} mermaid Already imported mermaid instance
+       * @property {import("@mermaid-js/mermaid-mindmap")} mermaidMindmap Already imported mermaid-mindmap plugin
+       */
+      const { mermaid, mermaidMindmap } = /** @type {GlobalThisWithMermaid & typeof globalThis} */ (globalThis)
 
       await mermaid.registerExternalDiagrams([mermaidMindmap])
 
@@ -227,7 +268,12 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
       // should throw an error if mmd diagram is invalid
       try {
         await mermaid.run({
-          nodes: [container],
+          nodes: [
+            /**
+             * @type {HTMLElement} We know this is a `HTMLElement`, since we
+             * control the input HTML file
+             */ (container)
+          ],
           suppressErrors: false
         })
       } catch (error) {
@@ -235,8 +281,10 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
           // mermaid-js doesn't currently throws JS Errors, but let's leave this
           // here in case it does in the future
           throw error
+        } else if (isDetailedError(error)) {
+          throw new Error(error.message)
         } else {
-          throw new Error(error?.message ?? 'Unknown mermaid render error')
+          throw new Error(`Unknown mermaid render error: ${error}`)
         }
       }
 
@@ -328,12 +376,17 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
 }
 
 /**
+ * @typedef {object} MarkdownImageProps Markdown image properties
+ * Used to create an markdown image that looks like `![alt](url "title")`
+ * @property {string} url - Path to image.
+ * @property {string} alt - Image alt text, required.
+ * @property {string | null} [title] - Optional image title text.
+ */
+
+/**
  * Creates a markdown image syntax.
  *
- * @param {object} params - Parameters.
- * @param {string} params.url - Path to image.
- * @param {string} params.alt - Image alt text, required.
- * @param {string} [params.title] - Image title text.
+ * @param {MarkdownImageProps} params - Parameters.
  * @returns {`![${string}](${string})`} The markdown image text.
  */
 function markdownImage ({ url, title, alt }) {
@@ -350,19 +403,24 @@ function markdownImage ({ url, title, alt }) {
 /**
  * Renders a mermaid diagram or mermaid markdown file.
  *
- * @param {`${string}.${"md" | "markdown"}` | string} [input] - If this ends with `.md`/`.markdown`,
+ * @param {`${string}.${"md" | "markdown"}` | string | undefined} input - If this ends with `.md`/`.markdown`,
  * path to a markdown file containing mermaid.
  * If this is a string, loads the mermaid definition from the given file.
  * If this is `undefined`, loads the mermaid definition from stdin.
  * @param {`${string}.${"md" | "markdown" | "svg" | "png" | "pdf"}`} output - Path to the output file.
  * @param {Object} [opts] - Options
- * @param {puppeteer.LaunchOptions} [opts.puppeteerConfig] - Puppeteer launch options.
+ * @param {import("puppeteer").LaunchOptions} [opts.puppeteerConfig] - Puppeteer launch options.
  * @param {boolean} [opts.quiet] - If set, suppress log output.
  * @param {"svg" | "png" | "pdf"} [opts.outputFormat] - Mermaid output format.
  * Defaults to `output` extension. Overrides `output` extension if set.
  * @param {ParseMDDOptions} [opts.parseMMDOptions] - Options to pass to {@link parseMMDOptions}.
  */
 async function run (input, output, { puppeteerConfig = {}, quiet = false, outputFormat, parseMMDOptions } = {}) {
+  /**
+   * Logs the given message to stdout, unless `quiet` is set to `true`.
+   *
+   * @param {string} message - The message to maybe log.
+   */
   const info = message => {
     if (!quiet) {
       console.info(message)
@@ -375,27 +433,34 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, output
   const browser = await puppeteer.launch(puppeteerConfig)
   try {
     if (!outputFormat) {
-      outputFormat = path.extname(output).replace('.', '')
-    }
-    if (outputFormat === 'md' || outputFormat === 'markdown') {
-      // fallback to svg in case no outputFormat is given and output file is MD
-      outputFormat = 'svg'
+      const outputFormatFromFilename =
+        /**
+         * @type {"md" | "markdown" | "svg" | "png" | "pdf"}
+         */ (path.extname(output).replace('.', ''))
+      if (outputFormatFromFilename === 'md' || outputFormatFromFilename === 'markdown') {
+        // fallback to svg in case no outputFormat is given and output file is MD
+        outputFormat = 'svg'
+      } else {
+        outputFormat = outputFormatFromFilename
+      }
     }
     if (!/(?:svg|png|pdf)$/.test(outputFormat)) {
       throw new Error('Output format must be one of "svg", "png" or "pdf"')
     }
 
     const definition = await getInputData(input)
-    if (/\.(md|markdown)$/.test(input)) {
+    if (input && /\.(md|markdown)$/.test(input)) {
       const imagePromises = []
       for (const mermaidCodeblockMatch of definition.matchAll(mermaidChartsInMarkdownRegexGlobal)) {
         const mermaidDefinition = mermaidCodeblockMatch[1]
 
-        // Output can be either a template image file, or a `.md` output file.
-        //   If it is a template image file, use that to created numbered diagrams
-        //     I.e. if "out.png", use "out-1.png", "out-2.png", etc
-        //   If it is an output `.md` file, use that to base .svg numbered diagrams on
-        //     I.e. if "out.md". use "out-1.svg", "out-2.svg", etc
+        /** Output can be either a template image file, or a `.md` output file.
+         *   If it is a template image file, use that to created numbered diagrams
+         *     I.e. if "out.png", use "out-1.png", "out-2.png", etc
+         *   If it is an output `.md` file, use that to base .svg numbered diagrams on
+         *     I.e. if "out.md". use "out-1.svg", "out-2.svg", etc
+         * @type {string}
+         */
         const outputFile = output.replace(
           /(\.(md|markdown|png|svg|pdf))$/,
           `-${imagePromises.length + 1}$1`
@@ -427,7 +492,12 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, output
       if (/\.(md|markdown)$/.test(output)) {
         const outDefinition = definition.replace(mermaidChartsInMarkdownRegexGlobal, (_mermaidMd) => {
           // pop first image from front of array
-          const { url, title, alt } = images.shift()
+          const { url, title, alt } =
+            /**
+             * @type {MarkdownImageProps} We use the same regex,
+             * so we will never try to get too many objects from the array.
+             * (aka `images.shift()` will never return `undefined`)
+             */ (images.shift())
           return markdownImage({ url, title, alt: alt || 'diagram' })
         })
         await fs.promises.writeFile(output, outDefinition, 'utf-8')
