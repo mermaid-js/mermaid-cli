@@ -125,9 +125,11 @@ end
         Crash --> [*]
     ```
 
-9. Should still find mermaid code even with trailing spaces after the \`\`\`
+9. Should still find mermaid code even with trailing spaces after the opening
+`` ```mermaid `` and closing `` ``` ``.
 
-```mermaid
+```mermaid     
+%%        ↑↑↑↑↑ spaces should be above here.
 stateDiagram
     state Choose <<fork>>
     [*] --> Still
