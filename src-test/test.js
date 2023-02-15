@@ -173,6 +173,15 @@ describe('mermaid-cli', () => {
     await expect(matches[0].includes('```   ')).toBeTruthy()
   }, timeout)
 
+  test('should have 5 trailing spaces after ```mermaid in test-positive/mermaid.md for case 9.', async () => {
+    // make sure that we don't accidentally delete the trailing spaces in test 9
+    const data = await fs.readFile('test-positive/mermaid.md', { encoding: 'utf8' })
+    const regex = /9\.\s+Should still find mermaid code even with trailing spaces after the(.+)do not delete the trailing spaces after the/sg
+    const matches = data.match(regex)
+    await expect(matches.length).toBeGreaterThan(0)
+    await expect(matches[0].includes('```mermaid     ')).toBeTruthy()
+  }, timeout)
+
   test('should write multiple SVGs for default .md input by default', async () => {
     const expectedOutputFiles = [1, 2, 3, 8, 9].map((i) => join('test-positive', `mermaid.md-${i}.svg`))
     // delete any files from previous test (fs.rm added in Node v14.14.0)
