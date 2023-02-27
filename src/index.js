@@ -226,7 +226,10 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
       mermaid.initialize(mermaidConfig)
       // should throw an error if mmd diagram is invalid
       try {
-        await mermaid.initThrowsErrorsAsync(undefined, container)
+        await mermaid.run({
+          nodes: [container],
+          suppressErrors: true,
+        });
       } catch (error) {
         if (error instanceof Error) {
           // mermaid-js doesn't currently throws JS Errors, but let's leave this
