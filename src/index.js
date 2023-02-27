@@ -228,8 +228,8 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
       try {
         await mermaid.run({
           nodes: [container],
-          suppressErrors: true,
-        });
+          suppressErrors: true
+        })
       } catch (error) {
         if (error instanceof Error) {
           // mermaid-js doesn't currently throws JS Errors, but let's leave this
