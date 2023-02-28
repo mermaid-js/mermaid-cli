@@ -180,7 +180,7 @@ describe('mermaid-cli', () => {
   test('should error on mermaid syntax error', async () => {
     await expect(
       compileDiagram('test-negative', 'invalid.expect-error.mmd', 'svg')
-    ).rejects.toThrow("Error: Evaluation failed: Error: Diagram error not found.")
+    ).rejects.toThrow('Error: Evaluation failed: Error: Diagram error not found.')
   }, timeout)
 
   test('should have 3 trailing spaces after ``` in test-positive/mermaid.md for case 9.', async () => {
