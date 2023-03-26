@@ -3,10 +3,12 @@
   <body>
     <div id="container"></div>
     <script type="module">
-      import faBrands from "@fortawesome/fontawesome-free-webfonts/css/fa-brands.css"
-      import faRegular from "@fortawesome/fontawesome-free-webfonts/css/fa-regular.css"
-      import faSolid from "@fortawesome/fontawesome-free-webfonts/css/fa-solid.css"
-      import fontawesome from "@fortawesome/fontawesome-free-webfonts/css/fontawesome.css"
+      // don't import minified CSS files (e.g. `*.min.css`), since that actually
+      // makes the dist/index.html slightly larger!
+      import faBrands from "@fortawesome/fontawesome-free/css/brands.css"
+      import faRegular from "@fortawesome/fontawesome-free/css/regular.css"
+      import faSolid from "@fortawesome/fontawesome-free/css/solid.css"
+      import fontawesome from "@fortawesome/fontawesome-free/css/fontawesome.css"
 
       import mermaid from "mermaid"
       import mermaidMindmap from "@mermaid-js/mermaid-mindmap"
