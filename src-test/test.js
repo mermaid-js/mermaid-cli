@@ -103,8 +103,8 @@ afterAll(async () => {
   }
 })
 
-// 30 second timeout, this needs to be set higher than normal since CI is slow
-const timeout = 30000
+// 60 second timeout, this needs to be set higher than normal since CI is slow
+const timeout = 60000
 
 describe('mermaid-cli', () => {
   beforeAll(async () => {
