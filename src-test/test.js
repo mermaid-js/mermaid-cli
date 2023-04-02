@@ -164,7 +164,7 @@ describe('mermaid-cli', () => {
       execFilePromise.child.stdin
     )
     const { stderr } = await execFilePromise
-    expect(stderr).toContain('No input file specfied, reading from stdin.')
+    expect(stderr).toContain('No input file specified, reading from stdin.')
   }, timeout)
 
   test('should not warn when reading from stdin with `--input -`', async () => {
@@ -174,7 +174,7 @@ describe('mermaid-cli', () => {
       execFilePromise.child.stdin
     )
     const { stderr } = await execFilePromise
-    expect(stderr).not.toContain('No input file specfied, reading from stdin.')
+    expect(stderr).not.toContain('No input file specified, reading from stdin.')
   }, timeout)
 
   test('should error on mermaid syntax error', async () => {
