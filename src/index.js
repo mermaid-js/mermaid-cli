@@ -125,7 +125,7 @@ async function cli () {
 
   // check input file
   if (!input) {
-    warn('No input file specfied, reading from stdin. ' +
+    warn('No input file specified, reading from stdin. ' +
       'If you want to specify an input file, please use `-i <input>.` ' +
       'You can use `-i -` to read from stdin and to suppress this warning.'
     )
