@@ -258,11 +258,8 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
        * We've already imported these modules in our `index.html` file, so that they
        * get correctly bundled.
        * @property {import("mermaid")["default"]} mermaid Already imported mermaid instance
-       * @property {import("@mermaid-js/mermaid-mindmap")} mermaidMindmap Already imported mermaid-mindmap plugin
        */
-      const { mermaid, mermaidMindmap } = /** @type {GlobalThisWithMermaid & typeof globalThis} */ (globalThis)
-
-      await mermaid.registerExternalDiagrams([mermaidMindmap])
+      const { mermaid } = /** @type {GlobalThisWithMermaid & typeof globalThis} */ (globalThis)
 
       mermaid.initialize(mermaidConfig)
       // should throw an error if mmd diagram is invalid
