@@ -407,7 +407,7 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       const invalidMMDInput = 'this is not a valid mermaid file'
       expect(
         parseMMD(browser, invalidMMDInput, 'svg')
-      ).rejects.toThrow('Evaluation failed: Error: No diagram type detected matching given configuration for text: this is not a valid mermaid file')
+      ).rejects.toThrow('Evaluation failed: UnknownDiagramError: No diagram type detected matching given configuration for text: this is not a valid mermaid file')
     })
 
     describe.each(workflows)('testing workflow %s', (workflow) => {

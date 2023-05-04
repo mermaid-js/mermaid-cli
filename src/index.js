@@ -240,20 +240,6 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
     }, backgroundColor)
     const metadata = await page.$eval('#container', async (container, definition, mermaidConfig, myCSS, backgroundColor) => {
       /**
-       * Checks to see if the given object is one of Mermaid's DetailedErrors.
-       *
-       * @param {unknown} error - The error to check
-       * @returns {error is import("mermaid").DetailedError} Returns `true` is the `error`
-       * is a `Mermaid.DetailedError`.
-       * @see https://github.com/mermaid-js/mermaid/blob/v10.0.1/packages/mermaid/src/utils.ts#L927-L930
-       */
-      function isDetailedError (error) {
-        return typeof error === 'object' && error !== null && 'str' in error
-      }
-
-      container.textContent = definition
-
-      /**
        * @typedef {Object} GlobalThisWithMermaid
        * We've already imported these modules in our `index.html` file, so that they
        * get correctly bundled.
@@ -261,29 +247,10 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
        */
       const { mermaid } = /** @type {GlobalThisWithMermaid & typeof globalThis} */ (globalThis)
 
-      mermaid.initialize(mermaidConfig)
+      mermaid.initialize({ startOnLoad: false, ...mermaidConfig })
       // should throw an error if mmd diagram is invalid
-      try {
-        await mermaid.run({
-          nodes: [
-            /**
-             * @type {HTMLElement} We know this is a `HTMLElement`, since we
-             * control the input HTML file
-             */ (container)
-          ],
-          suppressErrors: false
-        })
-      } catch (error) {
-        if (error instanceof Error) {
-          // mermaid-js doesn't currently throws JS Errors, but let's leave this
-          // here in case it does in the future
-          throw error
-        } else if (isDetailedError(error)) {
-          throw new Error(error.message)
-        } else {
-          throw new Error(`Unknown mermaid render error: ${error}`)
-        }
-      }
+      const { svg: svgText } = await mermaid.render('my-svg', definition, container)
+      container.innerHTML = svgText
 
       const svg = container.getElementsByTagName?.('svg')?.[0]
       if (svg?.style) {
