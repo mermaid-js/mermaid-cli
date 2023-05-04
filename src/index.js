@@ -449,7 +449,7 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, output
     if (input && /\.(md|markdown)$/.test(input)) {
       const imagePromises = []
       for (const mermaidCodeblockMatch of definition.matchAll(mermaidChartsInMarkdownRegexGlobal)) {
-        const mermaidDefinition = mermaidCodeblockMatch[1]
+        const mermaidDefinition = mermaidCodeblockMatch[2]
 
         /** Output can be either a template image file, or a `.md` output file.
          *   If it is a template image file, use that to created numbered diagrams
