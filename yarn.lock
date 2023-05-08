@@ -729,13 +729,14 @@
   dependencies:
     "@types/react" ">=16.0.0"
 
-"@puppeteer/browsers@0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@puppeteer/browsers/-/browsers-0.5.0.tgz#1a1ee454b84a986b937ca2d93146f25a3fe8b670"
-  integrity sha512-Uw6oB7VvmPRLE4iKsjuOh8zgDabhNX67dzo8U/BB0f9527qx+4eeUs+korU98OhG5C4ubg7ufBgVi63XYwS6TQ==
+"@puppeteer/browsers@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@puppeteer/browsers/-/browsers-1.0.1.tgz#6c2f6fbc93cb3a587c821c3cfce0e49d99b51dd1"
+  integrity sha512-9wkYhON9zBgtjYRE3FcokGCfjG25zjzNAYmsHpiWitRZ/4DeT3v125/fCUU66SaPJ4nUsxGNPgpS1TOcQ+8StA==
   dependencies:
     debug "4.3.4"
     extract-zip "2.0.1"
+    http-proxy-agent "5.0.0"
     https-proxy-agent "5.0.1"
     progress "2.0.3"
     proxy-from-env "1.1.0"
@@ -761,6 +762,11 @@
   integrity sha512-SwUDyjWnah1AaNl7kxsa7cfLhlTYoiyhDAIgyh+El30YvXs/o7OLXpYH88Zdhyx9JExKrmHDJ+10bwIcY80Jmw==
   dependencies:
     "@sinonjs/commons" "^2.0.0"
+
+"@tootallnate/once@2":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-2.0.0.tgz#f544a148d3ab35801c1f633a7441fd87c2e484bf"
+  integrity sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==
 
 "@trysound/sax@0.2.0":
   version "0.2.0"
@@ -1766,10 +1772,10 @@ detect-newline@^3.0.0:
   resolved "https://registry.yarnpkg.com/detect-newline/-/detect-newline-3.1.0.tgz#576f5dfc63ae1a192ff192d8ad3af6308991b651"
   integrity sha512-TLz+x/vEXm/Y7P7wn1EJFNLxYpUD4TgMosxY6fAVJUnJMbupHBOncxyWUG9OpTaH9EBD7uFI5LfEgmMOc54DsA==
 
-devtools-protocol@0.0.1107588:
-  version "0.0.1107588"
-  resolved "https://registry.yarnpkg.com/devtools-protocol/-/devtools-protocol-0.0.1107588.tgz#f8cac707840b97cc30b029359341bcbbb0ad8ffa"
-  integrity sha512-yIR+pG9x65Xko7bErCUSQaDLrO/P1p3JUzEk7JCU4DowPcGHkTGUGQapcfcLc4qj0UaALwZ+cr0riFgiqpixcg==
+devtools-protocol@0.0.1120988:
+  version "0.0.1120988"
+  resolved "https://registry.yarnpkg.com/devtools-protocol/-/devtools-protocol-0.0.1120988.tgz#8fe49088919ae3b8df7235774633763f1f925066"
+  integrity sha512-39fCpE3Z78IaIPChJsP6Lhmkbf4dWXOmzLk/KFTdRkNk/0JymRIfUynDVRndV9HoDz8PyalK1UH21ST/ivwW5Q==
 
 diff-sequences@^29.4.3:
   version "29.4.3"
@@ -2497,6 +2503,15 @@ html-escaper@^2.0.0:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/html-escaper/-/html-escaper-2.0.2.tgz#dfd60027da36a36dfcbe236262c00a5822681453"
   integrity sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==
+
+http-proxy-agent@5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/http-proxy-agent/-/http-proxy-agent-5.0.0.tgz#5129800203520d434f142bc78ff3c170800f2b43"
+  integrity sha512-n2hY8YdoRE1i7r6M0w9DIw5GgZN0G25P8zLCRQ8rjXtTU3vsNFBI/vWK/UIeE6g5MUUz6avwAPXmL6Fy9D/90w==
+  dependencies:
+    "@tootallnate/once" "2"
+    agent-base "6"
+    debug "4"
 
 https-proxy-agent@5.0.1:
   version "5.0.1"
@@ -3766,16 +3781,16 @@ punycode@^2.1.0:
   version "2.1.1"
   resolved "https://registry.npmjs.org/punycode/-/punycode-2.1.1.tgz"
 
-puppeteer-core@19.11.1:
-  version "19.11.1"
-  resolved "https://registry.yarnpkg.com/puppeteer-core/-/puppeteer-core-19.11.1.tgz#4c63d7a0a6cd268ff054ebcac315b646eee32667"
-  integrity sha512-qcuC2Uf0Fwdj9wNtaTZ2OvYRraXpAK+puwwVW8ofOhOgLPZyz1c68tsorfIZyCUOpyBisjr+xByu7BMbEYMepA==
+puppeteer-core@20.1.1:
+  version "20.1.1"
+  resolved "https://registry.yarnpkg.com/puppeteer-core/-/puppeteer-core-20.1.1.tgz#b5a94403ca0b776a50585ace9f917c2000fc3539"
+  integrity sha512-iB9F2Om8J+nU4qi30oYw0hMWOw6eQN7kFkLLI/u3UvxONOCx5o0KmM6+byaK2/QGIuQu2ly1mPaJnC1DyoW07Q==
   dependencies:
-    "@puppeteer/browsers" "0.5.0"
+    "@puppeteer/browsers" "1.0.1"
     chromium-bidi "0.4.7"
     cross-fetch "3.1.5"
     debug "4.3.4"
-    devtools-protocol "0.0.1107588"
+    devtools-protocol "0.0.1120988"
     extract-zip "2.0.1"
     https-proxy-agent "5.0.1"
     proxy-from-env "1.1.0"
@@ -3783,17 +3798,17 @@ puppeteer-core@19.11.1:
     unbzip2-stream "1.4.3"
     ws "8.13.0"
 
-puppeteer@^19.0.0:
-  version "19.11.1"
-  resolved "https://registry.yarnpkg.com/puppeteer/-/puppeteer-19.11.1.tgz#bb75d518e87b0b4f6ef9bad1ea7e9d1cdcd18a5d"
-  integrity sha512-39olGaX2djYUdhaQQHDZ0T0GwEp+5f9UB9HmEP0qHfdQHIq0xGQZuAZ5TLnJIc/88SrPLpEflPC+xUqOTv3c5g==
+puppeteer@^20.1.1:
+  version "20.1.1"
+  resolved "https://registry.yarnpkg.com/puppeteer/-/puppeteer-20.1.1.tgz#22bee2570921b165abc8d6182600c6fc71561164"
+  integrity sha512-agGDvDPIgYYwXL1WFP/O+HiDnFHJxtkmqyg4QOiHhgAgopyjOc+itL8SuXkJzXNSh9pnjGcZvl7ouJy/rU3SRg==
   dependencies:
-    "@puppeteer/browsers" "0.5.0"
+    "@puppeteer/browsers" "1.0.1"
     cosmiconfig "8.1.3"
     https-proxy-agent "5.0.1"
     progress "2.0.3"
     proxy-from-env "1.1.0"
-    puppeteer-core "19.11.1"
+    puppeteer-core "20.1.1"
 
 pure-rand@^6.0.0:
   version "6.0.1"
