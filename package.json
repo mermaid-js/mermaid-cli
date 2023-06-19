@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "chalk": "^5.0.1",
-    "commander": "^10.0.0",
+    "commander": "^11.0.0",
     "puppeteer": "^19.0.0"
   },
   "devDependencies": {
