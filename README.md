@@ -156,6 +156,28 @@ restore this behaviour with the `--workdir` option:
 docker run [...] --workdir=/home/mermaidcli minlag/mermaid-cli [...]
 ```
 
+## Use Podman:
+
+Pull from Github Container Registry
+
+```sh
+podman pull ghcr.io/mermaid-js/mermaid-cli/mermaid-cli
+```
+
+The container looks for input files in `/data`. So for example, if you have a
+diagram defined on your system in `/path/to/diagrams/diagram.mmd`, you can use
+the container to generate an SVG file as follows:
+
+```sh
+podman run --userns keep-id --user ${UID} --rm -v /path/to/diagrams:/data:Z ghcr.io/mermaid-js/mermaid-cli/mermaid-cli -i diagram.mmd
+```
+
+In previous version, the input files were mounted in `/home/mermaidcli`. You can
+restore this behaviour with the `--workdir` option:
+
+```sh
+podman run [...] --workdir=/home/mermaidcli ghcr.io/mermaid-js/mermaid-cli/mermaid-cli [...]
+```
 
 ## Use Node.JS API
 
