@@ -157,10 +157,19 @@ async function cli () {
     checkConfigFile(configFile)
     mermaidConfig = Object.assign(mermaidConfig, JSON.parse(fs.readFileSync(configFile, 'utf-8')))
   }
-  let puppeteerConfig = {}
+  // @ts-expect-error Setting headless to `1` is not officially supported
+  let puppeteerConfig = /** @type {import('puppeteer').PuppeteerLaunchOptions} */ ({
+    /*
+     * `headless: 1` is not officially supported, but setting this to any
+     * non-`true` truthy value doesn't change any behavior, but it hides the
+     * Puppeteer old Headless deprecation warning,
+     * see https://github.com/argos-ci/jest-puppeteer/issues/553#issuecomment-1561826456
+     */
+    headless: 1
+  })
   if (puppeteerConfigFile) {
     checkConfigFile(puppeteerConfigFile)
-    puppeteerConfig = JSON.parse(fs.readFileSync(puppeteerConfigFile, 'utf-8'))
+    puppeteerConfig = Object.assign(puppeteerConfig, JSON.parse(fs.readFileSync(puppeteerConfigFile, 'utf-8')))
   }
 
   // check cssFile
