@@ -803,10 +803,10 @@
   resolved "https://registry.yarnpkg.com/@trysound/sax/-/sax-0.2.0.tgz#cccaab758af56761eb7bf37af6f03f326dd798ad"
   integrity sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==
 
-"@tsconfig/node14@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@tsconfig/node14/-/node14-1.0.3.tgz#e4386316284f00b98435bf40f72f75a09dabf6c1"
-  integrity sha512-ysT8mhdixWK6Hw3i1V2AeRqZ5WfXg1G43mqoYlM2nc6388Fq5jcXyr5mRsqViLx/GJYdoL0bfXD8nmF+Zn/Iow==
+"@tsconfig/node14@^14.1.0":
+  version "14.1.0"
+  resolved "https://registry.yarnpkg.com/@tsconfig/node14/-/node14-14.1.0.tgz#1f8611430002b2a08c68ec1b1e7aa40c03b8fcd2"
+  integrity sha512-VmsCG04YR58ciHBeJKBDNMWWfYbyP8FekWVuTlpstaUPlat1D0x/tXzkWP7yCMU0eSz9V4OZU0LBWTFJ3xZf6w==
 
 "@types/babel__core@^7.1.14":
   version "7.1.19"
