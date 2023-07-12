@@ -39,6 +39,9 @@
     "vite-svg-loader": "^4.0.0",
     "yarn-upgrade-all": "^0.7.0"
   },
+  "resolutions": {
+    "antlr4": "~4.11.0"
+  },
   "files": [
     "src/",
     "dist/",
