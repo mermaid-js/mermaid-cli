@@ -249,9 +249,11 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
        * We've already imported these modules in our `index.html` file, so that they
        * get correctly bundled.
        * @property {import("mermaid")["default"]} mermaid Already imported mermaid instance
+       * @property {import("@mermaid-js/mermaid-zenuml")["default"]} zenuml Already imported mermaid-zenuml instance
        */
-      const { mermaid } = /** @type {GlobalThisWithMermaid & typeof globalThis} */ (globalThis)
+      const { mermaid, zenuml } = /** @type {GlobalThisWithMermaid & typeof globalThis} */ (globalThis)
 
+      await mermaid.registerExternalDiagrams([zenuml])
       mermaid.initialize({ startOnLoad: false, ...mermaidConfig })
       // should throw an error if mmd diagram is invalid
       const { svg: svgText } = await mermaid.render('my-svg', definition, container)
