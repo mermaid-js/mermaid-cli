@@ -754,11 +754,11 @@
     "@jridgewell/sourcemap-codec" "1.4.14"
 
 "@mermaid-js/mermaid-zenuml@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@mermaid-js/mermaid-zenuml/-/mermaid-zenuml-0.1.1.tgz#f37328339adfb44b361f85957cf5dd2aaeeb8b2e"
-  integrity sha512-L123P7n0o9BMesxikqj4bUZdIVdr2WxXzh/IiaUFhQRJ3qjHotIOhI9Ua/kfujky2ULQy+3hiHC52O+xWWWNXw==
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@mermaid-js/mermaid-zenuml/-/mermaid-zenuml-0.1.2.tgz#720a2af7d0c8c5816ea092b1d12276ca0475e61d"
+  integrity sha512-6QxV2tGk+VT7iBQv10uO7UwlwzwOEY1LKDyEcgLjVanRQXQM5mbiAYnwolKopTDScaZicG0LEY1vnd08D7bRfw==
   dependencies:
-    "@zenuml/core" "^3.0.0"
+    "@zenuml/core" "^3.0.3"
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -1129,15 +1129,15 @@
   resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.3.4.tgz#06e83c5027f464eef861c329be81454bc8b70780"
   integrity sha512-7OjdcV8vQ74eiz1TZLzZP4JwqM5fA94K6yntPS5Z25r9HDuGNzaGdgvwKYq6S+MxwF0TFRwe50fIR/MYnakdkQ==
 
-"@zenuml/core@^3.0.0":
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/@zenuml/core/-/core-3.0.2.tgz#8a600ebbf79b3d2229e5569908eb73c30a10dfdb"
-  integrity sha512-IrBGYq3zjphUERu39ow9S//hHBe/WU0xGGlCJXGKDPVgMWVrQIFtb1e1PAzb/tCJ5n+DWj78/c7cysvXZaIlDw==
+"@zenuml/core@^3.0.3":
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/@zenuml/core/-/core-3.0.6.tgz#983249a78556504e8c6dd8ac8832010634ea91c9"
+  integrity sha512-azEBVrl+ClCPhII92TbzBUFcWhIjlOPdEHVzF6eZXs5Oy4JlrfldS5pAZBHCFL4riOBsjZ5sHHmQLQg9V07T4Q==
   dependencies:
     "@types/assert" "^1.5.4"
     "@types/ramda" "^0.28.0"
     "@vue/compat" "^3.2.45"
-    antlr4 "^4.11.0"
+    antlr4 "~4.11.0"
     color-string "^1.5.5"
     dom-to-image-more "^2.9.5"
     file-saver "^2.0.5"
@@ -1214,7 +1214,7 @@ ansi-styles@^5.0.0:
   resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-5.2.0.tgz#07449690ad45777d1924ac2abb2fc8895dba836b"
   integrity sha512-Cxwpt2SfTzTtXcfOlzGEee8O+c+MmUgGrNiBcXnuWxuFJHe6a5Hz7qwhwe5OgaSYI0IJvkLqWX1ASG+cJOkEiA==
 
-antlr4@^4.11.0, antlr4@~4.11.0:
+antlr4@~4.11.0:
   version "4.11.0"
   resolved "https://registry.yarnpkg.com/antlr4/-/antlr4-4.11.0.tgz#d7466f5044fa6e333c0ec821b30c6157f6b004ae"
   integrity sha512-GUGlpE2JUjAN+G8G5vY+nOoeyNhHsXoIJwP1XF1oRw89vifA1K46T6SEkwLwr7drihN7I/lf0DIjKc4OZvBX8w==
