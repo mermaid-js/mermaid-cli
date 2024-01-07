@@ -12,7 +12,14 @@
   "engines": {
     "node": "^14.13 || >=16.0"
   },
-  "exports": "./src/index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist-types/src/index.d.ts",
+        "default": "./src/index.js"
+      }
+    }
+  },
   "types": "./dist-types/src/index.d.ts",
   "scripts": {
     "prepare": "tsc && vite build",
