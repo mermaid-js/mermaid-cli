@@ -109,6 +109,7 @@ async function cli () {
     .addOption(new Option('-b, --backgroundColor [backgroundColor]', 'Background color for pngs/svgs (not pdfs). Example: transparent, red, \'#F0F0F0\'.').default('white'))
     .option('-c, --configFile [configFile]', 'JSON configuration file for mermaid.')
     .option('-C, --cssFile [cssFile]', 'CSS file for the page.')
+    .option('-I, --svgId [svgId]', 'The id attribute for the SVG element to be rendered.')
     .addOption(new Option('-s, --scale [scale]', 'Puppeteer scale factor').argParser(parseCommanderInt).default(1))
     .option('-f, --pdfFit', 'Scale PDF to fit chart')
     .option('-q, --quiet', 'Suppress log output')
@@ -117,7 +118,7 @@ async function cli () {
 
   const options = commander.opts()
 
-  let { theme, width, height, input, output, outputFormat, backgroundColor, configFile, cssFile, puppeteerConfigFile, scale, pdfFit, quiet } = options
+  let { theme, width, height, input, output, outputFormat, backgroundColor, configFile, cssFile, svgId, puppeteerConfigFile, scale, pdfFit, quiet } = options
 
   // check input file
   if (!input) {
@@ -187,7 +188,7 @@ async function cli () {
       quiet,
       outputFormat,
       parseMMDOptions: {
-        mermaidConfig, backgroundColor, myCSS, pdfFit, viewport: { width, height, deviceScaleFactor: scale }
+        mermaidConfig, backgroundColor, myCSS, pdfFit, viewport: { width, height, deviceScaleFactor: scale }, svgId
       }
     }
   )
@@ -200,6 +201,7 @@ async function cli () {
  * @property {Parameters<import("mermaid")["default"]["initialize"]>[0]} [mermaidConfig] - Mermaid config.
  * @property {CSSStyleDeclaration["cssText"]} [myCSS] - Optional CSS text.
  * @property {boolean} [pdfFit] - If set, scale PDF to fit chart.
+ * @property {string} [svgId] - The id attribute for the SVG element to be rendered.
  */
 
 /**
@@ -229,7 +231,7 @@ async function parseMMD (browser, definition, outputFormat, opt) {
  * @returns {Promise<{title: string | null, desc: string | null, data: Buffer}>} The output file in bytes,
  * with optional metadata.
  */
-async function renderMermaid (browser, definition, outputFormat, { viewport, backgroundColor = 'white', mermaidConfig = {}, myCSS, pdfFit } = {}) {
+async function renderMermaid (browser, definition, outputFormat, { viewport, backgroundColor = 'white', mermaidConfig = {}, myCSS, pdfFit, svgId } = {}) {
   const page = await browser.newPage()
   page.on('console', (msg) => {
     console.log(msg.text())
@@ -243,7 +245,7 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
     await page.$eval('body', (body, backgroundColor) => {
       body.style.background = backgroundColor
     }, backgroundColor)
-    const metadata = await page.$eval('#container', async (container, definition, mermaidConfig, myCSS, backgroundColor) => {
+    const metadata = await page.$eval('#container', async (container, definition, mermaidConfig, myCSS, backgroundColor, svgId) => {
       /**
        * @typedef {Object} GlobalThisWithMermaid
        * We've already imported these modules in our `index.html` file, so that they
@@ -256,7 +258,7 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
       await mermaid.registerExternalDiagrams([zenuml])
       mermaid.initialize({ startOnLoad: false, ...mermaidConfig })
       // should throw an error if mmd diagram is invalid
-      const { svg: svgText } = await mermaid.render('my-svg', definition, container)
+      const { svg: svgText } = await mermaid.render(svgId || 'my-svg', definition, container)
       container.innerHTML = svgText
 
       const svg = container.getElementsByTagName?.('svg')?.[0]
@@ -292,7 +294,7 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
       return {
         title, desc
       }
-    }, definition, mermaidConfig, myCSS, backgroundColor)
+    }, definition, mermaidConfig, myCSS, backgroundColor, svgId)
 
     if (outputFormat === 'svg') {
       const svgXML = await page.$eval('svg', (svg) => {
