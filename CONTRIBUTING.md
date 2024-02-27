@@ -1,6 +1,6 @@
 # Contributing
 
-[fork]: /fork
+[fork]: ../../fork
 [pr]: /compare
 [style]: https://standardjs.com/
 [code-of-conduct]: CODE_OF_CONDUCT.md
