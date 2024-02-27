@@ -44,7 +44,7 @@ The `--cssFile` option can be used to inline some custom CSS.
 
 Please see [./test-positive/flowchart1.css](test-positive/flowchart1.css) for an example of a CSS file that has animations.
 
-**Warning**: If you want to override `mermaid`'s [`themeCSS`](https://mermaid-js.github.io/mermaid/#/Setup?id=theme), we recommend instead adding `{"themeCSS": "..."})` to your mermaid `--configFile`. You may also need to use [`!important`](https://developer.mozilla.org/en-US/docs/Web/CSS/important) to override mermiad's `themeCSS`.
+**Warning**: If you want to override `mermaid`'s [`themeCSS`](https://mermaid.js.org/config/schema-docs/config.html#themecss), we recommend instead adding `{"themeCSS": "..."})` to your mermaid `--configFile`. You may also need to use [`!important`](https://developer.mozilla.org/en-US/docs/Web/CSS/important) to override mermiad's `themeCSS`.
 
 **Warning**: Inline CSS files may be blocked by your browser, depending on the [HTTP Content-Security-Policy header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy) of the website that hosts your SVG.
 
