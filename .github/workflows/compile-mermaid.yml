@@ -17,13 +17,13 @@ jobs:
           fetch-depth: 0
 
       - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0.11.0
+        uses: gittools/actions/gitversion/setup@v0.13.2
         with:
           versionSpec: "5.x"
 
       - name: Use GitVersion
         id: gitversion # step id used as reference for output values
-        uses: gittools/actions/gitversion/execute@v0.11.0
+        uses: gittools/actions/gitversion/execute@v0.13.2
 
       - name: Convert repository name to lower case
         run: echo "GITHUB_REPOSITORY_LOWER_CASE=$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
