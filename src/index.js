@@ -246,6 +246,8 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
       body.style.background = backgroundColor
     }, backgroundColor)
     const metadata = await page.$eval('#container', async (container, definition, mermaidConfig, myCSS, backgroundColor, svgId) => {
+      await Promise.all(Array.from(document.fonts, (font) => font.load()))
+
       /**
        * @typedef {Object} GlobalThisWithMermaid
        * We've already imported these modules in our `index.html` file, so that they
