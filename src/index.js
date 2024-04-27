@@ -13,6 +13,13 @@ const pkg = require('../package.json')
 const __dirname = url.fileURLToPath(new url.URL('.', import.meta.url))
 
 /**
+ * Mermaid.js IFFE path.
+ *
+ * Importing this in a browser adds a global `mermaid` object.
+ */
+const mermaidIIFEPath = path.resolve(path.dirname(require.resolve('mermaid')), 'mermaid.js')
+
+/**
  * Prints an error to stderr, then closes with exit code 1
  *
  * @param {string} message - The message to print to `stderr`.
@@ -245,13 +252,14 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
     await page.$eval('body', (body, backgroundColor) => {
       body.style.background = backgroundColor
     }, backgroundColor)
+    await page.addScriptTag({ path: mermaidIIFEPath })
     const metadata = await page.$eval('#container', async (container, definition, mermaidConfig, myCSS, backgroundColor, svgId) => {
       await Promise.all(Array.from(document.fonts, (font) => font.load()))
 
       /**
        * @typedef {Object} GlobalThisWithMermaid
-       * We've already imported these modules in our `index.html` file, so that they
-       * get correctly bundled.
+       * We've already imported these modules in our `index.html` file (or by running `page.addScriptTag`),
+       * so that they get correctly bundled.
        * @property {import("mermaid")["default"]} mermaid Already imported mermaid instance
        * @property {import("@mermaid-js/mermaid-zenuml")["default"]} zenuml Already imported mermaid-zenuml instance
        */
