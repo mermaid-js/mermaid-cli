@@ -144,3 +144,13 @@ stateDiagram
 ```   
 
 **Warning**: do not delete the trailing spaces after the \`\`\`
+
+10. Flowchart with KaTeX in it
+
+```mermaid
+---
+title: My flowchart with KaTeX in it.
+---
+flowchart LR
+  A["$$x^2$$"] -->|"$$\sqrt{x+3}$$"| B("$$\frac{1}{2}$$")
+```
