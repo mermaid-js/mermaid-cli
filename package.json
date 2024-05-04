@@ -10,7 +10,7 @@
     "mmdc": "./src/cli.js"
   },
   "engines": {
-    "node": "^14.13 || >=16.0"
+    "node": "^18.19 || >=20.0"
   },
   "exports": {
     ".": {
@@ -37,7 +37,8 @@
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.6.0",
     "@mermaid-js/mermaid-zenuml": "^0.2.0",
-    "@tsconfig/node14": "^14.1.0",
+    "@tsconfig/node18": "^18.2.4",
+    "@types/node": "~18.19.31",
     "jest": "^29.0.1",
     "standard": "^17.0.0",
     "typescript": "^5.0.1-rc",
