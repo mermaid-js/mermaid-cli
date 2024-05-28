@@ -1,7 +1,7 @@
 FROM node:18.20-alpine3.19 AS build
 
 ENV CHROME_BIN="/usr/bin/chromium-browser" \
-    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
+    PUPPETEER_SKIP_DOWNLOAD="true"
 
 RUN apk add chromium
 
