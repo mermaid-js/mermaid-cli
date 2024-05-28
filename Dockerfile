@@ -11,7 +11,7 @@ RUN chmod 755 install-dependencies.sh && /bin/sh install-dependencies.sh
 RUN adduser -D mermaidcli
 USER mermaidcli
 WORKDIR /home/mermaidcli
-RUN yarn add @mermaid-js/mermaid-cli@$VERSION
+RUN npm install @mermaid-js/mermaid-cli@$VERSION
 
 ADD puppeteer-config.json  /puppeteer-config.json
 

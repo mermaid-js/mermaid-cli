@@ -24,7 +24,7 @@
   "scripts": {
     "prepare": "tsc && vite build",
     "prepack": "tsc && vite build",
-    "test": "standard && yarn node --experimental-vm-modules $(yarn bin jest)",
+    "test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" npx jest",
     "lint": "standard",
     "lint-fix": "standard --fix"
   },
