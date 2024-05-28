@@ -21,4 +21,4 @@ Then run mermaid-cli with option `mmdc --puppeteerConfigFile puppeteerConfigFile
 
 You might also be able to do the same thing with environment variables by following: https://pptr.dev/#environment-variables.
 
-Btw, if you set `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=1` as an env variable when running `yarn install` or `npm install`, it should skip downloading CHROMIUM too.
+Btw, if you set `PUPPETEER_SKIP_DOWNLOAD=1` as an env variable when running `yarn install` or `npm install`, it should skip downloading CHROMIUM too.
