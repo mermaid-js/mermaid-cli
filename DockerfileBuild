@@ -9,8 +9,8 @@ WORKDIR /app
 
 COPY . /app/
 
-RUN yarn \
-    && yarn pack
+RUN npm install \
+    && npm pack
 
 FROM node:18.20-alpine3.19 AS mermaid-cli-current
 
@@ -25,7 +25,7 @@ RUN chmod 755 install-dependencies.sh && /bin/sh install-dependencies.sh
 RUN adduser -D mermaidcli
 USER mermaidcli
 WORKDIR /home/mermaidcli
-RUN yarn add $(ls -d /install/*.tgz)
+RUN npm install $(ls -d /install/*.tgz)
 
 ADD puppeteer-config.json  /puppeteer-config.json
 WORKDIR /data
