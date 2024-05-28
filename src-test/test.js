@@ -200,7 +200,7 @@ describe('mermaid-cli', () => {
   test('should error on mermaid syntax error', async () => {
     await expect(
       compileDiagram('test-negative', 'invalid.expect-error.mmd', 'svg')
-    ).rejects.toThrow('Error: Evaluation failed: Error: Parse error on line 2:')
+    ).rejects.toThrow('Error: Parse error on line 2:')
   }, timeout)
 
   test('should have 3 trailing spaces after ``` in test-positive/mermaid.md for case 9.', async () => {
@@ -435,7 +435,7 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       const invalidMMDInput = 'this is not a valid mermaid file'
       expect(
         parseMMD(browser, invalidMMDInput, 'svg')
-      ).rejects.toThrow('Evaluation failed: UnknownDiagramError: No diagram type detected matching given configuration for text: this is not a valid mermaid file')
+      ).rejects.toThrow('No diagram type detected matching given configuration for text: this is not a valid mermaid file')
     })
 
     describe.each(workflows)('testing workflow %s', (workflow) => {
