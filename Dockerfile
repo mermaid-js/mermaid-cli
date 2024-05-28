@@ -1,7 +1,7 @@
 FROM node:alpine
 
 ENV CHROME_BIN="/usr/bin/chromium-browser" \
-    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
+    PUPPETEER_SKIP_DOWNLOAD="true" 
 
 ARG VERSION
 
