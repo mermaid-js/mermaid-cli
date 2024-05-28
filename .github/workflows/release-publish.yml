@@ -24,13 +24,10 @@ jobs:
           node-version: 18
           cache: npm
           registry-url: https://registry.npmjs.org/
-      - name: Install Yarn
-        run: npm i yarn --global
-
       - name: Build the package
-        # throws an error if yarn.lock is out-of-date
-        # `yarn install` automatically builds the package
-        run: yarn install --frozen-lockfile
+        # throws an error if package-lock.json is out-of-date
+        # `npm ci` automatically builds the package
+        run: npm ci
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v3.0.0
         with:

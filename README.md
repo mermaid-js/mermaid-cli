@@ -188,7 +188,7 @@ Some people are [having issues](https://github.com/mermaidjs/mermaid.cli/issues/
 installing this tool globally. Installing it locally is an alternative solution:
 
 ```
-yarn add @mermaid-js/mermaid-cli
+npm install @mermaid-js/mermaid-cli
 ./node_modules/.bin/mmdc -h
 ```
 

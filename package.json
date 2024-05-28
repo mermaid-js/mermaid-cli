@@ -24,7 +24,7 @@
   "scripts": {
     "prepare": "tsc && vite build",
     "prepack": "tsc && vite build",
-    "test": "standard && yarn node --experimental-vm-modules $(yarn bin jest)",
+    "test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" npx jest",
     "lint": "standard",
     "lint-fix": "standard --fix"
   },
@@ -67,5 +67,5 @@
       "/dist-types/"
     ]
   },
-  "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72"
+  "packageManager": "npm@10.8.1"
 }
