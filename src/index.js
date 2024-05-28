@@ -257,7 +257,7 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
         await Promise.all(Array.from(document.fonts, (font) => font.load()))
         // wait for fonts to go from 'loading' to 'loaded'
         await document.fonts.ready
-        return document.fonts.check('1em "Font Awesome 5 Free", "Font Awesome 5 Brands"')
+        return document.fonts.check('1em "Font Awesome 6 Free", "Font Awesome 6 Brands"')
       }),
       page.$eval('body', (body, backgroundColor) => {
         body.style.background = backgroundColor
