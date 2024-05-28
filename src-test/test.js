@@ -95,7 +95,7 @@ function expectBytesAreFormat (bytes, fileType) {
 
 let browser
 beforeAll(async () => {
-  browser = await puppeteer.launch()
+  browser = await puppeteer.launch({ headless: 'shell' })
 })
 afterAll(async () => {
   if (browser) {
