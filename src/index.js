@@ -177,15 +177,14 @@ async function cli () {
     checkConfigFile(configFile)
     mermaidConfig = Object.assign(mermaidConfig, JSON.parse(fs.readFileSync(configFile, 'utf-8')))
   }
-  // @ts-expect-error Setting headless to `1` is not officially supported
+
   let puppeteerConfig = /** @type {import('puppeteer').PuppeteerLaunchOptions} */ ({
     /*
-     * `headless: 1` is not officially supported, but setting this to any
-     * non-`true` truthy value doesn't change any behavior, but it hides the
-     * Puppeteer old Headless deprecation warning,
-     * see https://github.com/argos-ci/jest-puppeteer/issues/553#issuecomment-1561826456
+     * `headless: 'shell'` is not officially supported in Puppeteer v19, v20, v21,
+     * but still works. In Puppeteer v22, it uses the `chrome-headless-shell` package,
+     * which is much faster than the regular headless mode.
      */
-    headless: 1
+    headless: 'shell'
   })
   if (puppeteerConfigFile) {
     checkConfigFile(puppeteerConfigFile)
