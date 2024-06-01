@@ -413,7 +413,11 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, output
   // TODO: should we use a Markdown parser like remark instead of rolling our own parser?
   const mermaidChartsInMarkdown = /^[^\S\n]*[`:]{3}(?:mermaid)([^\S\n]*\r?\n([\s\S]*?))[`:]{3}[^\S\n]*$/
   const mermaidChartsInMarkdownRegexGlobal = new RegExp(mermaidChartsInMarkdown, 'gm')
-  const browser = await puppeteer.launch(puppeteerConfig)
+  /**
+   * @type {puppeteer.Browser | undefined}
+   * Lazy-loaded browser instance, only created when needed.
+   */
+  let browser
   try {
     if (!outputFormat) {
       const outputFormatFromFilename =
@@ -435,6 +439,9 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, output
     if (input && /\.(md|markdown)$/.test(input)) {
       const imagePromises = []
       for (const mermaidCodeblockMatch of definition.matchAll(mermaidChartsInMarkdownRegexGlobal)) {
+        if (browser === undefined) {
+          browser = await puppeteer.launch(puppeteerConfig)
+        }
         const mermaidDefinition = mermaidCodeblockMatch[2]
 
         /** Output can be either a template image file, or a `.md` output file.
@@ -488,11 +495,12 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, output
       }
     } else {
       info('Generating single mermaid chart')
+      browser = await puppeteer.launch(puppeteerConfig)
       const data = await parseMMD(browser, definition, outputFormat, parseMMDOptions)
       await fs.promises.writeFile(output, data)
     }
   } finally {
-    await browser.close()
+    await browser?.close?.()
   }
 }
 
