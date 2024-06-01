@@ -211,23 +211,6 @@ async function cli () {
  */
 
 /**
- * Parse and render a mermaid diagram.
- *
- * @deprecated Prefer {@link renderMermaid}, as it also returns useful metadata.
- *
- * @param {import("puppeteer").Browser} browser - Puppeteer Browser
- * @param {string} definition - Mermaid diagram definition
- * @param {"svg" | "png" | "pdf"} outputFormat - Mermaid output format.
- * @param {ParseMDDOptions} [opt] - Options, see {@link ParseMDDOptions} for details.
- *
- * @returns {Promise<Buffer>} The output file in bytes.
- */
-async function parseMMD (browser, definition, outputFormat, opt) {
-  const { data } = await renderMermaid(browser, definition, outputFormat, opt)
-  return data
-}
-
-/**
  * Render a mermaid diagram.
  *
  * @param {import("puppeteer").Browser} browser - Puppeteer Browser
@@ -505,7 +488,7 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, output
       }
     } else {
       info('Generating single mermaid chart')
-      const data = await parseMMD(browser, definition, outputFormat, parseMMDOptions)
+      const { data } = await renderMermaid(browser, definition, outputFormat, parseMMDOptions)
       await fs.promises.writeFile(output, data)
     }
   } finally {
@@ -513,4 +496,4 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, output
   }
 }
 
-export { run, renderMermaid, parseMMD, cli, error }
+export { run, renderMermaid, cli, error }
