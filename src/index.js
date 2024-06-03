@@ -250,15 +250,24 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
     const mermaidHTMLPath = path.join(__dirname, '..', 'dist', 'index.html')
     await page.goto(url.pathToFileURL(mermaidHTMLPath).href)
 
-    await Promise.all([
-      page.$eval('style', async () => {
+    const [fontAwesomeLoaded] = await Promise.all([
+      page.$eval('style', async (_) => {
+        // starts loading all fonts
+        // doesn't do anything if the fonts are already 'loading'
         await Promise.all(Array.from(document.fonts, (font) => font.load()))
+        // wait for fonts to go from 'loading' to 'loaded'
+        await document.fonts.ready
+        return document.fonts.check('1em "Font Awesome 5 Free", "Font Awesome 5 Brands"')
       }),
       page.$eval('body', (body, backgroundColor) => {
         body.style.background = backgroundColor
       }, backgroundColor),
       page.addScriptTag({ path: mermaidIIFEPath })
     ])
+
+    if (fontAwesomeLoaded === false) {
+      warn('Font Awesome 5 Free or Font Awesome 5 Brands failed to load. This may cause issues with some icons.')
+    }
 
     const metadata = await page.$eval('#container', async (container, definition, mermaidConfig, myCSS, backgroundColor, svgId) => {
       /**
@@ -306,6 +315,10 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
           desc = svgNode.textContent
         }
       }
+
+      // this shouldn't be required, but just in case, let's double-check that
+      // all fonts are actually loaded
+      await document.fonts.ready
       return {
         title, desc
       }
