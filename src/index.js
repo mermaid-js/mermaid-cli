@@ -249,13 +249,18 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
     }
     const mermaidHTMLPath = path.join(__dirname, '..', 'dist', 'index.html')
     await page.goto(url.pathToFileURL(mermaidHTMLPath).href)
-    await page.$eval('body', (body, backgroundColor) => {
-      body.style.background = backgroundColor
-    }, backgroundColor)
-    await page.addScriptTag({ path: mermaidIIFEPath })
-    const metadata = await page.$eval('#container', async (container, definition, mermaidConfig, myCSS, backgroundColor, svgId) => {
-      await Promise.all(Array.from(document.fonts, (font) => font.load()))
 
+    await Promise.all([
+      page.$eval('style', async () => {
+        await Promise.all(Array.from(document.fonts, (font) => font.load()))
+      }),
+      page.$eval('body', (body, backgroundColor) => {
+        body.style.background = backgroundColor
+      }, backgroundColor),
+      page.addScriptTag({ path: mermaidIIFEPath })
+    ])
+
+    const metadata = await page.$eval('#container', async (container, definition, mermaidConfig, myCSS, backgroundColor, svgId) => {
       /**
        * @typedef {Object} GlobalThisWithMermaid
        * We've already imported these modules in our `index.html` file (or by running `page.addScriptTag`),
