@@ -1,12 +1,28 @@
 import { defineConfig } from "vite"
-import { viteSingleFile } from "vite-plugin-singlefile"
-import svgLoader from 'vite-svg-loader'
 
 export default defineConfig({
+  base: './',
   plugins: [
-    // bundle everything into a single `index.html`
-    viteSingleFile(),
-    // unsure if this is working properly for fontawesome fonts
-    svgLoader(),
-  ],
-})
+    {
+      name: 'IIFE-converter',
+      config(currentConfig, _unused) {
+        return {
+          ...currentConfig,
+          build: {
+            ...currentConfig.build,
+            rollupOptions: {
+              ...currentConfig.build?.rollupOptions,
+              output: {
+                ...currentConfig.build?.rollupOptions?.output,
+                format: 'iife',
+              }
+            }
+          }
+        };
+      },
+      transformIndexHtml(html) {
+        return html.replace('<script type="module" crossorigin', '<script')
+      }
+    }
+  ]
+});
