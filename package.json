@@ -47,8 +47,6 @@
     "standard": "^17.0.0",
     "typescript": "^5.0.1-rc",
     "vite": "^4.0.3",
-    "vite-plugin-singlefile": "^0.13.1",
-    "vite-svg-loader": "^5.1.0",
     "yarn-upgrade-all": "^0.7.0"
   },
   "files": [
