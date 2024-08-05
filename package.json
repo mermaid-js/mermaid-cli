@@ -32,7 +32,7 @@
     "chalk": "^5.0.1",
     "commander": "^10.0.0",
     "mermaid": "^10.8.0",
-    "puppeteer": "^19.0.0"
+    "puppeteer": "^22.15.0"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.6.0",
