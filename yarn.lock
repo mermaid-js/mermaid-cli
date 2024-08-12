@@ -1769,6 +1769,11 @@ color-convert@^2.0.1:
   dependencies:
     color-name "~1.1.4"
 
+color-loggers@^0.3.1:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/color-loggers/-/color-loggers-0.3.2.tgz#04b12224f4ef3f78c1bdfb238f2cee50f72d7e51"
+  integrity sha512-asfXyY1/9N+Cxt30jb0PFy5tccybuMnWVc9J8EJuYoJVlcsUshn+pt2QuyUB3BWKMXVvEH8jgLrCFs11Am8QZA==
+
 color-name@1.1.3:
   version "1.1.3"
   resolved "https://registry.npmjs.org/color-name/-/color-name-1.1.3.tgz"
@@ -5796,9 +5801,11 @@ yargs@^17.3.1:
     yargs-parser "^21.0.0"
 
 yarn-upgrade-all@^0.7.0:
-  version "0.7.2"
-  resolved "https://registry.yarnpkg.com/yarn-upgrade-all/-/yarn-upgrade-all-0.7.2.tgz#5d2afa9230661c55f22d3f848f22258db732ae20"
-  integrity sha512-iVxmoBuNdpxeahAIehJ039Pp6S8zQ/qTENQRMV5hp7x/2tLGUzytCODIKZFjfUwcRRKT3boGgHheUEWC7+VlQw==
+  version "0.7.4"
+  resolved "https://registry.yarnpkg.com/yarn-upgrade-all/-/yarn-upgrade-all-0.7.4.tgz#bb23ca31e2b7028ef973fe48c882b24288988ad6"
+  integrity sha512-poqeMyl5LD+xkw9YN322UHqctTf/N6FLpLsAVUllZqGcntEYkDuKL5r4p+zB67z5MaLs8F3qpPNlc9jNjXSABw==
+  dependencies:
+    color-loggers "^0.3.1"
 
 yauzl@^2.10.0:
   version "2.10.0"
