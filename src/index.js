@@ -165,11 +165,10 @@ async function cli () {
   } else if (!/\.(?:svg|png|pdf|md|markdown)$/.test(output)) {
     error('Output file must end with ".md"/".markdown", ".svg", ".png" or ".pdf"')
   }
-  if (output) {
-    const outputDir = path.dirname(output)
-    if (!fs.existsSync(outputDir)) {
-      error(`Output directory "${outputDir}/" doesn't exist`)
-    }
+
+  const outputDir = path.dirname(output)
+  if (!fs.existsSync(outputDir)) {
+    error(`Output directory "${outputDir}/" doesn't exist`)
   }
 
   // check config files
