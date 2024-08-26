@@ -76,18 +76,18 @@ async function compileDiagram (workflow, file, format, { puppeteerConfigFile } =
 /**
  * Confirms the filetype of the given bytes
  *
- * @param {Buffer} bytes - The bytes of the file to check
+ * @param {Uint8Array} bytes - The bytes of the file to check
  * @param {"png"|"pdf"|"svg"} fileType - The filetype to check for
  */
 function expectBytesAreFormat (bytes, fileType) {
   switch (fileType) {
     // see https://en.wikipedia.org/wiki/List_of_file_signatures
     case 'png':
-      return expect(bytes.subarray(0, 8)).toEqual(Buffer.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]))
+      return expect(new Uint8Array(bytes).subarray(0, 8)).toEqual(Uint8Array.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]))
     case 'pdf':
-      return expect(bytes.subarray(0, 5)).toEqual(Buffer.from('%PDF-', 'utf8'))
+      return expect(new Uint8Array(bytes).subarray(0, 5)).toEqual(Uint8Array.from(Buffer.from('%PDF-', 'utf8')))
     case 'svg':
-      return expect(bytes.subarray(0, 4)).toEqual(Buffer.from('<svg', 'utf8'))
+      return expect(new Uint8Array(bytes).subarray(0, 4)).toEqual(Uint8Array.from(Buffer.from('<svg', 'utf8')))
     default:
       throw new Error('Unsupported filetype')
   }
@@ -427,7 +427,7 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
     test('should return bytes from mmd', async () => {
       const mmdInput = 'graph TD;\n    nA-->B;\n'
       const { data: bytes } = await renderMermaid(browser, mmdInput, 'svg')
-      expect(bytes).toBeInstanceOf(Buffer)
+      expect(bytes).toBeInstanceOf(Uint8Array)
       expectBytesAreFormat(bytes, 'svg')
     })
 

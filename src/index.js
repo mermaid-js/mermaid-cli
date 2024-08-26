@@ -229,7 +229,7 @@ async function cli () {
  * @param {string} definition - Mermaid diagram definition
  * @param {"svg" | "png" | "pdf"} outputFormat - Mermaid output format.
  * @param {ParseMDDOptions} [opt] - Options, see {@link ParseMDDOptions} for details.
- * @returns {Promise<{title: string | null, desc: string | null, data: Buffer}>} The output file in bytes,
+ * @returns {Promise<{title: string | null, desc: string | null, data: Uint8Array}>} The output file in bytes,
  * with optional metadata.
  */
 async function renderMermaid (browser, definition, outputFormat, { viewport, backgroundColor = 'white', mermaidConfig = {}, myCSS, pdfFit, svgId } = {}) {

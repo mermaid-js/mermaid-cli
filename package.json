@@ -34,7 +34,7 @@
     "mermaid": "^11.0.2"
   },
   "peerDependencies": {
-    "puppeteer": "^19 || ^20 || ^21 || ^22"
+    "puppeteer": "^23"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^6.5.2",
@@ -42,8 +42,8 @@
     "@mermaid-js/mermaid-zenuml": "^0.2.0",
     "@tsconfig/node18": "^18.2.4",
     "@types/node": "~18.19.31",
-    "puppeteer": "^22.10.0",
     "jest": "^29.0.1",
+    "puppeteer": "^23.1.1",
     "standard": "^17.0.0",
     "typescript": "^5.0.1-rc",
     "vite": "^4.0.3",
