@@ -167,7 +167,7 @@ async function cli () {
   }
 
   const outputDir = path.dirname(output)
-  if (!fs.existsSync(outputDir)) {
+  if (output !== '/dev/stdout' && !fs.existsSync(outputDir)) {
     error(`Output directory "${outputDir}/" doesn't exist`)
   }
 
@@ -253,7 +253,7 @@ async function parseMMD (browser, definition, outputFormat, opt) {
 async function renderMermaid (browser, definition, outputFormat, { viewport, backgroundColor = 'white', mermaidConfig = {}, myCSS, pdfFit, svgId } = {}) {
   const page = await browser.newPage()
   page.on('console', (msg) => {
-    console.log(msg.text())
+    console.warn(msg.text())
   })
   try {
     if (viewport) {
