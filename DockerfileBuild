@@ -1,4 +1,4 @@
-FROM node:alpine AS build
+FROM node:18.20-alpine3.19 AS build
 
 ENV CHROME_BIN="/usr/bin/chromium-browser" \
     PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
@@ -12,7 +12,7 @@ COPY . /app/
 RUN yarn \
     && yarn pack
 
-FROM node:alpine AS mermaid-cli-current
+FROM node:18.20-alpine3.19 AS mermaid-cli-current
 
 WORKDIR /app
 
