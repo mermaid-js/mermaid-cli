@@ -31,7 +31,7 @@
   "dependencies": {
     "chalk": "^5.0.1",
     "commander": "^10.0.0",
-    "mermaid": "^10.8.0",
+    "mermaid": "^11.0.2",
     "puppeteer": "^19.0.0"
   },
   "devDependencies": {
