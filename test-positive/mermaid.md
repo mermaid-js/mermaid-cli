@@ -6,7 +6,7 @@ A-->B("hello 🐛")
 2. git-graph.mmd
 ```mermaid
 gitGraph
-    % Need to manually set id, otherwise they are auto-generated
+    %% Need to manually set id, otherwise they are auto-generated
     commit id: "abcdef"
     commit id: "123456"
     branch feature
