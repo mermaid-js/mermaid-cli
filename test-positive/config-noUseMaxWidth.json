@@ -28,6 +28,12 @@
     "requirement": {
         "useMaxWidth": false
     },
+    "sankey": {
+        "useMaxWidth": false
+    },
+    "gitGraph": {
+        "useMaxWidth": false
+    },
     "c4": {
         "useMaxWidth": false
     }

@@ -31,13 +31,14 @@
   "dependencies": {
     "chalk": "^5.0.1",
     "commander": "^12.1.0",
-    "mermaid": "^10.8.0"
+    "mermaid": "^11.0.2"
   },
   "peerDependencies": {
     "puppeteer": "^19 || ^20 || ^21 || ^22"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^6.5.2",
+    "@mermaid-js/layout-elk": "^0.1.2",
     "@mermaid-js/mermaid-zenuml": "^0.2.0",
     "@tsconfig/node18": "^18.2.4",
     "@types/node": "~18.19.31",
