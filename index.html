@@ -12,9 +12,11 @@
       import "katex/dist/katex.css"
 
       import zenuml from "@mermaid-js/mermaid-zenuml"
+      import elkLayouts from "@mermaid-js/layout-elk"
 
       // expose zenuml to the global scope so that puppeteer can see it
       globalThis.zenuml = zenuml
+      globalThis.elkLayouts = elkLayouts
     </script>
   </body>
 </html>

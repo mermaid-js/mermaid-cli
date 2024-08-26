@@ -154,3 +154,16 @@ title: My flowchart with KaTeX in it.
 flowchart LR
   A["$$x^2$$"] -->|"$$\sqrt{x+3}$$"| B("$$\frac{1}{2}$$")
 ```
+
+11. Flowchart using Elk and handDrawn look
+
+```mermaid
+---
+config:
+    look: handDrawn
+    layout: elk
+    handDrawnSeed: 1 # this is so visual regression tests are constant
+---
+flowchart LR
+    A --> B --> C & D
+```

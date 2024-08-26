@@ -256,10 +256,12 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
        * so that they get correctly bundled.
        * @property {import("mermaid")["default"]} mermaid Already imported mermaid instance
        * @property {import("@mermaid-js/mermaid-zenuml")["default"]} zenuml Already imported mermaid-zenuml instance
+       * @property {import("@mermaid-js/layout-elk")["default"]} elkLayouts Already imported mermaid-elkLayouts instance
        */
-      const { mermaid, zenuml } = /** @type {GlobalThisWithMermaid & typeof globalThis} */ (globalThis)
+      const { mermaid, zenuml, elkLayouts } = /** @type {GlobalThisWithMermaid & typeof globalThis} */ (globalThis)
 
       await mermaid.registerExternalDiagrams([zenuml])
+      mermaid.registerLayoutLoaders(elkLayouts)
       mermaid.initialize({ startOnLoad: false, ...mermaidConfig })
       // should throw an error if mmd diagram is invalid
       const { svg: svgText } = await mermaid.render(svgId || 'my-svg', definition, container)
