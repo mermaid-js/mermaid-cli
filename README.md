@@ -228,3 +228,14 @@ it installs (`mmdc`).  `npx -p @mermaid-js/mermaid-cli mmdc -h`
 ## For contributors
 
 Contributions are welcome. See the [contribution guide](CONTRIBUTING.md).
+
+## Release procedure
+
+### When
+Normally, we make releases, when a new version of mermaid is published. Unless we need to make an emergency fix and we cannot wait for the next mermaid release.
+### How
+Click on the [Releases](https://github.com/mermaid-js/mermaid-cli/releases). You will find a draft of the next release (there must at lease 1 contribution). From here:
+1. Create a tag with the release version, e.g. 11.1.1. Normally, we follow mermaid project release version.
+2. Release name is the version of the release tag, e.g. 11.1.1.
+3. Update the draft if needed
+4. Publish the release. That's it! You are done.
