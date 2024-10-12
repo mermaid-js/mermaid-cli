@@ -225,7 +225,7 @@ async function cli () {
 /**
  * Render a mermaid diagram.
  *
- * @param {import("puppeteer").Browser} browser - Puppeteer Browser
+ * @param {import("puppeteer").Browser | import("puppeteer").BrowserContext} browser - Puppeteer Browser
  * @param {string} definition - Mermaid diagram definition
  * @param {"svg" | "png" | "pdf"} outputFormat - Mermaid output format.
  * @param {ParseMDDOptions} [opt] - Options, see {@link ParseMDDOptions} for details.
