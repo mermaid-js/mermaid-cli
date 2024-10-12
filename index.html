@@ -11,11 +11,9 @@
       import "@fortawesome/fontawesome-free/css/fontawesome.css"
       import "katex/dist/katex.css"
 
-      import zenuml from "@mermaid-js/mermaid-zenuml"
       import elkLayouts from "@mermaid-js/layout-elk"
 
-      // expose zenuml to the global scope so that puppeteer can see it
-      globalThis.zenuml = zenuml
+      // expose elkLayouts to the global scope so that puppeteer can see it
       globalThis.elkLayouts = elkLayouts
     </script>
   </body>
