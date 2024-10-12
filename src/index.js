@@ -313,7 +313,7 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
       })
       return {
         ...metadata,
-        data: Buffer.from(svgXML, 'utf8')
+        data: new TextEncoder().encode(svgXML)
       }
     } else if (outputFormat === 'png') {
       const clip = await page.$eval('svg', svg => {
