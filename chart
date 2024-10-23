@@ -1,0 +1,36 @@
+classDiagram
+    class Operation {
+        <<interface>>
+        +getResult() int
+    }
+    class AddOperation {
+        +numberA int
+        +numberB int
+        +getResult() int
+    }
+    class SubOperation {
+        +numberA int
+        +numberB int
+        +getResult() int
+    }
+    class OperationFactory {
+        <<abstract>>
+        +createOperation() Operation
+    }
+    class AddFactory {
+        +createOperation() Operation
+    }
+    class SubFactory {
+        +createOperation() Operation
+    }
+    class Client {
+        +main(String[]) void
+    }
+    Operation <|-- AddOperation
+    Operation <|-- SubOperation
+    OperationFactory <|.. AddFactory
+    OperationFactory <|.. SubFactory
+    AddFactory ..> AddOperation : creates
+    SubFactory ..> SubOperation : creates
+    Client --> OperationFactory : uses
+    Client --> Operation : uses
