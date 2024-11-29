@@ -39,6 +39,9 @@
     "puppeteer": "^23"
   },
   "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/eslint-parser": "^7.25.9",
+    "@babel/plugin-syntax-import-attributes": "^7.26.0",
     "@fortawesome/fontawesome-free": "^6.5.2",
     "@mermaid-js/layout-elk": "^0.1.2",
     "@tsconfig/node18": "^18.2.4",
@@ -61,6 +64,7 @@
     }
   },
   "standard": {
+    "parser": "@babel/eslint-parser",
     "ignore": [
       "/dist/",
       "/dist-types/"

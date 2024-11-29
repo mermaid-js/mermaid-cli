@@ -5,11 +5,8 @@ import { resolve } from 'import-meta-resolve'
 import path from 'path'
 import puppeteer from 'puppeteer'
 import url from 'url'
+import pkg from '../package.json' with { type: 'json' }
 
-// importing JSON is still experimental in Node.JS https://nodejs.org/docs/latest-v16.x/api/esm.html#json-modules
-import { createRequire } from 'module'
-const require = createRequire(import.meta.url)
-const pkg = require('../package.json')
 // __dirname is not available in ESM modules by default
 const __dirname = url.fileURLToPath(new url.URL('.', import.meta.url))
 
