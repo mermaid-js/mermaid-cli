@@ -42,7 +42,12 @@ jobs:
 
       - name: Prepare release
         run: npm version --no-git-tag-version --allow-same-version ${{env.RELEASE_VERSION}}
-        
+
+      - name: Update version file
+        run: |
+          echo "export const version = '${{env.RELEASE_VERSION}}'" > src/version.js
+          git add src/version.js
+
       - name: Convert repository name to lower case
         run: echo "GITHUB_REPOSITORY_LOWER_CASE=$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
