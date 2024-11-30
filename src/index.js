@@ -5,11 +5,8 @@ import { resolve } from 'import-meta-resolve'
 import path from 'path'
 import puppeteer from 'puppeteer'
 import url from 'url'
+import { version } from './version.js'
 
-// importing JSON is still experimental in Node.JS https://nodejs.org/docs/latest-v16.x/api/esm.html#json-modules
-import { createRequire } from 'module'
-const require = createRequire(import.meta.url)
-const pkg = require('../package.json')
 // __dirname is not available in ESM modules by default
 const __dirname = url.fileURLToPath(new url.URL('.', import.meta.url))
 
@@ -108,7 +105,7 @@ function parseCommanderInt (value, _unused) {
 async function cli () {
   const commander = new Command()
   commander
-    .version(pkg.version)
+    .version(version)
     .addOption(new Option('-t, --theme [theme]', 'Theme of the chart').choices(['default', 'forest', 'dark', 'neutral']).default('default'))
     .addOption(new Option('-w, --width [width]', 'Width of the page').argParser(parseCommanderInt).default(800))
     .addOption(new Option('-H, --height [height]', 'Height of the page').argParser(parseCommanderInt).default(600))
