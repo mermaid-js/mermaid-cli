@@ -19,6 +19,7 @@
     // next to the .js files
     // We can't use `dist/` as Vite will automatically overwrite it.
     "outDir": "dist-types",
+    "rootDir": ".",
     // go to js file when using IDE functions like
     // "Go to Definition" in VSCode
     "declarationMap": true,
