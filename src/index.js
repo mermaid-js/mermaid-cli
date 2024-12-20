@@ -410,17 +410,13 @@ async function renderMermaid(
           await mermaid.registerIconPacks(
             iconPackages.map((pkg) => ({
               name: pkg,
-              //loader: () =>
               loader: () =>
-                //info(`Starting to load icons for package: ${pkg}`);
                 fetch(`https://unpkg.com/@iconify-json/${pkg}/icons.json`).then(
                   (res) => {
-                    //info(`load icons for package: ${pkg}`);
-                    // if (!res.ok) {
-                    //   error(`Failed to fetch icons for package: ${pkg}`);
-                    //   return {};
-                    // }
-
+                    console.info(`load icons for package: ${pkg}`);
+                    if (!res.ok) {
+                      error(`Failed to fetch icons for package: ${pkg}`);
+                    }
                     return res.json();
                   }
                 ),

@@ -1,0 +1,12 @@
+---
+title: Architecture Diagram
+---
+architecture-beta
+    group api(cloud)[API Label]
+    service db(database)[Database Label] in api
+    service disk1(disk)[Storage 1 Label] in api
+    service disk2(disk)[Storage 2 Label] in api
+    service server(server)[Server Label] in api
+    db:L -- R:server
+    disk1:T -- B:server
+    disk2:T -- B:db
