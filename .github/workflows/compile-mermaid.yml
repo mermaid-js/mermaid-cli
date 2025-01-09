@@ -64,7 +64,8 @@ jobs:
           )
           # This will overwrite any PNG files with the same name that have been created by run-tests.sh
           # v0.5.0 is the last version to correctly convert our SVG files to PNG
-          npx --yes convert-svg-to-png@0.5.0 "${svg_files_to_convert[@]}"
+          # We use aa-exec since `convert-svg-to-png` uses puppeteer, which AppArmor blocks in Ubuntu 24.04
+          aa-exec --profile=chrome npx --yes convert-svg-to-png@0.5.0 "${svg_files_to_convert[@]}"
 
       - name: Upload diagrams for manual inspection
         # also uploads for `upload-percy.yml` action
