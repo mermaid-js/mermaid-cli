@@ -21,5 +21,7 @@ jobs:
           cache: 'npm'
       # throws an error if package-lock.json is out-of-date
       - run: npm ci
-      # runs jest unittests
-      - run: npm test
+      # We use aa-exec since Ubuntu 24.04's AppArmor profile blocks the use
+      # of puppeteer otherwise, see
+      # https://github.com/puppeteer/puppeteer/issues/12818
+      - run: aa-exec --profile=chrome npm test
