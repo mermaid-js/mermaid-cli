@@ -466,5 +466,13 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       expect(result).toMatchObject({ title: 'Hi', desc: 'World' })
       expectBytesAreFormat(result.data, 'svg')
     })
+
+    test('should show Iconify icon packs', async () => {
+      const mmdInput = 'architecture-beta\n    group aws(logos:aws)[AWS]'
+      const result = await renderMermaid(browser, mmdInput, 'svg')
+      expectBytesAreFormat(result.data, 'svg')
+      const decoder = new TextDecoder();
+      expect(decoder.decode(result.data)).toContain('<path')
+    })
   })
 })
