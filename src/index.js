@@ -264,6 +264,17 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
 
       await mermaid.registerExternalDiagrams([zenuml])
       mermaid.registerLayoutLoaders(elkLayouts)
+      // lazy load icon packs
+      const iconPacks = ['logos', 'mdi']
+      mermaid.registerIconPacks(
+        iconPacks.map((icon) => ({
+          name: icon,
+          loader: () =>
+            fetch(`https://unpkg.com/@iconify-json/${icon}/icons.json`)
+              .then((res) => res.json())
+              .catch(() => error(`Failed to fetch icon: ${icon}`))
+        }))
+      )
       mermaid.initialize({ startOnLoad: false, ...mermaidConfig })
       // should throw an error if mmd diagram is invalid
       const { svg: svgText } = await mermaid.render(svgId || 'my-svg', definition, container)
