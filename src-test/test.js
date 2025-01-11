@@ -471,7 +471,7 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       const mmdInput = 'architecture-beta\n    group aws(logos:aws)[AWS]'
       const result = await renderMermaid(browser, mmdInput, 'svg')
       expectBytesAreFormat(result.data, 'svg')
-      const decoder = new TextDecoder();
+      const decoder = new TextDecoder()
       expect(decoder.decode(result.data)).toContain('<path')
     })
   })
