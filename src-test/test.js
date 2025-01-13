@@ -414,7 +414,10 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
           formats.push('markdown')
         }
         const shouldError = /expect-error/.test(file)
-        test.concurrent.each(formats)(`${shouldError ? 'should fail' : 'should compile'} ${file} to format %s`, async (format) => {
+        // markdown files render all their images in parallel, so doing lots
+        // of markdown files in parallel is expensive!
+        const runConcurrently = !/\.(md|markdown)$/.test(file);
+        (runConcurrently ? test.concurrent : test).each(formats)(`${shouldError ? 'should fail' : 'should compile'} ${file} to format %s`, async (format) => {
           const result = file.replace(/\.(?:mmd|md|markdown)$/, `-run.${format}`)
           const promise = run(join(workflow, file), join(out, result), { quiet: true })
           if (shouldError) {
