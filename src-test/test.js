@@ -469,7 +469,7 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
 
     test('should show Iconify icon packs', async () => {
       const mmdInput = 'architecture-beta\n    group aws(logos:aws)[AWS]'
-      const result = await renderMermaid(browser, mmdInput, 'svg')
+      const result = await renderMermaid(browser, mmdInput, 'svg', { iconPacks: ['@iconify-json/logos'] })
       expectBytesAreFormat(result.data, 'svg')
       const decoder = new TextDecoder()
       expect(decoder.decode(result.data)).toContain('<path')

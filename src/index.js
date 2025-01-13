@@ -219,6 +219,7 @@ async function cli () {
  * @property {CSSStyleDeclaration["cssText"]} [myCSS] - Optional CSS text.
  * @property {boolean} [pdfFit] - If set, scale PDF to fit chart.
  * @property {string} [svgId] - The id attribute for the SVG element to be rendered.
+ * @property {string[]} [iconPacks] - Icon packages to use.
  */
 
 /**
@@ -231,7 +232,7 @@ async function cli () {
  * @returns {Promise<{title: string | null, desc: string | null, data: Uint8Array}>} The output file in bytes,
  * with optional metadata.
  */
-async function renderMermaid (browser, definition, outputFormat, { viewport, backgroundColor = 'white', mermaidConfig = {}, myCSS, pdfFit, svgId } = {}) {
+async function renderMermaid (browser, definition, outputFormat, { viewport, backgroundColor = 'white', mermaidConfig = {}, myCSS, pdfFit, svgId, iconPacks = [] } = {}) {
   const page = await browser.newPage()
   page.on('console', (msg) => {
     console.warn(msg.text())
@@ -249,7 +250,7 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
       page.addScriptTag({ path: mermaidIIFEPath }),
       page.addScriptTag({ path: zenumlIIFEPath })
     ])
-    const metadata = await page.$eval('#container', async (container, definition, mermaidConfig, myCSS, backgroundColor, svgId) => {
+    const metadata = await page.$eval('#container', async (container, definition, mermaidConfig, myCSS, backgroundColor, svgId, iconPacks) => {
       await Promise.all(Array.from(document.fonts, (font) => font.load()))
 
       /**
@@ -265,12 +266,11 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
       await mermaid.registerExternalDiagrams([zenuml])
       mermaid.registerLayoutLoaders(elkLayouts)
       // lazy load icon packs
-      const iconPacks = ['logos', 'mdi']
       mermaid.registerIconPacks(
         iconPacks.map((icon) => ({
-          name: icon,
+          name: icon.split('/')[1],
           loader: () =>
-            fetch(`https://unpkg.com/@iconify-json/${icon}/icons.json`)
+            fetch(`https://unpkg.com/${icon}/icons.json`)
               .then((res) => res.json())
               .catch(() => error(`Failed to fetch icon: ${icon}`))
         }))
@@ -313,7 +313,7 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
       return {
         title, desc
       }
-    }, definition, mermaidConfig, myCSS, backgroundColor, svgId)
+    }, definition, mermaidConfig, myCSS, backgroundColor, svgId, iconPacks)
 
     if (outputFormat === 'svg') {
       const svgXML = await page.$eval('svg', (svg) => {
