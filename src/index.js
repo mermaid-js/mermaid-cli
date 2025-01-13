@@ -120,7 +120,7 @@ async function cli () {
     .option('-f, --pdfFit', 'Scale PDF to fit chart')
     .option('-q, --quiet', 'Suppress log output')
     .option('-p --puppeteerConfigFile [puppeteerConfigFile]', 'JSON configuration file for puppeteer.')
-    .option('--icon-pack <icons...>', 'Icon packs to use, e.g. @iconify-json/logos', [])
+    .option('--iconPacks <icons...>', 'Icon packs to use, e.g. @iconify-json/logos. These should be Iconfiy NPM packages that expose a icons.json file, see https://iconify.design/docs/icons/json.html. These will be downloaded from https://unkpg.com when needed.', [])
     .parse(process.argv)
 
   const options = commander.opts()
