@@ -120,11 +120,12 @@ async function cli () {
     .option('-f, --pdfFit', 'Scale PDF to fit chart')
     .option('-q, --quiet', 'Suppress log output')
     .option('-p --puppeteerConfigFile [puppeteerConfigFile]', 'JSON configuration file for puppeteer.')
+    .option('--icon-pack <icons...>', 'Icon packs to use, e.g. @iconify-json/logos', [])
     .parse(process.argv)
 
   const options = commander.opts()
 
-  let { theme, width, height, input, output, outputFormat, backgroundColor, configFile, cssFile, svgId, puppeteerConfigFile, scale, pdfFit, quiet } = options
+  let { theme, width, height, input, output, outputFormat, backgroundColor, configFile, cssFile, svgId, puppeteerConfigFile, scale, pdfFit, quiet, iconPacks } = options
 
   // check input file
   if (!input) {
@@ -205,7 +206,7 @@ async function cli () {
       quiet,
       outputFormat,
       parseMMDOptions: {
-        mermaidConfig, backgroundColor, myCSS, pdfFit, viewport: { width, height, deviceScaleFactor: scale }, svgId
+        mermaidConfig, backgroundColor, myCSS, pdfFit, viewport: { width, height, deviceScaleFactor: scale }, svgId, iconPacks
       }
     }
   )
