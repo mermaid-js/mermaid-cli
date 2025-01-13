@@ -40,6 +40,13 @@ for format in "svg" "png"; do
     -o "$outputFileName"
 done
 
+# Test if passing custom Iconify icons work
+outputFileName="/data/$INPUT_DATA/architecture-diagram-logos-with-icons.png"
+docker run --rm -v $(pwd):/data $IMAGETAG \
+  -i /data/$INPUT_DATA/architecture-diagram-logos.mmd \
+  --iconPacks '@iconify-json/logos' \
+  -o "$outputFileName"
+
 # Test if a diagram from STDIN can be understood
 cat $INPUT_DATA/flowchart1.mmd | docker run --rm -i -v $(pwd):/data $IMAGETAG -o /data/$INPUT_DATA/flowchart1-stdin.png -w 800
 
