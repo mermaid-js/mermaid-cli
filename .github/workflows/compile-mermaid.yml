@@ -69,7 +69,7 @@ jobs:
 
       - name: Upload diagrams for manual inspection
         # also uploads for `upload-percy.yml` action
-        uses: actions/upload-artifact@v4.4.3
+        uses: actions/upload-artifact@v4.6.0
         with:
           name: output
           path: ./${{env.INPUT_DATA}}
