@@ -192,13 +192,6 @@ npm install @mermaid-js/mermaid-cli
 ./node_modules/.bin/mmdc -h
 ```
 
-Or use NPM:
-
-```
-npm install @mermaid-js/mermaid-cli
-./node_modules/.bin/mmdc -h
-```
-
 ### Run with npx
 
 [`npx`](https://www.npmjs.com/package/npx) is installed by default with NPM. It
