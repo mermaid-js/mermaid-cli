@@ -178,7 +178,7 @@ async function cli () {
     mermaidConfig = Object.assign(mermaidConfig, JSON.parse(fs.readFileSync(configFile, 'utf-8')))
   }
 
-  let puppeteerConfig = /** @type {import('puppeteer').PuppeteerLaunchOptions} */ ({
+  let puppeteerConfig = /** @type {import('puppeteer').LaunchOptions} */ ({
     /*
      * `headless: 'shell'` is not officially supported in Puppeteer v19, v20, v21,
      * but still works. In Puppeteer v22, it uses the `chrome-headless-shell` package,
