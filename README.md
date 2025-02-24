@@ -200,18 +200,6 @@ need to use the `-p` flag because the package name is different than the command
 it installs (`mmdc`).  `npx -p @mermaid-js/mermaid-cli mmdc -h`
 
 
-## Install with [brew](https://brew.sh)
-
-> **Warning**
->
-> This method of installation is no longer supported.
-> For more details, see the [discussion](https://github.com/mermaid-js/mermaid-cli/issues/288).
-> An old version of mermaid-cli can be installed with brew.
-> ```sh
-> brew install mermaid-cli
-> ```
-
-
 ## Known issues
 
 1. [Linux sandbox issue](docs/linux-sandbox-issue.md)
