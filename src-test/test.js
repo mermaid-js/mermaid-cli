@@ -319,6 +319,10 @@ describe('mermaid-cli', () => {
 })
 
 describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
+  beforeAll(async () => {
+    await fs.mkdir(join(out, './svg/dist/'), { recursive: true })
+  })
+
   describe('run()', () => {
     test('should write markdown output with svg images', async () => {
       const expectedOutputMd = 'test-output/mermaid-run-output-test-svg.md'
@@ -359,7 +363,7 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       )
 
       await run(
-        'test-positive/mermaid.md', expectedOutputMd, { quiet: true, outputFormat: 'svg', artefacts: './test-output/svg/dist' }
+        'test-positive/mermaid.md', expectedOutputMd, { quiet: true, outputFormat: 'svg', artefacts: './test-output/svg/dist/' }
       )
 
       const markdownFile = await fs.readFile(expectedOutputMd, { encoding: 'utf8' })
