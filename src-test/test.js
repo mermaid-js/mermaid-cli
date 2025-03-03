@@ -324,9 +324,9 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
   })
 
   describe('run()', () => {
-    test('should write markdown output with svg images', async () => {
+    test.each([true, false])('should write markdown output with svg images - custom artefact path [%s]', async (artefact) => {
       const expectedOutputMd = 'test-output/mermaid-run-output-test-svg.md'
-      const expectedOutputSvgs = [1, 2, 3].map((i) => `test-output/mermaid-run-output-test-svg-${i}.svg`)
+      const expectedOutputSvgs = [1, 2, 3].map((i) => `test-output${artefact ? '/svg/dist' : ''}/mermaid-run-output-test-svg-${i}.svg`)
       // delete any files from previous test (fs.rm added in Node v14.14.0)
       await Promise.all(
         [
@@ -336,34 +336,7 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       )
 
       await run(
-        'test-positive/mermaid.md', expectedOutputMd, { quiet: true, outputFormat: 'svg' }
-      )
-
-      const markdownFile = await fs.readFile(expectedOutputMd, { encoding: 'utf8' })
-
-      // files should exist, and they should be SVGs
-      await Promise.all(expectedOutputSvgs.map(async (expectedOutputSvg) => {
-        // markdown file should point to png relative to md file
-        expect(markdownFile).toContain(relative('test-output', expectedOutputSvg))
-
-        const svgFile = await fs.readFile(expectedOutputSvg, { encoding: 'utf8' })
-        expect(svgFile).toMatch(/^<svg/)
-      }))
-    }, timeout)
-
-    test('should write markdown output with svg images in artefact path', async () => {
-      const expectedOutputMd = 'test-output/mermaid-run-output-test-svg.md'
-      const expectedOutputSvgs = [1, 2, 3].map((i) => `test-output/svg/dist/mermaid-run-output-test-svg-${i}.svg`)
-      // delete any files from previous test (fs.rm added in Node v14.14.0)
-      await Promise.all(
-        [
-          expectedOutputMd,
-          ...expectedOutputSvgs
-        ].map((file) => fs.rm(file, { force: true }))
-      )
-
-      await run(
-        'test-positive/mermaid.md', expectedOutputMd, { quiet: true, outputFormat: 'svg', artefacts: './test-output/svg/dist/' }
+        'test-positive/mermaid.md', expectedOutputMd, { quiet: true, outputFormat: 'svg', artefacts: artefact ? './test-output/svg/dist/' : undefined }
       )
 
       const markdownFile = await fs.readFile(expectedOutputMd, { encoding: 'utf8' })
