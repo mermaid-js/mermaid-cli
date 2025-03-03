@@ -45,7 +45,7 @@
     "@tsconfig/node18": "^18.2.4",
     "@types/node": "~18.19.31",
     "jest": "^29.0.1",
-    "puppeteer": "^23.1.1",
+    "puppeteer": "^24.3.0",
     "standard": "^17.0.0",
     "typescript": "^5.0.1-rc",
     "vite": "^6.0.2",
