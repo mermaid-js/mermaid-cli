@@ -53,7 +53,7 @@ jobs:
 
       - name: The job has failed
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v4.6.0
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: npm-logs
           path: /home/runner/.npm/_logs
@@ -103,7 +103,7 @@ jobs:
           git push --no-verify
 
       # For manual inspection of the generated artifacts
-      - uses: actions/upload-artifact@v4.6.0
+      - uses: actions/upload-artifact@v4.6.2
         with:
           name: output
           path: ./test-positive
