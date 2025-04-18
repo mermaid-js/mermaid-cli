@@ -97,7 +97,7 @@ async function getInputData (inputFile) {
 function parseCommanderInt (value, _unused) {
   const parsedValue = parseInt(value, 10)
   if (isNaN(parsedValue) || parsedValue < 1) {
-    throw new InvalidArgumentError('Not an positive integer.')
+    throw new InvalidArgumentError('Not a positive integer.')
   }
   return parsedValue
 }
@@ -370,7 +370,7 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
 
 /**
  * @typedef {object} MarkdownImageProps Markdown image properties
- * Used to create an markdown image that looks like `![alt](url "title")`
+ * Used to create a markdown image that looks like `![alt](url "title")`
  * @property {string} url - Path to image.
  * @property {string} alt - Image alt text, required.
  * @property {string | null} [title] - Optional image title text.
