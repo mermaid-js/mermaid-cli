@@ -177,7 +177,7 @@ describe('mermaid-cli', () => {
     expect(stderr).not.toContain('No input file specified, reading from stdin.')
   }, timeout)
 
-  test('should warn when outputing to stdout with missing --outputFormat', async () => {
+  test('should warn when outputting to stdout with missing --outputFormat', async () => {
     const execFilePromise = promisify(execFile)('node', ['src/cli.js', '--output', '-'])
     await promisify(pipeline)(
       createReadStream('test-positive/flowchart1.mmd'),
@@ -187,7 +187,7 @@ describe('mermaid-cli', () => {
     expect(stderr).toContain('No output format specified, using svg.')
   }, timeout)
 
-  test('should not warn when outputing to stdout with --outputFormat', async () => {
+  test('should not warn when outputting to stdout with --outputFormat', async () => {
     const execFilePromise = promisify(execFile)('node', ['src/cli.js', '--output', '-', '--outputFormat', 'svg'])
     await promisify(pipeline)(
       createReadStream('test-positive/flowchart1.mmd'),
