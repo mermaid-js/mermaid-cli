@@ -158,7 +158,7 @@ async function cli () {
     if (!outputFormat) {
       outputFormat = 'svg'
       warn('No output format specified, using svg. ' +
-        'If you want to specify an output format and supress this warning, ' +
+        'If you want to specify an output format and suppress this warning, ' +
         'please use `-e <format>.` '
       )
     }
