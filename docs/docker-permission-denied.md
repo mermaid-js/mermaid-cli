@@ -24,4 +24,4 @@ You can solve this issue by using docker `-u` option with your `UID`:
 docker run -u $UID -it --rm -v "$(pwd)":data minlag/mermaid-cli -i /data/diagram.mmd
 ```
 
-The issue is described [here](https://github.com/mermaid-js/mermaid-cli/issues/140)
+The issue is described in [issue #140](https://github.com/mermaid-js/mermaid-cli/issues/140)
