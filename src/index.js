@@ -111,6 +111,7 @@ async function cli () {
     .addOption(new Option('-H, --height [height]', 'Height of the page').argParser(parseCommanderInt).default(600))
     .option('-i, --input <input>', 'Input mermaid file. Files ending in .md will be treated as Markdown and all charts (e.g. ```mermaid (...)``` or :::mermaid (...):::) will be extracted and generated. Use `-` to read from stdin.')
     .option('-o, --output [output]', 'Output file. It should be either md, svg, png, pdf or use `-` to output to stdout. Optional. Default: input + ".svg"')
+    .option('-a, --artefacts [artefacts]', 'Output artefacts path. Only used with Markdown input file. Optional. Default: output directory')
     .addOption(new Option('-e, --outputFormat [format]', 'Output format for the generated image.').choices(['svg', 'png', 'pdf']).default(null, 'Loaded from the output file extension'))
     .addOption(new Option('-b, --backgroundColor [backgroundColor]', 'Background color for pngs/svgs (not pdfs). Example: transparent, red, \'#F0F0F0\'.').default('white'))
     .option('-c, --configFile [configFile]', 'JSON configuration file for mermaid.')
@@ -125,7 +126,7 @@ async function cli () {
 
   const options = commander.opts()
 
-  let { theme, width, height, input, output, outputFormat, backgroundColor, configFile, cssFile, svgId, puppeteerConfigFile, scale, pdfFit, quiet, iconPacks } = options
+  let { theme, width, height, input, output, outputFormat, backgroundColor, configFile, cssFile, svgId, puppeteerConfigFile, scale, pdfFit, quiet, iconPacks, artefacts } = options
 
   // check input file
   if (!input) {
@@ -164,6 +165,15 @@ async function cli () {
     }
   } else if (!/\.(?:svg|png|pdf|md|markdown)$/.test(output)) {
     error('Output file must end with ".md"/".markdown", ".svg", ".png" or ".pdf"')
+  }
+
+  if (artefacts) {
+    if (!input || !/\.(?:md|markdown)$/.test(input)) {
+      error('Artefacts [-a|--artefacts] path can only be used with Markdown input file')
+    }
+    if (!fs.existsSync(artefacts)) {
+      fs.mkdirSync(artefacts, { recursive: true })
+    }
   }
 
   const outputDir = path.dirname(output)
@@ -207,7 +217,8 @@ async function cli () {
       outputFormat,
       parseMMDOptions: {
         mermaidConfig, backgroundColor, myCSS, pdfFit, viewport: { width, height, deviceScaleFactor: scale }, svgId, iconPacks
-      }
+      },
+      artefacts
     }
   )
 }
@@ -405,10 +416,11 @@ function markdownImage ({ url, title, alt }) {
  * @param {import("puppeteer").LaunchOptions} [opts.puppeteerConfig] - Puppeteer launch options.
  * @param {boolean} [opts.quiet] - If set, suppress log output.
  * @param {"svg" | "png" | "pdf"} [opts.outputFormat] - Mermaid output format.
+ * @param {string} [opts.artefacts] - Path to the artefacts directory.
  * Defaults to `output` extension. Overrides `output` extension if set.
  * @param {ParseMDDOptions} [opts.parseMMDOptions] - Options to pass to {@link parseMMDOptions}.
  */
-async function run (input, output, { puppeteerConfig = {}, quiet = false, outputFormat, parseMMDOptions } = {}) {
+async function run (input, output, { puppeteerConfig = {}, quiet = false, outputFormat, parseMMDOptions, artefacts } = {}) {
   /**
    * Logs the given message to stdout, unless `quiet` is set to `true`.
    *
@@ -465,10 +477,15 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, output
          *     I.e. if "out.md". use "out-1.svg", "out-2.svg", etc
          * @type {string}
          */
-        const outputFile = output.replace(
+        let outputFile = output.replace(
           /(\.(md|markdown|png|svg|pdf))$/,
           `-${imagePromises.length + 1}$1`
         ).replace(/\.(md|markdown)$/, `.${outputFormat}`)
+
+        if (artefacts) {
+          outputFile = path.resolve(artefacts, path.basename(outputFile))
+        }
+
         const outputFileRelative = `./${path.relative(path.dirname(path.resolve(output)), path.resolve(outputFile))}`
 
         const imagePromise = (async () => {

@@ -319,10 +319,14 @@ describe('mermaid-cli', () => {
 })
 
 describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
+  beforeAll(async () => {
+    await fs.mkdir(join(out, './svg/dist/'), { recursive: true })
+  })
+
   describe('run()', () => {
-    test('should write markdown output with svg images', async () => {
+    test.each([true, false])('should write markdown output with svg images - custom artefact path [%s]', async (artefact) => {
       const expectedOutputMd = 'test-output/mermaid-run-output-test-svg.md'
-      const expectedOutputSvgs = [1, 2, 3].map((i) => `test-output/mermaid-run-output-test-svg-${i}.svg`)
+      const expectedOutputSvgs = [1, 2, 3].map((i) => `test-output${artefact ? '/svg/dist' : ''}/mermaid-run-output-test-svg-${i}.svg`)
       // delete any files from previous test (fs.rm added in Node v14.14.0)
       await Promise.all(
         [
@@ -332,7 +336,7 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       )
 
       await run(
-        'test-positive/mermaid.md', expectedOutputMd, { quiet: true, outputFormat: 'svg' }
+        'test-positive/mermaid.md', expectedOutputMd, { quiet: true, outputFormat: 'svg', artefacts: artefact ? './test-output/svg/dist/' : undefined }
       )
 
       const markdownFile = await fs.readFile(expectedOutputMd, { encoding: 'utf8' })
