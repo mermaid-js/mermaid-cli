@@ -80,5 +80,11 @@ if [ ! -f "$INPUT_DATA/static/mermaid-1.png" ]; then
   exit 1;
 fi
 
+# Verify that the generated markdown file contains the correct image links
+if ! grep -q "![mermaid-1](static/mermaid-1.png)" "$INPUT_DATA/static/mermaid.md"; then
+  echo "Generated markdown file does not contain the correct image links";
+  exit 1;
+fi
+
 # Clean up
 rm -rf $INPUT_DATA/static
