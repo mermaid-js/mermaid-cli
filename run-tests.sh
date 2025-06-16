@@ -74,14 +74,14 @@ if grep -q "<br>" "./test-positive/graph-with-br.mmd.svg"; then
   exit 1;
 fi
 
-# Test if --artefact-path works correctly
+# Test if --artefacts works correctly
 # Create the artefact directory
 mkdir -p $INPUT_DATA/static
 
-# Run mmdc with --artefact-path using existing test file
+# Run mmdc with --artefacts using existing test file
 docker run --rm -v $(pwd):/data $IMAGETAG \
   -i /data/test-positive/mermaid.md \
-  --artefact-path /data/$INPUT_DATA/static
+  --artefacts /data/$INPUT_DATA/static
 
 # Verify that the images were created in the specified path
 if [ ! -f "$INPUT_DATA/static/mermaid-1.png" ]; then
