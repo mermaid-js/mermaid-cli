@@ -25,6 +25,7 @@
     "prepare": "tsc && vite build",
     "prepack": "tsc && vite build",
     "test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" npx jest",
+    "test:cli": "bash run-tests.sh test-positive",
     "version": "node scripts/version.js",
     "lint": "standard",
     "lint-fix": "standard --fix"
