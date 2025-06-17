@@ -9,8 +9,7 @@ if [ -z "$IMAGETAG" ]; then
   echo "No image tag provided, building Docker image..."
   # Get the current package version from package.json
   VERSION=$(node -p "require('./package.json').version")
-  IMAGETAG="mermaid-cli:test"
-  docker build --build-arg VERSION=$VERSION -t $IMAGETAG .
+  docker build --build-arg VERSION=$VERSION -t "mermaid-cli:test" -f DockerfileBuild .
 fi
 
 # we must set `useMaxWidth: false` in config` to convert-svg-to-png for Percy CI
@@ -74,26 +73,25 @@ if grep -q "<br>" "./test-positive/graph-with-br.mmd.svg"; then
   exit 1;
 fi
 
-# Test if --artefacts works correctly
-# Create the artefact directory
-mkdir -p $INPUT_DATA/static
+mkdir ./test-output/
 
 # Run mmdc with --artefacts using existing test file
 docker run --rm -v $(pwd):/data $IMAGETAG \
   -i /data/test-positive/mermaid.md \
-  --artefacts /data/$INPUT_DATA/static
+  -o /data/test-output/mermaid-artefacts.md \
+  --artefacts /data/static-out/
 
 # Verify that the images were created in the specified path
-if [ ! -f "$INPUT_DATA/static/mermaid-1.png" ]; then
+if [ ! -f "./static-out/mermaid-artefacts-1.svg" ]; then
   echo "Images were not created in the specified artefact path";
   exit 1;
 fi
 
 # Verify that the generated markdown file contains the correct image links
-if ! grep -q "![mermaid-1](static/mermaid-1.png)" "$INPUT_DATA/static/mermaid.md"; then
+if ! grep -q "!\[diagram\](\.\/\.\.\/static-out\/mermaid-artefacts-1\.svg)" "./test-output/mermaid-artefacts.md"; then
   echo "Generated markdown file does not contain the correct image links";
   exit 1;
 fi
 
 # Clean up
-rm -rf $INPUT_DATA/static
+rm -rf ./static-out/
