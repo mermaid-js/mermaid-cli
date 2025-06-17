@@ -95,3 +95,4 @@ fi
 
 # Clean up
 rm -rf ./static-out/
+rm -rf ./test-output/mermaid-artefacts.md
