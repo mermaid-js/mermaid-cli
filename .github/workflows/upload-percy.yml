@@ -19,9 +19,9 @@ on:
 
 jobs:
   upload:
-    if: >
-      ${{ github.event.workflow_run.event == 'pull_request' &&
-      github.event.workflow_run.conclusion == 'success' }}
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success'
     permissions:
       # disable unused permissions
       actions: read
