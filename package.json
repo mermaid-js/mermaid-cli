@@ -49,7 +49,7 @@
     "puppeteer": "^23.1.1",
     "standard": "^17.0.0",
     "typescript": "^5.0.1-rc",
-    "vite": "^6.0.2",
+    "vite": "^7.0.6",
     "yarn-upgrade-all": "^0.7.0"
   },
   "files": [
