@@ -1,0 +1,12 @@
+flowchart LR
+
+	aca@{ label: "azure-container-app", icon: "azure:worker-container-app", pos: "b"}
+	apicon@{ label: "api-connection", icon: "azure:api-connections", pos: "b"}
+	sql@{ label: "sql-database", icon: "azure:sql-database", pos: "b"}
+	redis@{ label: "redis", icon: "azure:cache-redis", pos: "b"}
+	cosmosdb@{ label: "Database:catalog<br/>Container:article", icon: "azure:azure-cosmos-db", pos: "b"}
+
+	aca --> apicon
+	aca --> sql
+	aca --> redis
+	aca --> cosmosdb
