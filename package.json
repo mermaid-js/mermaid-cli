@@ -41,7 +41,7 @@
     "puppeteer": "^23"
   },
   "devDependencies": {
-    "@fortawesome/fontawesome-free": "^6.5.2",
+    "@fortawesome/fontawesome-free": "^7.0.0",
     "@mermaid-js/layout-elk": "^0.1.2",
     "@tsconfig/node18": "^18.2.4",
     "@types/node": "~18.19.31",
