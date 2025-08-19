@@ -56,6 +56,14 @@ docker run --rm -v $(pwd):/data $IMAGETAG \
   --iconPacks '@iconify-json/logos' \
   -o "$outputFileName"
 
+# Test if passing custom Iconify icons (from unpkg and other sources) work
+outputFileName="/data/$INPUT_DATA/flowchart1.png"
+docker run --rm -v $(pwd):/data $IMAGETAG \
+  -i /data/$INPUT_DATA/flowchart1.mmd \
+  --iconPacks '@iconify-json/logos' \
+  --iconPacksNamesAndUrls "azure#https://raw.githubusercontent.com/NakayamaKento/AzureIcons/refs/heads/main/icons.json" \
+  -o "$outputFileName"
+
 # Test if a diagram from STDIN can be understood
 cat $INPUT_DATA/flowchart1.mmd | docker run --rm -i -v $(pwd):/data $IMAGETAG -o /data/$INPUT_DATA/flowchart1-stdin.png -w 800
 
