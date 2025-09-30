@@ -17,6 +17,10 @@
       "import": {
         "types": "./dist-types/src/index.d.ts",
         "default": "./src/index.js"
+      },
+      "require": {
+        "types": "./dist-types/src/index.d.ts",
+        "default": "./src/index.js"
       }
     }
   },
