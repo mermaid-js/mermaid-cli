@@ -14,10 +14,8 @@
   },
   "exports": {
     ".": {
-      "import": {
-        "types": "./dist-types/src/index.d.ts",
-        "default": "./src/index.js"
-      }
+      "types": "./dist-types/src/index.d.ts",
+      "default": "./src/index.js"
     }
   },
   "types": "./dist-types/src/index.d.ts",
