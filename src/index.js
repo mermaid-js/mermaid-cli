@@ -102,6 +102,22 @@ function parseCommanderInt (value, _unused) {
   return parsedValue
 }
 
+/**
+ * Commander parser that converts a string to a float.
+ *
+ * @param {string} value - The value from commander.
+ * @param {*} _unused - Unused.
+ * @returns {number} The value parsed as a number.
+ * @see https://github.com/tj/commander.js/wiki/Class:-Option#argparserfn
+ */
+function parseCommanderFloat (value, _unused) {
+  const parsedValue = parseFloat(value)
+  if (isNaN(parsedValue) || parsedValue <= 0) {
+    throw new InvalidArgumentError('Not a positive number.')
+  }
+  return parsedValue
+}
+
 async function cli () {
   const commander = new Command()
   commander
@@ -117,7 +133,7 @@ async function cli () {
     .option('-c, --configFile [configFile]', 'JSON configuration file for mermaid.')
     .option('-C, --cssFile [cssFile]', 'CSS file for the page.')
     .option('-I, --svgId [svgId]', 'The id attribute for the SVG element to be rendered.')
-    .addOption(new Option('-s, --scale [scale]', 'Puppeteer scale factor').argParser(parseCommanderInt).default(1))
+    .addOption(new Option('-s, --scale [scale]', 'Puppeteer scale factor').argParser(parseCommanderFloat).default(1))
     .option('-f, --pdfFit', 'Scale PDF to fit chart')
     .option('-q, --quiet', 'Suppress log output')
     .option('-p --puppeteerConfigFile [puppeteerConfigFile]', 'JSON configuration file for puppeteer.')
