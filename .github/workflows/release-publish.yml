@@ -14,12 +14,12 @@ jobs:
       DOCKER_IO_REPOSITORY: minlag/mermaid-cli
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
-      - uses: fregante/setup-git-user@v2
+      - uses: fregante/setup-git-user@024bc0b8e177d7e77203b48dab6fb45666854b35 # v2.0.2
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: 18
           cache: npm
@@ -29,13 +29,13 @@ jobs:
         # `npm ci` automatically builds the package
         run: npm ci
       - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v3.2.1
+        uses: gittools/actions/gitversion/setup@51d325634925d7d9ce0a7efc2c586c0bc2b9eee6 # v3.2.1
         with:
           versionSpec: "5.x"
 
       - name: Use GitVersion
         id: gitversion # step id used as reference for output values
-        uses: gittools/actions/gitversion/execute@v3.2.1
+        uses: gittools/actions/gitversion/execute@51d325634925d7d9ce0a7efc2c586c0bc2b9eee6 # v3.2.1
 
       - name: Get release version
         run: echo "RELEASE_VERSION=${{ steps.gitversion.outputs.semVer }}" >> $GITHUB_ENV
@@ -53,32 +53,32 @@ jobs:
 
       - name: The job has failed
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v5.0.0
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: npm-logs
           path: /home/runner/.npm/_logs
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Login to DockerHub
-        uses: docker/login-action@v3
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and Push Image(s)
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
         with:
           context: .
           file: ${{env.DOCKERFILE}}
@@ -103,7 +103,7 @@ jobs:
           git push --no-verify
 
       # For manual inspection of the generated artifacts
-      - uses: actions/upload-artifact@v5.0.0
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: output
           path: ./test-positive
