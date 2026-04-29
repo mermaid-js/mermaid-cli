@@ -263,7 +263,7 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
       page.addScriptTag({ path: mermaidIIFEPath }),
       page.addScriptTag({ path: zenumlIIFEPath })
     ])
-    const metadata = await page.$eval('#container', async (container, definition, mermaidConfig, myCSS, backgroundColor, svgId, iconPacks, iconPacksNamesAndUrls) => {
+    const metadata = await page.$eval('#container', async (container, { definition, mermaidConfig, myCSS, backgroundColor, svgId, iconPacks, iconPacksNamesAndUrls }) => {
       await Promise.all(Array.from(document.fonts, (font) => font.load()))
 
       /**
@@ -346,7 +346,7 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
       return {
         title, desc
       }
-    }, definition, mermaidConfig, myCSS, backgroundColor, svgId, iconPacks, iconPacksNamesAndUrls)
+    }, { definition, mermaidConfig, myCSS, backgroundColor, svgId, iconPacks, iconPacksNamesAndUrls })
 
     if (outputFormat === 'svg') {
       const svgXML = await page.$eval('svg', (svg) => {
