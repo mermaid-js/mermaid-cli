@@ -1,6 +1,11 @@
 name: "Build, test and deploy mermaid-cli Docker image"
 on: [push, pull_request]
 concurrency: ci-${{ github.ref }}
+
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
