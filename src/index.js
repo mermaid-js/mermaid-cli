@@ -291,22 +291,21 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
       )
 
       mermaid.registerIconPacks(
-        iconPacksNamesAndUrls.map((iconPackInfo) => 
-          {
-            var packName = iconPackInfo.split('#')[0];
-            var packUrl = iconPackInfo.split('#')[1];
+        iconPacksNamesAndUrls.map((iconPackInfo) => {
+          const packName = iconPackInfo.split('#')[0]
+          const packUrl = iconPackInfo.split('#')[1]
 
-            return ({
-              name: packName,
-              loader: () =>
-                fetch(packUrl)
-                  .then((res) => res.json())
-                  .catch(() => {
-                    error(`Failed to fetch icon: ${iconPackInfo}`);
-                  })
-              }
-            )
+          return ({
+            name: packName,
+            loader: () =>
+              fetch(packUrl)
+                .then((res) => res.json())
+                .catch(() => {
+                  error(`Failed to fetch icon: ${iconPackInfo}`)
+                })
           }
+          )
+        }
         )
       )
       mermaid.initialize({ startOnLoad: false, ...mermaidConfig })
