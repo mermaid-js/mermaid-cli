@@ -36,6 +36,9 @@
     "import-meta-resolve": "^4.1.0",
     "mermaid": "^11.14.0"
   },
+  "optionalDependencies": {
+    "@mermaid-js/layout-tidy-tree": "^0.2.1"
+  },
   "peerDependencies": {
     "puppeteer": "^23 || ^24"
   },

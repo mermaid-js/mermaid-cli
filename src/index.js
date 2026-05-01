@@ -19,6 +19,18 @@ const mermaidESMPath = path.resolve(path.dirname(url.fileURLToPath(resolve('merm
 const elkESMPath = path.resolve(path.dirname(url.fileURLToPath(resolve('@mermaid-js/layout-elk', import.meta.url))), 'mermaid-layout-elk.esm.mjs')
 const zenumlESMPath = path.resolve(path.dirname(url.fileURLToPath(resolve('@mermaid-js/mermaid-zenuml', import.meta.url))), 'mermaid-zenuml.esm.mjs')
 
+/** @type {string | undefined} Path to `@mermaid-js/layout-tidy-tree`, if it is installed */
+let tidyTreeESMPath
+try {
+  tidyTreeESMPath = path.resolve(path.dirname(url.fileURLToPath(resolve('@mermaid-js/layout-tidy-tree', import.meta.url))), 'mermaid-layout-tidy-tree.esm.mjs')
+} catch (error) {
+  if (error instanceof Error && 'code' in error && error.code === 'ERR_MODULE_NOT_FOUND') {
+    // optional dependency, this is normal
+  } else {
+    throw error
+  }
+}
+
 /**
  * Prints an error to stderr, then closes with exit code 1
  *
@@ -265,21 +277,28 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
     const mermaidUrl = await interceptor.fileUrlToInterceptUrl(url.pathToFileURL(mermaidESMPath))
     const elkUrl = await interceptor.fileUrlToInterceptUrl(url.pathToFileURL(elkESMPath))
     const zenumlUrl = await interceptor.fileUrlToInterceptUrl(url.pathToFileURL(zenumlESMPath))
+    const tidyTreeESMUrl = tidyTreeESMPath ? await interceptor.fileUrlToInterceptUrl(url.pathToFileURL(tidyTreeESMPath)) : undefined
 
     page.on('request', interceptor.interceptRequestHandler)
     await page.setRequestInterception(true)
 
-    const metadata = await page.$eval('#container', async (container, { definition, mermaidConfig, myCSS, backgroundColor, svgId, iconPacks, iconPacksNamesAndUrls, elkUrl, mermaidUrl, zenumlUrl }) => {
+    const metadata = await page.$eval('#container', async (container, { definition, mermaidConfig, myCSS, backgroundColor, svgId, iconPacks, iconPacksNamesAndUrls, elkUrl, mermaidUrl, zenumlUrl, tidyTreeESMUrl }) => {
       /** @type {typeof import('mermaid')} */
       const { default: mermaid } = await import(mermaidUrl)
       /** @type {typeof import('@mermaid-js/layout-elk')} */
       const { default: elkLayouts } = await import(elkUrl)
       /** @type {typeof import('@mermaid-js/mermaid-zenuml')} */
       const { default: zenuml } = await import(zenumlUrl)
+      // @ts-ignore -- @mermaid-js/layout-tidy-tree is an optionalDependency and might not be installed
+      /** @type {typeof import('@mermaid-js/layout-tidy-tree') | {default: undefined}} */
+      const { default: tidyTree } = tidyTreeESMUrl ? await import(tidyTreeESMUrl) : { default: undefined }
       await Promise.all(Array.from(document.fonts, (font) => font.load()))
 
       await mermaid.registerExternalDiagrams([zenuml])
-      mermaid.registerLayoutLoaders(elkLayouts)
+      mermaid.registerLayoutLoaders([
+        ...elkLayouts,
+        ...(tidyTree ?? [])
+      ])
       // lazy load icon packs
 
       mermaid.registerIconPacks(
@@ -348,7 +367,7 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
       return {
         title, desc
       }
-    }, { definition, mermaidConfig, myCSS, backgroundColor, svgId, iconPacks, iconPacksNamesAndUrls, elkUrl, mermaidUrl, zenumlUrl })
+    }, { definition, mermaidConfig, myCSS, backgroundColor, svgId, iconPacks, iconPacksNamesAndUrls, elkUrl, mermaidUrl, zenumlUrl, tidyTreeESMUrl })
 
     if (outputFormat === 'svg') {
       const svgXML = await page.$eval('svg', (svg) => {
