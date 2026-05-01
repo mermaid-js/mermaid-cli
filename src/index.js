@@ -270,8 +270,11 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
     await page.setRequestInterception(true)
 
     const metadata = await page.$eval('#container', async (container, { definition, mermaidConfig, myCSS, backgroundColor, svgId, iconPacks, iconPacksNamesAndUrls, elkUrl, mermaidUrl, zenumlUrl }) => {
+      /** @type {typeof import('mermaid')} */
       const { default: mermaid } = await import(mermaidUrl)
+      /** @type {typeof import('@mermaid-js/layout-elk')} */
       const { default: elkLayouts } = await import(elkUrl)
+      /** @type {typeof import('@mermaid-js/mermaid-zenuml')} */
       const { default: zenuml } = await import(zenumlUrl)
       await Promise.all(Array.from(document.fonts, (font) => font.load()))
 
