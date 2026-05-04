@@ -42,7 +42,7 @@
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^7.0.1",
     "@tsconfig/node18": "^18.2.4",
-    "@types/node": "~18.19.31",
+    "@types/node": "~25.6.0",
     "jest": "^30.0.5",
     "puppeteer": "^24.0.0",
     "standard": "^17.0.0",
