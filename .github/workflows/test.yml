@@ -4,20 +4,30 @@ on: [push, pull_request]
 permissions:
   contents: read
 
+defaults:
+  run:
+    shell: bash # Use bash even on Windows
+
 jobs:
   test:
-    name: Test Node.js ${{ matrix.node }} with ${{ matrix.dependencies }} dependencies
-    runs-on: ubuntu-latest
+    name: Test Node.js ${{ matrix.node }} with ${{ matrix.dependencies }} dependencies on ${{ matrix.os }}
     timeout-minutes: 30
     strategy:
       fail-fast: false # our tests are a bit flaky in CI
       matrix:
         node: [ 18.19 ]
+        os:
+          - ubuntu-latest
+          - windows-latest
         dependencies:
           # default `package-lock.json` dependencies
           - 'default'
-          # install with oldest dependencies without optional dependencies
-          - 'minimal'
+        include:
+          # test with minimal dependencies (only puppeteer-core and its dependencies)
+          - node: 18.19
+            os: ubuntu-latest
+            dependencies: 'minimal'
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Setup Node.JS ${{ matrix.node }}
@@ -49,4 +59,11 @@ jobs:
       # We use aa-exec since Ubuntu 24.04's AppArmor profile blocks the use
       # of puppeteer otherwise, see
       # https://github.com/puppeteer/puppeteer/issues/12818
-      - run: aa-exec --profile=chrome npm test
+      - name: Run tests
+        run: |
+          is_ubuntu=$(node -e 'console.log(os.platform() === "linux" && os.version().toLowerCase().includes("ubuntu"));')
+          if [ "$is_ubuntu" = "true" ]; then
+            aa-exec --profile=chrome npm test
+          else
+            npm test
+          fi

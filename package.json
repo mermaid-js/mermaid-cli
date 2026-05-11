@@ -22,7 +22,7 @@
   "scripts": {
     "prepare": "tsc && vite build",
     "prepack": "tsc && vite build",
-    "test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" npx jest",
+    "test": "cross-env-shell NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" npx jest",
     "test:cli": "bash run-tests.sh test-positive",
     "version": "node scripts/version.js",
     "lint": "standard",
@@ -47,6 +47,7 @@
     "@fortawesome/fontawesome-free": "^7.0.1",
     "@tsconfig/node18": "^18.2.4",
     "@types/node": "~18.19.31",
+    "cross-env": "^7.0.3",
     "jest": "^30.0.5",
     "puppeteer": "^24.0.0",
     "standard": "^17.0.0",
