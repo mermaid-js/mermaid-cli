@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
+      fail-fast: false # our tests are a bit flaky in CI
       matrix:
         node: [ 18.19 ]
         dependencies:
