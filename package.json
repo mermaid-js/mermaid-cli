@@ -48,7 +48,7 @@
     "standard": "^17.0.0",
     "typescript": "^6.0.3",
     "vite": "^6.0.2",
-    "yarn-upgrade-all": "^0.7.0"
+    "yarn-upgrade-all": "^0.8.1"
   },
   "files": [
     "src/",
