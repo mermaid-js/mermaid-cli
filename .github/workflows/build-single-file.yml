@@ -1,0 +1,64 @@
+name: Build Single-File Executable
+
+on:
+  push:
+    branches: [master]
+    tags:
+      - "v*"
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build-windows-exe:
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Build Windows executable
+        shell: bash
+        run: |
+          deno compile \
+            --allow-all \
+            --node-modules-dir \
+            --target x86_64-pc-windows-msvc \
+            --output mmdc.exe \
+            npm:@mermaid-js/mermaid-cli
+
+      - name: Verify executable exists
+        shell: bash
+        run: ls -lh mmdc.exe
+
+      - name: Test the executable
+        shell: bash
+        run: |
+          # Create a simple test diagram
+          echo 'graph TD; A-->B; A-->C; B-->D; C-->D;' > test.mmd
+          ./mmdc.exe -i test.mmd -o test.png
+          ls -la test.png test.mmd
+
+      - name: Upload artifact (for testing)
+        uses: actions/upload-artifact@v4
+        if: github.event_name == 'workflow_dispatch'
+        with:
+          name: mmdc-windows-exe
+          path: |
+            mmdc.exe
+            test.mmd
+            test.png
+
+      - name: Upload as release asset
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          files: mmdc.exe
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

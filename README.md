@@ -211,6 +211,18 @@ it installs (`mmdc`).  `npx -p @mermaid-js/mermaid-cli mmdc -h`
 > brew install mermaid-cli
 > ```
 
+## Standalone Windows Executable
+
+A single-file Windows executable (`.exe`) is available for download from the [GitHub Releases](https://github.com/mermaid-js/mermaid-cli/releases). This allows using mermaid-cli on Windows without installing Node.js or npm.
+
+Simply download the `mmdc.exe` from the latest release and run:
+
+```cmd
+mmdc.exe -i input.mmd -o output.svg
+```
+
+The executable includes all dependencies (including Chromium for rendering).
+
 
 ## Known issues
 
