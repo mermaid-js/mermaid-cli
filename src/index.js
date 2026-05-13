@@ -15,6 +15,17 @@ import { Interceptor } from './puppeteerIntercept.js'
 const __dirname = url.fileURLToPath(new url.URL('.', import.meta.url))
 
 /**
+ * CSS paths to embed in the page.
+ */
+const cssImports = /** @type {const} */ ({
+  '@fortawesome/fontawesome-free/css/brands.css': { level: 2 },
+  '@fortawesome/fontawesome-free/css/regular.css': { level: 2 },
+  '@fortawesome/fontawesome-free/css/solid.css': { level: 2 },
+  '@fortawesome/fontawesome-free/css/fontawesome.css': { level: 2 },
+  'katex/dist/katex.css': { level: 2 }
+})
+
+/**
  * ESM bundles. Our interceptor doesn't support loading ESM modules that load
  * other modules using relative paths, so these have to no `dependencies`.
  */
@@ -305,8 +316,16 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
     page.on('request', interceptor.interceptRequestHandler)
     await page.setRequestInterception(true)
 
+    await Promise.all(Object.entries(cssImports).map(async ([cssImport, { level }]) => {
+      const interceptUrl = await interceptor.fileUrlToInterceptUrl(new URL(resolve(cssImport, import.meta.url)), {
+        allowParentDirectoryLevel: level
+      })
+      await page.addStyleTag({
+        url: interceptUrl
+      })
+    }))
+
     const metadata = await page.$eval('#container', async (container, { definition, mermaidConfig, myCSS, backgroundColor, svgId, iconPacks, iconPacksNamesAndUrls, elkUrl, mermaidUrl, zenumlUrl, tidyTreeESMUrl }) => {
-      /** @type {typeof import('mermaid')} */
       const { default: mermaid } = await import(mermaidUrl)
       /** @type {typeof import('@mermaid-js/layout-elk')} */
       const { default: elkLayouts } = await import(elkUrl)
