@@ -7,6 +7,29 @@ import path from 'node:path'
 import url from 'node:url'
 
 /**
+ * Guesses the MIME-type of a file based on its extension.
+ *
+ * I've hardcoded the bare minimum number of MIME-types to support for security reasons.
+ *
+ * @param {string} filePath - The file path to guess the MIME-type for.
+ */
+function getContentTypeFromFileExtension (filePath) {
+  const ext = path.extname(filePath).toLowerCase()
+  switch (ext) {
+    case '.css':
+      // Make sure to set UTF-8, since sometimes Puppeteer can parse it as Latin-1.
+      return 'text/css;charset=UTF-8'
+    case '.js':
+    case '.mjs':
+      return 'application/javascript'
+    case '.woff2':
+      return 'font/woff2'
+    default:
+      throw new Error(`Unsupported file extension for intercept: ${ext}`)
+  }
+}
+
+/**
  * Puppeteer doesn't allow importing ESM modules from `file://` URLs.
  * We don't want to create a dummy http server to serve ESM modules
  * (since that would cause issues with ports/firewalls), so this module
@@ -27,14 +50,22 @@ export class Interceptor {
   #allowedDirs = new Set()
 
   /**
-     * @param {URL | `file://${string}`} fileUrl - File URL
-     */
-  async fileUrlToInterceptUrl (fileUrl) {
+   * @param {URL | `file://${string}`} fileUrl - File URL
+   * @param {Object} [options] - Optional options.
+   * @param {number} [options.allowParentDirectoryLevel] - Number of parent directory levels to allow access to.
+   */
+  async fileUrlToInterceptUrl (fileUrl, {
+    allowParentDirectoryLevel = 1
+  } = {}) {
     fileUrl = new URL(fileUrl)
     if (fileUrl.protocol !== 'file:') {
       throw new Error(`Invalid file URL: ${fileUrl}`)
     }
-    this.#allowedDirs.add(path.dirname(await realpath(url.fileURLToPath(fileUrl))))
+    let parentDirectory = await realpath(url.fileURLToPath(fileUrl))
+    while (allowParentDirectoryLevel-- >= 0) {
+      parentDirectory = path.dirname(parentDirectory)
+    }
+    this.#allowedDirs.add(parentDirectory)
     return `${this.#INTERCEPT_ORIGIN}${fileUrl.pathname}`
   }
 
@@ -68,7 +99,7 @@ export class Interceptor {
           headers: {
             'Access-Control-Allow-Origin': '*'
           },
-          contentType: 'application/javascript',
+          contentType: getContentTypeFromFileExtension(url.fileURLToPath(fileUrl)),
           body: await readFile(fileUrl)
         })
       }
