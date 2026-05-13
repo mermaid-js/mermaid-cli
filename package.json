@@ -25,8 +25,8 @@
     "test": "cross-env-shell NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" npx jest",
     "test:cli": "bash run-tests.sh test-positive",
     "version": "node scripts/version.js",
-    "lint": "standard",
-    "lint-fix": "standard --fix"
+    "lint": "prettier --check .",
+    "lint-fix": "prettier --write ."
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.0.0 || ^7.0.1",
@@ -50,8 +50,8 @@
     "@types/node": "~18.19.31",
     "cross-env": "^7.0.3",
     "jest": "^30.0.5",
+    "prettier": "^3.8.3",
     "puppeteer": "^24.0.0",
-    "standard": "^17.0.0",
     "typescript": "^6.0.3",
     "vite": "^6.0.2",
     "yarn-upgrade-all": "^0.8.1"
@@ -65,12 +65,6 @@
     "moduleNameMapper": {
       "#(.*)": "<rootDir>/node_modules/$1"
     }
-  },
-  "standard": {
-    "ignore": [
-      "/dist/",
-      "/dist-types/"
-    ]
   },
   "packageManager": "npm@10.8.1"
 }
