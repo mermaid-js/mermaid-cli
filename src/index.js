@@ -452,10 +452,12 @@ function markdownImage ({ url, title, alt }) {
  * @param {"svg" | "png" | "pdf"} [opts.outputFormat] - Mermaid output format.
  * @param {string} [opts.artefacts] - Path to the artefacts directory.
  * Defaults to `output` extension. Overrides `output` extension if set.
+ * @param {import("puppeteer").Browser} [opts.browser] - If set, reuses the given puppeteer browser instance instead of creating a new one.
+ * This may leak cookies/cache between runs.
  * @param {Limiter} [opts.limiter] - If set, limiter function to avoid rendering too many diagrams in parallel.
  * @param {ParseMDDOptions} [opts.parseMMDOptions] - Options to pass to {@link parseMMDOptions}.
  */
-async function run (input, output, { puppeteerConfig = {}, quiet = false, outputFormat, parseMMDOptions, limiter = (x, ...args) => x(...args), artefacts } = {}) {
+async function run (input, output, { browser: userPassedBrowser, puppeteerConfig = {}, quiet = false, outputFormat, parseMMDOptions, limiter = (x, ...args) => x(...args), artefacts } = {}) {
   /**
    * Logs the given message to stdout, unless `quiet` is set to `true`.
    *
@@ -474,7 +476,7 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, output
    * @type {puppeteer.Browser | undefined}
    * Lazy-loaded browser instance, only created when needed.
    */
-  let browser
+  let browser = userPassedBrowser
   try {
     if (!outputFormat) {
       const outputFormatFromFilename =
@@ -561,7 +563,7 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, output
       }
     } else {
       info('Generating single mermaid chart')
-      browser = await puppeteer.launch(puppeteerConfig)
+      browser ??= await puppeteer.launch(puppeteerConfig)
       const { data } = await renderMermaid(browser, definition, outputFormat, parseMMDOptions)
       if (output === '/dev/stdout') {
         await promisify(process.stdout.write).call(process.stdout, data)
@@ -570,7 +572,10 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, output
       }
     }
   } finally {
-    await browser?.close?.()
+    // Don't close the browser if it was passed in by the user
+    if (browser !== userPassedBrowser) {
+      await browser?.close?.()
+    }
   }
 }
 
