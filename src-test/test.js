@@ -400,7 +400,7 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       expect(markdownFile).toContain(markdownImageWithCustomTitle)
 
       // check whether newlines before/after mermaid diagram are kept
-      expect(markdownFile).toContain('There should be an empty newline after this line, but before the Mermaid diagram:\n\n')
+      expect(markdownFile).toMatch(/There should be an empty newline after this line, but before the Mermaid diagram:\r?\n\r?\n/)
 
       // files should exist, and they should be PNGs
       await Promise.all(expectedOutputPngs.map(async (expectedOutputPng) => {
