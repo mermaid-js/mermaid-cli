@@ -46,7 +46,7 @@ jobs:
         run: echo "RELEASE_VERSION=${{ steps.gitversion.outputs.semVer }}" >> $GITHUB_ENV
 
       - name: Prepare release
-        run: npm version --no-git-tag-version --allow-same-version ${{env.RELEASE_VERSION}}
+        run: npm version --no-git-tag-version --allow-same-version "$RELEASE_VERSION"
 
       - name: Convert repository name to lower case
         run: echo "GITHUB_REPOSITORY_LOWER_CASE=$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
@@ -95,14 +95,14 @@ jobs:
 
       - name: Post deployment tests
         run: |
-          for i in $(ls test-positive/*.mmd); do docker run -v $(pwd):/data ${{env.DOCKER_IO_REPOSITORY}}:${{env.RELEASE_VERSION}} -i /data/$i; done
-          for i in $(ls test-positive/*.mmd); do cat $i | docker run -i -v $(pwd):/data ${{env.DOCKER_IO_REPOSITORY}}:${{env.RELEASE_VERSION}} -o /data/$i-stdin.svg; done
+          for i in test-positive/*.mmd; do docker run -v "$(pwd):/data" "$DOCKER_IO_REPOSITORY:$RELEASE_VERSION" -i "/data/$i"; done
+          for i in test-positive/*.mmd; do cat "$i" | docker run -i -v "$(pwd):/data" "$DOCKER_IO_REPOSITORY:$RELEASE_VERSION" -o "/data/$i-stdin.svg"; done
 
       - name: Commit new version to the repository
         run: |
           git add package.json package-lock.json
           git checkout master
-          git commit -m "Bump version ${{env.RELEASE_VERSION}}"
+          git commit -m "Bump version $RELEASE_VERSION"
           git push --no-verify
 
       # For manual inspection of the generated artifacts
