@@ -2,7 +2,9 @@ import { Command, Option, InvalidArgumentError } from 'commander'
 import chalk from 'chalk'
 import fs from 'fs'
 import { resolve } from 'import-meta-resolve'
+import os from 'node:os'
 import path from 'path'
+import pLimit from 'p-limit'
 import puppeteer from 'puppeteer'
 import url from 'url'
 import { promisify } from 'node:util'
@@ -114,6 +116,9 @@ async function cli () {
     .option('-i, --input <input>', 'Input mermaid file. Files ending in .md will be treated as Markdown and all charts (e.g. ```mermaid (...)``` or :::mermaid (...):::) will be extracted and generated. Use `-` to read from stdin.')
     .option('-o, --output [output]', 'Output file. It should be either md, svg, png, pdf or use `-` to output to stdout. Optional. Default: input + ".svg"')
     .option('-a, --artefacts [artefacts]', 'Output artefacts path. Only used with Markdown input file. Optional. Default: output directory')
+    .addOption(new Option('-j, --jobs <jobs>', 'Number of parallel jobs to run when rendering multiple diagrams. Defaults to half the available CPUs.').argParser(parseCommanderInt).default(
+      Math.floor(os.availableParallelism() / 2) || 1
+    ))
     .addOption(new Option('-e, --outputFormat [format]', 'Output format for the generated image.').choices(['svg', 'png', 'pdf']).default(null, 'Loaded from the output file extension'))
     .addOption(new Option('-b, --backgroundColor [backgroundColor]', 'Background color for pngs/svgs (not pdfs). Example: transparent, red, \'#F0F0F0\'.').default('white'))
     .option('-c, --configFile [configFile]', 'JSON configuration file for mermaid.')
@@ -129,7 +134,7 @@ async function cli () {
 
   const options = commander.opts()
 
-  let { theme, width, height, input, output, outputFormat, backgroundColor, configFile, cssFile, svgId, puppeteerConfigFile, scale, pdfFit, quiet, iconPacks, iconPacksNamesAndUrls, artefacts } = options
+  let { theme, width, height, input, output, outputFormat, backgroundColor, configFile, cssFile, svgId, puppeteerConfigFile, scale, pdfFit, quiet, iconPacks, iconPacksNamesAndUrls, artefacts, jobs } = options
 
   // check input file
   if (!input) {
@@ -218,6 +223,7 @@ async function cli () {
       puppeteerConfig,
       quiet,
       outputFormat,
+      limiter: pLimit(jobs),
       parseMMDOptions: {
         mermaidConfig, backgroundColor, myCSS, pdfFit, viewport: { width, height, deviceScaleFactor: scale }, svgId, iconPacks, iconPacksNamesAndUrls
       },
@@ -426,6 +432,13 @@ function markdownImage ({ url, title, alt }) {
 }
 
 /**
+ * @typedef {<Arguments extends unknown[], ReturnType>(
+ *  function_: (...arguments_: Arguments) => Promise<ReturnType>,
+ *    ...arguments_: Arguments
+ * ) => Promise<ReturnType>} Limiter - Adapted from `p-limit` package.
+ */
+
+/**
  * Renders a mermaid diagram or mermaid markdown file.
  *
  * @param {`${string}.${"md" | "markdown"}` | string | undefined} input - If this ends with `.md`/`.markdown`,
@@ -439,9 +452,10 @@ function markdownImage ({ url, title, alt }) {
  * @param {"svg" | "png" | "pdf"} [opts.outputFormat] - Mermaid output format.
  * @param {string} [opts.artefacts] - Path to the artefacts directory.
  * Defaults to `output` extension. Overrides `output` extension if set.
+ * @param {Limiter} [opts.limiter] - If set, limiter function to avoid rendering too many diagrams in parallel.
  * @param {ParseMDDOptions} [opts.parseMMDOptions] - Options to pass to {@link parseMMDOptions}.
  */
-async function run (input, output, { puppeteerConfig = {}, quiet = false, outputFormat, parseMMDOptions, artefacts } = {}) {
+async function run (input, output, { puppeteerConfig = {}, quiet = false, outputFormat, parseMMDOptions, limiter = (x, ...args) => x(...args), artefacts } = {}) {
   /**
    * Logs the given message to stdout, unless `quiet` is set to `true`.
    *
@@ -509,7 +523,7 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, output
 
         const outputFileRelative = `./${path.relative(path.dirname(path.resolve(output)), path.resolve(outputFile))}`
 
-        const imagePromise = (async () => {
+        const imagePromise = limiter(async (browser, outputFormat) => {
           const { title, desc, data } = await renderMermaid(browser, mermaidDefinition, outputFormat, parseMMDOptions)
           await fs.promises.writeFile(outputFile, data)
           info(` ✅ ${outputFileRelative}`)
@@ -519,7 +533,7 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, output
             title,
             alt: desc
           }
-        })()
+        }, browser, outputFormat)
         imagePromises.push(imagePromise)
       }
 
