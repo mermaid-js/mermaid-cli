@@ -5,6 +5,7 @@ import { resolve } from 'import-meta-resolve'
 import path from 'path'
 import puppeteer from 'puppeteer'
 import url from 'url'
+import { promisify } from 'node:util'
 import { version } from './version.js'
 import { Interceptor } from './puppeteerIntercept.js'
 
@@ -548,9 +549,11 @@ async function run (input, output, { puppeteerConfig = {}, quiet = false, output
       info('Generating single mermaid chart')
       browser = await puppeteer.launch(puppeteerConfig)
       const { data } = await renderMermaid(browser, definition, outputFormat, parseMMDOptions)
-      await output !== '/dev/stdout'
-        ? fs.promises.writeFile(output, data)
-        : process.stdout.write(data)
+      if (output === '/dev/stdout') {
+        await promisify(process.stdout.write).call(process.stdout, data)
+      } else {
+        await fs.promises.writeFile(output, data)
+      }
     }
   } finally {
     await browser?.close?.()
