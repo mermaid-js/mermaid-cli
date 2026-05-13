@@ -1,0 +1,5 @@
+# Should purposely have CRLF line endings
+/test-positive/crlf-detect.md
+# Test for trailing newlines
+/test-positive/mermaid.md
+
