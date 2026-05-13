@@ -100,7 +100,7 @@ jobs:
 
       - name: Commit new version to the repository
         run: |
-          git add package.json
+          git add package.json package-lock.json
           git checkout master
           git commit -m "Bump version ${{env.RELEASE_VERSION}}"
           git push --no-verify
