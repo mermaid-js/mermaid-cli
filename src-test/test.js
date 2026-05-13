@@ -11,6 +11,8 @@ import { promisify } from 'util'
 import { expect, beforeAll, afterAll, describe, test } from '@jest/globals'
 
 import { run, renderMermaid } from '../src/index.js'
+import os from 'os'
+import pLimit from 'p-limit'
 import puppeteer from 'puppeteer'
 import { pipeline } from 'stream'
 
@@ -56,7 +58,8 @@ async function compileDiagram (workflow, file, format, { puppeteerConfigFile } =
     '-c',
     join(workflow, 'config.json'),
     '-b',
-    'lightgray'
+    'lightgray',
+    '--jobs=2'
   ]
 
   if (puppeteerConfigFile) {
@@ -92,6 +95,10 @@ function expectBytesAreFormat (bytes, fileType) {
       throw new Error('Unsupported filetype')
   }
 }
+
+// This is double the default limit in mermaid-cli, but for testing, we have
+// very small diagrams, so that should be okay from a performance standpoint.
+const limiter = pLimit(os.availableParallelism())
 
 let browser
 beforeAll(async () => {
@@ -352,7 +359,7 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       )
 
       await run(
-        'test-positive/mermaid.md', expectedOutputMd, { quiet: true, outputFormat: 'svg', artefacts: artefact ? './test-output/svg/dist/' : undefined }
+        'test-positive/mermaid.md', expectedOutputMd, { limiter, quiet: true, outputFormat: 'svg', artefacts: artefact ? './test-output/svg/dist/' : undefined }
       )
 
       const markdownFile = await fs.readFile(expectedOutputMd, { encoding: 'utf8' })
@@ -379,7 +386,7 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       )
 
       await run(
-        'test-positive/mermaid.md', expectedOutputMd, { quiet: true, outputFormat: 'png' }
+        'test-positive/mermaid.md', expectedOutputMd, { limiter, quiet: true, outputFormat: 'png' }
       )
 
       const markdownFile = await fs.readFile(expectedOutputMd, { encoding: 'utf8' })
@@ -411,7 +418,7 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       await run(
         'test-positive/flowchart1.mmd',
         expectedOutput,
-        { quiet: true, outputFormat: format }
+        { limiter, quiet: true, outputFormat: format }
       )
       expectBytesAreFormat(await fs.readFile(expectedOutput), format)
     }, timeout)
@@ -435,7 +442,7 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
         const runConcurrently = !/\.(md|markdown)$/.test(file);
         (runConcurrently ? test.concurrent : test).each(formats)(`${shouldError ? 'should fail' : 'should compile'} ${file} to format %s`, async (format) => {
           const result = file.replace(/\.(?:mmd|md|markdown)$/, `-run.${format}`)
-          const promise = run(join(workflow, file), join(out, result), { quiet: true })
+          const promise = run(join(workflow, file), join(out, result), { limiter, quiet: true })
           if (shouldError) {
             await expect(promise).rejects.toThrow()
           } else {
