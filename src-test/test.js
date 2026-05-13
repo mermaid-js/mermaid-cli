@@ -359,7 +359,7 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       )
 
       await run(
-        'test-positive/mermaid.md', expectedOutputMd, { limiter, quiet: true, outputFormat: 'svg', artefacts: artefact ? './test-output/svg/dist/' : undefined }
+        'test-positive/mermaid.md', expectedOutputMd, { browser, limiter, quiet: true, outputFormat: 'svg', artefacts: artefact ? './test-output/svg/dist/' : undefined }
       )
 
       const markdownFile = await fs.readFile(expectedOutputMd, { encoding: 'utf8' })
@@ -386,7 +386,7 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       )
 
       await run(
-        'test-positive/mermaid.md', expectedOutputMd, { limiter, quiet: true, outputFormat: 'png' }
+        'test-positive/mermaid.md', expectedOutputMd, { browser, limiter, quiet: true, outputFormat: 'png' }
       )
 
       const markdownFile = await fs.readFile(expectedOutputMd, { encoding: 'utf8' })
@@ -418,7 +418,7 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       await run(
         'test-positive/flowchart1.mmd',
         expectedOutput,
-        { limiter, quiet: true, outputFormat: format }
+        { browser, limiter, quiet: true, outputFormat: format }
       )
       expectBytesAreFormat(await fs.readFile(expectedOutput), format)
     }, timeout)
@@ -442,7 +442,7 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
         const runConcurrently = !/\.(md|markdown)$/.test(file);
         (runConcurrently ? test.concurrent : test).each(formats)(`${shouldError ? 'should fail' : 'should compile'} ${file} to format %s`, async (format) => {
           const result = file.replace(/\.(?:mmd|md|markdown)$/, `-run.${format}`)
-          const promise = run(join(workflow, file), join(out, result), { limiter, quiet: true })
+          const promise = run(join(workflow, file), join(out, result), { browser, limiter, quiet: true })
           if (shouldError) {
             await expect(promise).rejects.toThrow()
           } else {
