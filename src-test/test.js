@@ -316,6 +316,22 @@ describe('mermaid-cli', () => {
       await fs.copyFile(`test-output/flowchart1-with-css.${format}`, 'docs/animated-flowchart.svg')
     }
   }, timeout)
+
+  test('should support fractional scale argument', async () => {
+    const [small, normal, large] = await Promise.all([0.5, 1, 1.5].map(async(scale) => {
+      const outputFileName = `test-output/flowchart1-with-scale-${scale}.png`;
+      await promisify(execFile)('node', [
+        'src/cli.js', '--input=test-positive/flowchart1.mmd', '--output', outputFileName,
+        '--scale', scale]);
+      const bytes = await fs.readFile(outputFileName);
+      expectBytesAreFormat(bytes, 'png');
+      // PNG width is a 4-byte unsigned big-endian integer at byte offset 16
+      return bytes.readUInt32BE(16);
+    }));
+
+    expect(small).toBeCloseTo(normal * 0.5, -1);
+    expect(large).toBeCloseTo(normal * 1.5, -1);
+  }, timeout);
 })
 
 describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
