@@ -75,7 +75,6 @@ async function compileDiagram(
 
   if (output.stderr) {
     // should never happen, so log it if it does happen
-    // eslint-disable-next-line no-console
     console.warn(
       `Running ${args} succeeded but output the following to stderr: ${output.stderr}`,
     );
