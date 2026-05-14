@@ -1,5 +1,5 @@
-feature: ['feature/*', 'feat/*']
-fix: ['fix/*', 'bug/*']
+feature: ["feature/*", "feat/*"]
+fix: ["fix/*", "bug/*"]
 chore: chore/*
 dependencies: dependabot/*
 fixed-branch: fixed-branch-name

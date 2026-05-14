@@ -55,7 +55,8 @@ mmdc --input test-positive/flowchart1.mmd --cssFile test-positive/flowchart1.css
 <details>
   <summary>Example output: docs/animated-flowchart.svg</summary>
 
-  ![docs/animated-flowchart.svg](docs/animated-flowchart.svg)
+![docs/animated-flowchart.svg](docs/animated-flowchart.svg)
+
 </details>
 
 ### Transform a markdown file with mermaid diagrams
@@ -68,38 +69,44 @@ This command transforms a markdown file itself. The mermaid-cli will find the me
 
 This:
 
-~~~md
+````md
 ### Some markdown
+
 ```mermaid
 graph
    [....]
 ```
 
 ### Some more markdown
+
 ```mermaid
 sequenceDiagram
    [....]
 ```
 
 ### Mermaid with custom title/desc
+
 ```mermaid
 graph
    accTitle: My title here
    accDescr: My description here
    A-->B
 ```
-~~~
+````
 
 Becomes:
 
 ```md
 ### Some markdown
+
 ![diagram](./readme-1.svg)
 
 ### Some more markdown
+
 ![diagram](./readme-2.svg)
 
 ### Mermaid with custom title/desc
+
 ![My description here](./readme-3.svg "My title here")
 ```
 
@@ -167,7 +174,6 @@ restore this behaviour with the `--workdir` option:
 docker run [...] --workdir=/home/mermaidcli minlag/mermaid-cli [...]
 ```
 
-
 ## Use Node.JS API
 
 It's possible to call `mermaid-cli` via a Node.JS API.
@@ -175,11 +181,12 @@ Please be aware that **the NodeJS API is not covered by semver**, as `mermaid-cl
 `mermaid`'s versioning.
 
 ```js
-import { run } from "@mermaid-js/mermaid-cli"
+import { run } from "@mermaid-js/mermaid-cli";
 
 await run(
-   "input.mmd", "output.svg", // {optional options},
-)
+    "input.mmd",
+    "output.svg", // {optional options},
+);
 ```
 
 ## Install locally
@@ -195,10 +202,9 @@ npm install @mermaid-js/mermaid-cli
 ### Run with npx
 
 [`npx`](https://www.npmjs.com/package/npx) is installed by default with NPM. It
-downloads and runs commands at the same time.  To use Mermaid CLI with npx, you
+downloads and runs commands at the same time. To use Mermaid CLI with npx, you
 need to use the `-p` flag because the package name is different than the command
-it installs (`mmdc`).  `npx -p @mermaid-js/mermaid-cli mmdc -h`
-
+it installs (`mmdc`). `npx -p @mermaid-js/mermaid-cli mmdc -h`
 
 ## Install with [brew](https://brew.sh)
 
@@ -207,10 +213,10 @@ it installs (`mmdc`).  `npx -p @mermaid-js/mermaid-cli mmdc -h`
 > This method of installation is no longer supported.
 > For more details, see the [discussion](https://github.com/mermaid-js/mermaid-cli/issues/288).
 > An old version of mermaid-cli can be installed with brew.
+>
 > ```sh
 > brew install mermaid-cli
 > ```
-
 
 ## Known issues
 

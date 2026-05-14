@@ -1,24 +1,24 @@
 categories:
-  - title: '🚀 Features'
+  - title: "🚀 Features"
     labels:
-      - 'feature'
-      - 'enhancement'
-      - 'feat'
-  - title: '🐛 Bug Fixes'
+      - "feature"
+      - "enhancement"
+      - "feat"
+  - title: "🐛 Bug Fixes"
     labels:
-      - 'fix'
-      - 'bugfix'
-      - 'bug'
-  - title: '🧰 Maintenance'
-    label: 'chore'
+      - "fix"
+      - "bugfix"
+      - "bug"
+  - title: "🧰 Maintenance"
+    label: "chore"
   - title: 📦 Dependency updates
     labels:
       - dependencies
-change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
+change-template: "- $TITLE @$AUTHOR (#$NUMBER)"
 template: |
   ## Changes
   $CHANGES
-  
+
 replacers:
-- search: '@dependabot-preview'
-  replace: '@dependabot'
+  - search: "@dependabot-preview"
+    replace: "@dependabot"

@@ -1,6 +1,6 @@
 # Hello!
 
-This is a *markdown* file that contains no mermaid charts.
+This is a _markdown_ file that contains no mermaid charts.
 
 ```
   def test():
