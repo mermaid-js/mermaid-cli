@@ -14,7 +14,7 @@ async function main() {
   const packageJson = JSON.parse(await readFile("package.json", "utf8"));
   const version = packageJson.version;
 
-  await writeFile("src/version.js", `export const version = '${version}'\n`);
+  await writeFile("src/version.js", `export const version = "${version}";\n`);
   await promisify(execFile)("git", ["add", "src/version.js"]);
 }
 
