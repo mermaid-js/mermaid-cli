@@ -25,8 +25,8 @@
     "test": "cross-env-shell NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" npx jest",
     "test:cli": "bash run-tests.sh test-positive",
     "version": "node scripts/version.js",
-    "lint": "prettier --check .",
-    "lint-fix": "prettier --write ."
+    "lint": "prettier --check . && eslint .",
+    "lint-fix": "prettier --write . && eslint --fix ."
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.0.0 || ^7.0.1",
@@ -46,13 +46,17 @@
     "puppeteer": "^23 || ^24"
   },
   "devDependencies": {
+    "@eslint/js": "^9.0.0",
     "@tsconfig/node18": "^18.2.4",
     "@types/node": "~18.19.31",
     "cross-env": "^7.0.3",
+    "eslint": "^9.0.0",
+    "globals": "^17.6.0",
     "jest": "^30.0.5",
     "prettier": "^3.8.3",
     "puppeteer": "^24.0.0",
     "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.3",
     "vite": "^6.0.2",
     "yarn-upgrade-all": "^0.8.1"
   },

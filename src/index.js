@@ -568,7 +568,6 @@ async function renderMermaid(
         let title = null;
         // If <title> exists, it must be the first child Node,
         // see https://www.w3.org/TR/SVG11/struct.html#DescriptionAndTitleElements
-        /* global SVGTitleElement, SVGDescElement */ // These exist in browser-based code
         if (svg.firstChild instanceof SVGTitleElement) {
           title = svg.firstChild.textContent;
         }
@@ -604,7 +603,6 @@ async function renderMermaid(
         // SVG might have HTML <foreignObject> that are not valid XML
         // E.g. <br> must be replaced with <br/>
         // Luckily the DOM Web API has the XMLSerializer for this
-        // eslint-disable-next-line no-undef
         const xmlSerializer = new XMLSerializer();
         return xmlSerializer.serializeToString(svg);
       });
