@@ -52,6 +52,8 @@ jobs:
       # throws an error if package-lock.json is out-of-date
       - run: npm ci
 
+      - run: npm run lint
+
       - name: Install minimal dependencies
         run: node ./scripts/install-minimum.js
         if: matrix.dependencies == 'minimal'
