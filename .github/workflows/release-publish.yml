@@ -48,6 +48,19 @@ jobs:
       - name: Prepare release
         run: npm version --no-git-tag-version --allow-same-version "$RELEASE_VERSION"
 
+      - name: Commit new version and update release tag
+        run: |
+          git add package.json package-lock.json src/version.js
+          git checkout master
+          if git diff --cached --quiet; then
+            echo "Version files are already up to date"
+          else
+            git commit -m "Bump version $RELEASE_VERSION"
+            git push --no-verify origin master
+          fi
+          git tag --force "${{ github.event.release.tag_name }}" HEAD
+          git push --no-verify --force origin "${{ github.event.release.tag_name }}"
+
       - name: Convert repository name to lower case
         run: echo "GITHUB_REPOSITORY_LOWER_CASE=$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
@@ -97,13 +110,6 @@ jobs:
         run: |
           for i in test-positive/*.mmd; do docker run -v "$(pwd):/data" "$DOCKER_IO_REPOSITORY:$RELEASE_VERSION" -i "/data/$i"; done
           for i in test-positive/*.mmd; do cat "$i" | docker run -i -v "$(pwd):/data" "$DOCKER_IO_REPOSITORY:$RELEASE_VERSION" -o "/data/$i-stdin.svg"; done
-
-      - name: Commit new version to the repository
-        run: |
-          git add package.json package-lock.json
-          git checkout master
-          git commit -m "Bump version $RELEASE_VERSION"
-          git push --no-verify
 
       # For manual inspection of the generated artifacts
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
