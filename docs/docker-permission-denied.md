@@ -1,4 +1,5 @@
 When running the Docker image with Docker or Podman you get the following error:
+
 ```
 › podman run -it -v "$(pwd)":/data:z minlag/mermaid-cli -i /data/diagram.mmd
 node:fs:582
@@ -19,7 +20,9 @@ Error: EACCES: permission denied, open '/data/diagram.mmd.svg'
   path: '/data/diagram.mmd.svg'
 }
 ```
+
 You can solve this issue by using docker `-u` option with your `UID`:
+
 ```
 docker run -u $UID -it --rm -v "$(pwd)":data minlag/mermaid-cli -i /data/diagram.mmd
 ```

@@ -14,7 +14,7 @@ Create a `puppeteer-config.json` file:
 
 ```json
 {
-  "args": ["--no-sandbox"]
+    "args": ["--no-sandbox"]
 }
 ```
 

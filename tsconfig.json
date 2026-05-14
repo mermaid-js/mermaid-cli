@@ -31,7 +31,7 @@
     "lib": [
       "es2020",
       "DOM", // used by puppeteer functions
-      "DOM.Iterable", // means we can use `for/of` in HTMLCollection
-    ],
+      "DOM.Iterable" // means we can use `for/of` in HTMLCollection
+    ]
   }
 }
