@@ -46,20 +46,25 @@ jobs:
         run: echo "RELEASE_VERSION=${{ steps.gitversion.outputs.semVer }}" >> $GITHUB_ENV
 
       - name: Prepare release
-        run: npm version --no-git-tag-version --allow-same-version "$RELEASE_VERSION"
-
-      - name: Commit new version and update release tag
         run: |
-          git add package.json package-lock.json src/version.js
-          git checkout master
-          if git diff --cached --quiet; then
-            echo "Version files are already up to date"
-          else
-            git commit -m "Bump version $RELEASE_VERSION"
-            git push --no-verify origin master
+          release_tag="${{ github.event.release.tag_name }}"
+          old_release_tag_ref="$(git rev-parse "refs/tags/$release_tag")"
+
+          if [ "$release_tag" != "$RELEASE_VERSION" ]; then
+            echo "Release tag '$release_tag' does not match version '$RELEASE_VERSION'"
+            exit 1
           fi
-          git tag --force "${{ github.event.release.tag_name }}" HEAD
-          git push --no-verify --force origin "${{ github.event.release.tag_name }}"
+
+          npm version \
+            --allow-same-version \
+            --tag-version-prefix "" \
+            --message "Bump version %s" \
+            "$RELEASE_VERSION"
+
+          echo "RELEASE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          git push --no-verify \
+            --force-with-lease="refs/tags/$release_tag:$old_release_tag_ref" \
+            origin "refs/tags/$release_tag"
 
       - name: Convert repository name to lower case
         run: echo "GITHUB_REPOSITORY_LOWER_CASE=$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
@@ -110,6 +115,15 @@ jobs:
         run: |
           for i in test-positive/*.mmd; do docker run -v "$(pwd):/data" "$DOCKER_IO_REPOSITORY:$RELEASE_VERSION" -i "/data/$i"; done
           for i in test-positive/*.mmd; do cat "$i" | docker run -i -v "$(pwd):/data" "$DOCKER_IO_REPOSITORY:$RELEASE_VERSION" -o "/data/$i-stdin.svg"; done
+
+      - name: Update default branch to release commit
+        continue-on-error: true
+        run: |
+          default_branch="${{ github.event.repository.default_branch }}"
+          git fetch origin "$default_branch"
+          git checkout -B "$default_branch" "origin/$default_branch"
+          git merge --ff-only "$RELEASE_COMMIT"
+          git push --no-verify origin "$default_branch"
 
       # For manual inspection of the generated artifacts
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
