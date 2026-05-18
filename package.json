@@ -50,7 +50,7 @@
     "@tsconfig/node18": "^18.2.4",
     "@types/node": "~18.19.31",
     "cross-env": "^7.0.3",
-    "eslint": "^9.0.0",
+    "eslint": "^10.4.0",
     "globals": "^17.6.0",
     "jest": "^30.0.5",
     "prettier": "^3.8.3",
