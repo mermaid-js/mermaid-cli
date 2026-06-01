@@ -95,7 +95,7 @@ export class Interceptor {
   }
 
   /**
-   * @param {puppeteer.HTTPRequest} request - The intercepted request
+   * @param {import('puppeteer').HTTPRequest} request - The intercepted request
    */
   async #interceptRequestHandler(request) {
     try {
@@ -126,7 +126,7 @@ export class Interceptor {
    * Intercepts requests to `https://mermaid-cli-intercept.invalid`
    * and serves the corresponding file content.
    *
-   * @return {puppeteer.Handler<puppeteer.HTTPRequest>}
+   * @return {import('puppeteer').Handler<import('puppeteer').HTTPRequest>}
    */
   get interceptRequestHandler() {
     return this.#interceptRequestHandler.bind(this);
