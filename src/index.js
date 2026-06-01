@@ -750,7 +750,7 @@ async function run(
     "gm",
   );
   /**
-   * @type {puppeteer.Browser | undefined}
+   * @type {import('puppeteer').Browser | undefined}
    * Lazy-loaded browser instance, only created when needed.
    */
   let browser = userPassedBrowser;
