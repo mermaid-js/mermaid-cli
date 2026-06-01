@@ -49,11 +49,15 @@ jobs:
             });
             const fs = require('fs');
             fs.writeFileSync('${{github.workspace}}/mmdc-output.zip', Buffer.from(download.data));
-      - run: unzip mmdc-output.zip
+      - run: |
+          # Use `-j` to avoid zip slip/directory structure issues.
+          unzip -j mmdc-output.zip -d ./output
+          # Filter out irregular files like symlinks
+          find ./output -mindepth 1 -maxdepth 1 ! -type f -exec rm -- {} +
       - name: "Upload to Percy"
         # copied from https://docs.percy.io/docs/github-actions
         # should automatically upload `.png`
-        run: npx @percy/cli upload ./
+        run: npx @percy/cli upload ./output
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
           # Because we are not running on pull_request, but from a workflow_run,
