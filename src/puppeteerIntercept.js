@@ -121,7 +121,7 @@ export class Interceptor {
         `Error handling intercept request for ${request.url()}:`,
         error,
       );
-      request.abort(undefined, DEFAULT_INTERCEPT_RESOLUTION_PRIORITY);
+      return request.abort(undefined, DEFAULT_INTERCEPT_RESOLUTION_PRIORITY);
     }
     request.continue(undefined, DEFAULT_INTERCEPT_RESOLUTION_PRIORITY);
   }
