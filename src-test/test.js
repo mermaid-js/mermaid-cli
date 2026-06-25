@@ -801,34 +801,41 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       timeout,
     );
 
-    test("should allow custom request interceptors", async () => {
-      const context = await browser.createBrowserContext();
-      context.on("targetcreated", async (target) => {
-        const page = await target.page();
-        if (!page) {
-          return;
-        }
-        page.setRequestInterception(true);
-        page.on("request", (request) => {
-          if (request.url().includes("example.test")) {
-            request.respond(
-              {
-                status: 200,
-                contentType: "image/svg+xml",
-                body: `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><circle r="45" cx="50" cy="50" fill="red" /></svg>`,
-              },
-              DEFAULT_INTERCEPT_RESOLUTION_PRIORITY,
-            );
-          } else {
-            request.continue(undefined, DEFAULT_INTERCEPT_RESOLUTION_PRIORITY);
+    test(
+      "should allow custom request interceptors",
+      async () => {
+        const context = await browser.createBrowserContext();
+        context.on("targetcreated", async (target) => {
+          const page = await target.page();
+          if (!page) {
+            return;
           }
+          page.setRequestInterception(true);
+          page.on("request", (request) => {
+            if (request.url().includes("example.test")) {
+              request.respond(
+                {
+                  status: 200,
+                  contentType: "image/svg+xml",
+                  body: `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><circle r="45" cx="50" cy="50" fill="red" /></svg>`,
+                },
+                DEFAULT_INTERCEPT_RESOLUTION_PRIORITY,
+              );
+            } else {
+              request.continue(
+                undefined,
+                DEFAULT_INTERCEPT_RESOLUTION_PRIORITY,
+              );
+            }
+          });
         });
-      });
 
-      const mmdInput =
-        'flowchart TD\n    A --> B[<img src="https://example.test/icon.svg" />]';
-      const result = await renderMermaid(context, mmdInput, "png");
-      expectBytesAreFormat(result.data, "png");
-    });
+        const mmdInput =
+          'flowchart TD\n    A --> B[<img src="https://example.test/icon.svg" />]';
+        const result = await renderMermaid(context, mmdInput, "png");
+        expectBytesAreFormat(result.data, "png");
+      },
+      timeout,
+    );
   });
 });
