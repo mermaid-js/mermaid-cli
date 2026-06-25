@@ -776,7 +776,7 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       expectBytesAreFormat(result.data, "svg");
       const decoder = new TextDecoder();
       expect(decoder.decode(result.data)).toContain("<path");
-    });
+    }, timeout);
 
     test("should show Iconify icon packs and named iconpacks", async () => {
       const mmdInput =
@@ -790,6 +790,6 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       expectBytesAreFormat(result.data, "svg");
       const decoder = new TextDecoder();
       expect(decoder.decode(result.data)).toContain("<path");
-    });
+    }, timeout);
   });
 });
