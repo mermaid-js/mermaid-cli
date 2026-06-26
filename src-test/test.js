@@ -768,28 +768,36 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       expectBytesAreFormat(result.data, "svg");
     });
 
-    test("should show Iconify icon packs", async () => {
-      const mmdInput = "architecture-beta\n    group aws(logos:aws)[AWS]";
-      const result = await renderMermaid(browser, mmdInput, "svg", {
-        iconPacks: ["@iconify-json/logos"],
-      });
-      expectBytesAreFormat(result.data, "svg");
-      const decoder = new TextDecoder();
-      expect(decoder.decode(result.data)).toContain("<path");
-    }, timeout);
+    test(
+      "should show Iconify icon packs",
+      async () => {
+        const mmdInput = "architecture-beta\n    group aws(logos:aws)[AWS]";
+        const result = await renderMermaid(browser, mmdInput, "svg", {
+          iconPacks: ["@iconify-json/logos"],
+        });
+        expectBytesAreFormat(result.data, "svg");
+        const decoder = new TextDecoder();
+        expect(decoder.decode(result.data)).toContain("<path");
+      },
+      timeout,
+    );
 
-    test("should show Iconify icon packs and named iconpacks", async () => {
-      const mmdInput =
-        'flowchart TD\n    aws@{ icon: "logos:aws" } \n    resource-groups@{ icon: "azure:resource-groups", label: "resource-groups" }';
-      const result = await renderMermaid(browser, mmdInput, "svg", {
-        iconPacks: ["@iconify-json/logos"],
-        iconPacksNamesAndUrls: [
-          "azure#https://raw.githubusercontent.com/NakayamaKento/AzureIcons/refs/heads/main/icons.json",
-        ],
-      });
-      expectBytesAreFormat(result.data, "svg");
-      const decoder = new TextDecoder();
-      expect(decoder.decode(result.data)).toContain("<path");
-    }, timeout);
+    test(
+      "should show Iconify icon packs and named iconpacks",
+      async () => {
+        const mmdInput =
+          'flowchart TD\n    aws@{ icon: "logos:aws" } \n    resource-groups@{ icon: "azure:resource-groups", label: "resource-groups" }';
+        const result = await renderMermaid(browser, mmdInput, "svg", {
+          iconPacks: ["@iconify-json/logos"],
+          iconPacksNamesAndUrls: [
+            "azure#https://raw.githubusercontent.com/NakayamaKento/AzureIcons/refs/heads/main/icons.json",
+          ],
+        });
+        expectBytesAreFormat(result.data, "svg");
+        const decoder = new TextDecoder();
+        expect(decoder.decode(result.data)).toContain("<path");
+      },
+      timeout,
+    );
   });
 });
