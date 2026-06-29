@@ -35,7 +35,7 @@
     "chalk": "^5.0.1",
     "commander": "^13.1.0",
     "import-meta-resolve": "^4.1.0",
-    "katex": "^0.16.25",
+    "katex": "^0.17.0",
     "mermaid": "^11.14.0",
     "p-limit": "^6.2.0"
   },
