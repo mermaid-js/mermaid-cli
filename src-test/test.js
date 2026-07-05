@@ -11,6 +11,14 @@ import { promisify } from "util";
 import { expect, beforeAll, afterAll, describe, test } from "@jest/globals";
 
 import { run, renderMermaid } from "../src/index.js";
+import {
+  KEEP_SOURCE_PRESETS,
+  createKeepSourceRegex,
+  resolveKeepSourceTemplate,
+  sourceFromMatch,
+  applyKeepSourceTemplate,
+  hasKeepSourceMarkers,
+} from "../src/keep-source.js";
 import os from "os";
 import pLimit from "p-limit";
 import puppeteer, { DEFAULT_INTERCEPT_RESOLUTION_PRIORITY } from "puppeteer";
@@ -660,6 +668,252 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       },
       timeout,
     );
+
+    test(
+      "should keep the mermaid source and re-render idempotently with keepSource",
+      async () => {
+        const outputMd = "test-output/mermaid-keep-source.md";
+        await fs.rm(outputMd, { force: true });
+
+        const options = {
+          browser,
+          limiter,
+          quiet: true,
+          outputFormat: "svg",
+          keepSource: true,
+          sourceStyle: "plain",
+        };
+
+        // First run: bare ```mermaid fences -> image + marker-wrapped source.
+        await run("test-positive/mermaid.md", outputMd, options);
+        const firstPass = await fs.readFile(outputMd, { encoding: "utf8" });
+
+        // The source is kept (not discarded), wrapped in round-trip markers,
+        // alongside a generated image.
+        expect(firstPass).toContain("<!-- mermaid:begin -->");
+        expect(firstPass).toContain("<!-- mermaid:end -->");
+        expect(firstPass).toContain("```mermaid");
+        expect(firstPass).toMatch(
+          /!\[[^\]]*\]\(\.\/mermaid-keep-source-1\.svg/,
+        );
+
+        const beginMarkers = firstPass.match(/<!-- mermaid:begin -->/g) || [];
+        const fences = firstPass.match(/```mermaid/g) || [];
+        expect(beginMarkers.length).toBeGreaterThan(0);
+
+        // Second run on the tool's own output must be a no-op for the Markdown
+        // (the whole marker region is replaced, never nested).
+        await run(outputMd, outputMd, options);
+        const secondPass = await fs.readFile(outputMd, { encoding: "utf8" });
+
+        expect(secondPass).toEqual(firstPass);
+        expect(secondPass.match(/<!-- mermaid:begin -->/g) || []).toHaveLength(
+          beginMarkers.length,
+        );
+        expect(secondPass.match(/```mermaid/g) || []).toHaveLength(
+          fences.length,
+        );
+      },
+      timeout,
+    );
+
+    test(
+      "should support the collapsed source style with a custom summary",
+      async () => {
+        // A single diagram suffices here: the collapsed layout and its
+        // round-trip are style concerns, not regex-edge-case concerns (the
+        // plain and strip tests cover those against the full fixture).
+        const inputMd = "test-output/keep-source-collapsed-input.md";
+        await fs.writeFile(
+          inputMd,
+          "# Title\n\n```mermaid\ngraph TD\n  A-->B\n```\n",
+        );
+        const outputMd = "test-output/mermaid-keep-source-collapsed.md";
+        await fs.rm(outputMd, { force: true });
+
+        const options = {
+          browser,
+          limiter,
+          quiet: true,
+          outputFormat: "svg",
+          keepSource: true,
+          sourceStyle: "collapsed",
+          sourceSummary: "Show diagram source",
+        };
+
+        await run(inputMd, outputMd, options);
+        const firstPass = await fs.readFile(outputMd, { encoding: "utf8" });
+        expect(firstPass).toContain("<details>");
+        expect(firstPass).toContain("<summary>Show diagram source</summary>");
+
+        await run(outputMd, outputMd, options);
+        const secondPass = await fs.readFile(outputMd, { encoding: "utf8" });
+        expect(secondPass).toEqual(firstPass);
+        // exactly as many <details> as diagrams: no nesting on re-run
+        expect(secondPass.match(/<details>/g) || []).toHaveLength(
+          firstPass.match(/<details>/g).length,
+        );
+      },
+      timeout,
+    );
+
+    test(
+      "keepSource output is stable under Prettier (no formatter churn)",
+      async () => {
+        const prettier = await import("prettier");
+        const inputMd = "test-output/keep-source-prettier-input.md";
+        await fs.writeFile(
+          inputMd,
+          "# Title\n\n```mermaid\ngraph TD\n  A-->B\n```\n",
+        );
+
+        for (const sourceStyle of ["plain", "collapsed"]) {
+          const outputMd = `test-output/keep-source-prettier-${sourceStyle}.md`;
+          await fs.rm(outputMd, { force: true });
+          await run(inputMd, outputMd, {
+            browser,
+            limiter,
+            quiet: true,
+            outputFormat: "svg",
+            keepSource: true,
+            sourceStyle,
+          });
+
+          const output = await fs.readFile(outputMd, { encoding: "utf8" });
+          // Running Prettier over the emitted Markdown must be a no-op, so the
+          // tool's output does not fight a formatter in the user's repo.
+          const formatted = await prettier.format(output, {
+            parser: "markdown",
+          });
+          expect(formatted).toEqual(output);
+        }
+      },
+      timeout,
+    );
+
+    test(
+      "running without keepSource converts keep-source output back to plain output",
+      async () => {
+        const plainMd = "test-output/keep-source-strip-plain.md";
+        const keptMd = "test-output/keep-source-strip-kept.md";
+        await fs.rm(plainMd, { force: true });
+        await fs.rm(keptMd, { force: true });
+
+        const options = { browser, limiter, quiet: true, outputFormat: "svg" };
+
+        // Reference: render the input without keepSource.
+        await run("test-positive/mermaid.md", plainMd, options);
+        const plain = await fs.readFile(plainMd, { encoding: "utf8" });
+
+        // Render with keepSource, then re-run without the flag in place: the
+        // regions must collapse back to plain images, not accumulate wrappers.
+        await run("test-positive/mermaid.md", keptMd, {
+          ...options,
+          keepSource: true,
+        });
+        await run(keptMd, keptMd, options);
+        const stripped = await fs.readFile(keptMd, { encoding: "utf8" });
+
+        // No markers survive. (Can't assert on ```mermaid: the fixture
+        // mentions it in prose.)
+        expect(stripped).not.toContain("<!-- mermaid:begin -->");
+        expect(stripped).not.toContain("<!-- mermaid:end -->");
+        // Identical to never having used keepSource, modulo the image
+        // filenames, which derive from the output filename.
+        expect(
+          stripped.replaceAll(
+            "keep-source-strip-kept",
+            "keep-source-strip-plain",
+          ),
+        ).toEqual(plain);
+      },
+      timeout,
+    );
+
+    // The following exercise the keep-source regex/template directly (no
+    // rendering), so they are fast and deterministic.
+    describe("keep-source regex/template internals", () => {
+      test("captures a bare fence with CRLF line endings", () => {
+        const md = ["```mermaid", "graph TD", "  A-->B", "```", ""].join(
+          "\r\n",
+        );
+        const sources = [...md.matchAll(createKeepSourceRegex())].map(
+          sourceFromMatch,
+        );
+        expect(sources).toHaveLength(1);
+        expect(sources[0]).toContain("graph TD");
+      });
+
+      test("does not swallow a following diagram when a marker is missing", () => {
+        // The first region is missing its `mermaid:end` marker.
+        const md = [
+          "<!-- mermaid:begin -->",
+          "![](a.svg)",
+          "```mermaid",
+          "AAA",
+          "```",
+          "<!-- mermaid:begin -->",
+          "![](b.svg)",
+          "```mermaid",
+          "BBB",
+          "```",
+          "<!-- mermaid:end -->",
+        ].join("\n");
+        const sources = [...md.matchAll(createKeepSourceRegex())]
+          .map(sourceFromMatch)
+          .map((s) => s.trim());
+        // Both diagrams survive rather than one being consumed by the other.
+        expect(sources).toEqual(["AAA", "BBB"]);
+      });
+
+      test("matches in linear time on a begin marker with no matching end (ReDoS guard)", () => {
+        // Regression guard for catastrophic backtracking: a large input with
+        // begin markers + fences but no end markers must complete quickly.
+        const md = "<!-- mermaid:begin -->\n```mermaid\nX\n```\n".repeat(4000);
+        const start = Date.now();
+        const count = [...md.matchAll(createKeepSourceRegex())].length;
+        expect(count).toBe(4000);
+        expect(Date.now() - start).toBeLessThan(2000);
+      });
+
+      test("resolveKeepSourceTemplate resolves style presets and defaults to plain", () => {
+        expect(resolveKeepSourceTemplate("collapsed")).toBe(
+          KEEP_SOURCE_PRESETS.collapsed,
+        );
+        expect(resolveKeepSourceTemplate("plain")).toBe(
+          KEEP_SOURCE_PRESETS.plain,
+        );
+        expect(resolveKeepSourceTemplate(undefined)).toBe(
+          KEEP_SOURCE_PRESETS.plain,
+        );
+      });
+
+      test("hasKeepSourceMarkers detects markers, including whitespace variants", () => {
+        expect(hasKeepSourceMarkers("# plain doc\n```mermaid\nA\n```")).toBe(
+          false,
+        );
+        expect(hasKeepSourceMarkers("<!-- mermaid:begin -->")).toBe(true);
+        expect(hasKeepSourceMarkers("text\n<!--mermaid:end-->\ntext")).toBe(
+          true,
+        );
+      });
+
+      test("resolveKeepSourceTemplate rejects an unknown style", () => {
+        expect(() => resolveKeepSourceTemplate("colapsed")).toThrow(
+          /Unknown sourceStyle "colapsed"/,
+        );
+      });
+
+      test("leaves unknown placeholders untouched and does not re-interpret values", () => {
+        const out = applyKeepSourceTemplate("{{image}} {{unknown}}", {
+          image: "$& {{source}}",
+        });
+        // Known placeholder substituted literally ($& not treated specially,
+        // and a {{source}} inside the value is not recursively expanded);
+        // unknown placeholder left as-is.
+        expect(out).toBe("$& {{source}} {{unknown}}");
+      });
+    });
 
     test.each(["svg", "png", "pdf"])(
       "should write %s from .mmd input",

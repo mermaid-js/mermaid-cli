@@ -10,6 +10,14 @@ import url from "url";
 import { promisify } from "node:util";
 import { version } from "./version.js";
 import { Interceptor } from "./puppeteerIntercept.js";
+import {
+  createKeepSourceRegex,
+  resolveKeepSourceTemplate,
+  sourceFromMatch,
+  applyKeepSourceTemplate,
+  escapeHtml,
+  hasKeepSourceMarkers,
+} from "./keep-source.js";
 
 // __dirname is not available in ESM modules by default
 const __dirname = url.fileURLToPath(new url.URL(".", import.meta.url));
@@ -200,6 +208,24 @@ async function cli() {
       "-a, --artefacts [artefacts]",
       "Output artefacts path. Only used with Markdown input file. Optional. Default: output directory",
     )
+    .option(
+      "--keep-source",
+      "Keep the mermaid source in the Markdown output, wrapped in round-trip markers so it can be re-rendered idempotently. Only used with Markdown output.",
+      false,
+    )
+    .addOption(
+      new Option(
+        "--source-style <style>",
+        "Layout preset used with --keep-source.",
+      )
+        .choices(["plain", "collapsed"])
+        .default("plain"),
+    )
+    .option(
+      "--source-summary <text>",
+      "Summary label used by the 'collapsed' --source-style.",
+      "Diagram source",
+    )
     .addOption(
       new Option(
         "-j, --jobs <jobs>",
@@ -275,6 +301,9 @@ async function cli() {
     iconPacksNamesAndUrls,
     artefacts,
     jobs,
+    keepSource,
+    sourceStyle,
+    sourceSummary,
   } = options;
 
   // check input file
@@ -329,6 +358,12 @@ async function cli() {
     if (!fs.existsSync(artefacts)) {
       fs.mkdirSync(artefacts, { recursive: true });
     }
+  }
+
+  if (keepSource && !/\.(?:md|markdown)$/.test(output)) {
+    warn(
+      "--keep-source (and --source-* options) only apply to Markdown output; ignoring.",
+    );
   }
 
   const outputDir = path.dirname(output);
@@ -387,6 +422,9 @@ async function cli() {
       iconPacksNamesAndUrls,
     },
     artefacts,
+    keepSource,
+    sourceStyle,
+    sourceSummary,
   });
 }
 
@@ -717,6 +755,9 @@ function markdownImage({ url, title, alt }) {
  * This may leak cookies/cache between runs.
  * @param {Limiter} [opts.limiter] - If set, limiter function to avoid rendering too many diagrams in parallel.
  * @param {ParseMDDOptions} [opts.parseMMDOptions] - Options to pass to {@link parseMMDOptions}.
+ * @param {boolean} [opts.keepSource] - If set, keep the mermaid source in the Markdown output (wrapped in round-trip markers) instead of replacing it with only an image. Only used with Markdown output.
+ * @param {"plain" | "collapsed"} [opts.sourceStyle] - Layout preset used with `keepSource`.
+ * @param {string} [opts.sourceSummary] - Summary label used by the `collapsed` source style.
  */
 async function run(
   input,
@@ -729,6 +770,9 @@ async function run(
     parseMMDOptions,
     limiter = (x, ...args) => x(...args),
     artefacts,
+    keepSource = false,
+    sourceStyle = "plain",
+    sourceSummary = "Diagram source",
   } = {},
 ) {
   /**
@@ -743,12 +787,16 @@ async function run(
   };
 
   // TODO: should we use a Markdown parser like remark instead of rolling our own parser?
-  const mermaidChartsInMarkdown =
-    /^[^\S\n]*[`:]{3}(?:mermaid)([^\S\n]*\r?\n([\s\S]*?))[`:]{3}[^\S\n]*$/;
-  const mermaidChartsInMarkdownRegexGlobal = new RegExp(
-    mermaidChartsInMarkdown,
-    "gm",
-  );
+  // Matches bare ```mermaid fences as well as whole regions previously emitted
+  // by --keep-source, so a re-run always replaces a region wholesale: with
+  // keepSource the source is kept alongside the fresh image, without it the
+  // region collapses back to a plain image — the same output as if
+  // --keep-source had never been used.
+  const markdownRegexGlobal = createKeepSourceRegex();
+  // Resolved eagerly so an invalid style fails before any rendering.
+  const keepSourceTemplate = keepSource
+    ? resolveKeepSourceTemplate(sourceStyle)
+    : "";
   /**
    * @type {import('puppeteer').Browser | undefined}
    * Lazy-loaded browser instance, only created when needed.
@@ -780,14 +828,26 @@ async function run(
         throw new Error("Cannot use `stdout` with markdown input");
       }
 
+      if (
+        !keepSource &&
+        /\.(md|markdown)$/.test(output) &&
+        hasKeepSourceMarkers(definition)
+      ) {
+        warn(
+          "The input contains keep-source regions but --keep-source is not set: " +
+            "each region will be converted back to a plain image and its embedded " +
+            "mermaid source removed. Use --keep-source to retain the source.",
+        );
+      }
+
       const imagePromises = [];
       for (const mermaidCodeblockMatch of definition.matchAll(
-        mermaidChartsInMarkdownRegexGlobal,
+        markdownRegexGlobal,
       )) {
         if (browser === undefined) {
           browser = await puppeteer.launch(puppeteerConfig);
         }
-        const mermaidDefinition = mermaidCodeblockMatch[2];
+        const mermaidDefinition = sourceFromMatch(mermaidCodeblockMatch);
 
         /** Output can be either a template image file, or a `.md` output file.
          *   If it is a template image file, use that to created numbered diagrams
@@ -842,8 +902,8 @@ async function run(
 
       if (/\.(md|markdown)$/.test(output)) {
         const outDefinition = definition.replace(
-          mermaidChartsInMarkdownRegexGlobal,
-          (_mermaidMd) => {
+          markdownRegexGlobal,
+          (...matchArgs) => {
             // pop first image from front of array
             const { url, title, alt } =
               /**
@@ -851,7 +911,16 @@ async function run(
                * so we will never try to get too many objects from the array.
                * (aka `images.shift()` will never return `undefined`)
                */ (images.shift());
-            return markdownImage({ url, title, alt: alt || "diagram" });
+            const image = markdownImage({ url, title, alt: alt || "diagram" });
+            if (!keepSource) {
+              return image;
+            }
+            const source = sourceFromMatch(matchArgs).replace(/\s+$/, "");
+            return applyKeepSourceTemplate(keepSourceTemplate, {
+              image,
+              source,
+              summary: escapeHtml(sourceSummary),
+            });
           },
         );
         await fs.promises.writeFile(output, outDefinition, "utf-8");

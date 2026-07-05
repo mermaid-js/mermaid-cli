@@ -110,6 +110,76 @@ Becomes:
 ![My description here](./readme-3.svg "My title here")
 ```
 
+### Keep the mermaid source (`--keep-source`)
+
+By default the mermaid source is replaced by the generated image. With
+`--keep-source` the source is kept in the output too, wrapped in round-trip
+markers, so you can edit the diagram and re-render in place. This applies to
+Markdown input and output only. Running the command again on its own output is
+idempotent — the existing image and source are replaced together, never nested.
+
+```sh
+mmdc -i readme.md -o readme.md --keep-source
+```
+
+Each diagram becomes:
+
+````md
+<!-- mermaid:begin -->
+
+![diagram](./readme-1.svg)
+
+```mermaid
+graph TD
+   [....]
+```
+
+<!-- mermaid:end -->
+````
+
+The default layout is plain Markdown that renders anywhere. Alternatively,
+`--source-style collapsed` hides the source behind a collapsible HTML
+`<details>` block:
+
+```sh
+mmdc -i readme.md -o readme.md --keep-source --source-style collapsed
+```
+
+Each diagram becomes:
+
+````md
+<!-- mermaid:begin -->
+
+![diagram](./readme-1.svg)
+<details>
+<summary>Diagram source</summary>
+
+```mermaid
+graph TD
+   [....]
+```
+
+</details>
+<!-- mermaid:end -->
+````
+
+The optional `--source-summary <text>` changes the label of the collapsible
+block from the default `Diagram source`.
+
+Each style has one caveat. On hosts that render mermaid natively (GitHub,
+GitLab), the `plain` style shows each diagram twice — the generated image plus
+the natively rendered fence — so prefer `collapsed` there. Conversely, the
+`collapsed` style relies on raw HTML, so it only renders where your Markdown
+host allows HTML (GitHub, GitLab, and most static-site generators); in viewers
+that strip HTML the tags show up literally — use the default `plain` style
+there.
+
+Running `mmdc` _without_ `--keep-source` on a file that contains keep-source
+regions converts each region back to a plain image — the same output as if
+`--keep-source` had never been used. This removes the embedded mermaid source
+from the document, so `mmdc` prints a warning when it happens; keep using the
+flag if you want to retain the source.
+
 ### Piping from stdin
 
 You can easily pipe input from stdin. This example shows how to use a heredoc to
