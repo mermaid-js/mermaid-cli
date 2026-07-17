@@ -1,4 +1,4 @@
 mode: ContinuousDeployment
 branches:
-  master:
-    tag: beta
+  main:
+    label: beta
