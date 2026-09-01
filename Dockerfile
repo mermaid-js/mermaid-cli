@@ -13,6 +13,8 @@ USER mermaidcli
 WORKDIR /home/mermaidcli
 RUN npm install @mermaid-js/mermaid-cli@$VERSION
 
+ENV PATH="$PATH:/home/mermaidcli/node_modules/.bin/"
+
 ADD puppeteer-config.json  /puppeteer-config.json
 
 WORKDIR /data
