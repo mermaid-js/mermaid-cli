@@ -4,6 +4,13 @@ IMAGETAG=$2
 
 set -e
 
+# Clean up, even on failure
+cleanup() {
+  rm -rf ./static-out/
+  rm -rf ./test-output/
+}
+trap cleanup EXIT
+
 # If no image tag is provided, build the Docker image
 if [ -z "$IMAGETAG" ]; then
   echo "No image tag provided, building Docker image..."
@@ -102,6 +109,8 @@ if ! grep -q "!\[diagram\](\.\/\.\.\/static-out\/mermaid-artefacts-1\.svg)" "./t
   exit 1;
 fi
 
-# Clean up
-rm -rf ./static-out/
-rm -rf ./test-output/mermaid-artefacts.md
+# Verify that mmdc is on the PATH
+if ! docker run --rm --entrypoint='/bin/sh' $IMAGETAG -c 'mmdc --version' > /dev/null; then
+  echo "mmdc binary is not on the PATH"
+  exit 1;
+fi
