@@ -2,7 +2,7 @@
 # package ecosystems to update and where the package manifests are located.
 # Please see the documentation for all configuration options:
 # https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
-
+# $schema: https://www.schemastore.org/dependabot-2.0.json
 version: 2
 updates:
   - package-ecosystem: npm
@@ -11,9 +11,29 @@ updates:
       interval: weekly
       day: monday
       time: "07:00"
+    cooldown:
+      default-days: 5
+      exclude:
+        - mermaid
+        - '@mermaid-js/*'
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
       day: monday
       time: "07:00"
+    cooldown:
+      default-days: 5
+    groups:
+      actions:
+        patterns:
+          - "actions/*"
+        update-types: ['minor', 'patch']
+      docker:
+        patterns:
+          - "docker/*"
+        update-types: ['minor', 'patch']
+      codeql:
+        # All CodeQL actions need to be on the exact same version
+        patterns:
+          - "github/codeql-action/*"
