@@ -15,7 +15,7 @@ updates:
       default-days: 5
       exclude:
         - mermaid
-        - '@mermaid-js/*'
+        - "@mermaid-js/*"
   - package-ecosystem: github-actions
     directory: /
     schedule:
@@ -28,11 +28,11 @@ updates:
       actions:
         patterns:
           - "actions/*"
-        update-types: ['minor', 'patch']
+        update-types: ["minor", "patch"]
       docker:
         patterns:
           - "docker/*"
-        update-types: ['minor', 'patch']
+        update-types: ["minor", "patch"]
       codeql:
         # All CodeQL actions need to be on the exact same version
         patterns:
