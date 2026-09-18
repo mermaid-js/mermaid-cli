@@ -1,6 +1,6 @@
 {
-  // our minimum supported Node version is Node v18.19
-  "extends": "@tsconfig/node18/tsconfig.json",
+  // our minimum supported Node version is Node v22.13
+  "extends": "@tsconfig/node22/tsconfig.json",
   "include": ["src/*"],
 
   "compilerOptions": {
@@ -29,7 +29,10 @@
     // required to get the version from package.json
     "resolveJsonModule": true,
     "lib": [
-      "es2020",
+      "es2024",
+      "ESNext.Array",
+      "ESNext.Collection",
+      "ESNext.Iterator",
       "DOM", // used by puppeteer functions
       "DOM.Iterable" // means we can use `for/of` in HTMLCollection
     ]

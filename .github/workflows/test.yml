@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false # our tests are a bit flaky in CI
       matrix:
-        node: [18.19]
+        node: [22.13]
         os:
           - ubuntu-latest
           - windows-latest
@@ -24,7 +24,7 @@ jobs:
           - "default"
         include:
           # test with minimal dependencies (only puppeteer-core and its dependencies)
-          - node: 18.19
+          - node: 22.13
             os: ubuntu-latest
             dependencies: "minimal"
     runs-on: ${{ matrix.os }}
