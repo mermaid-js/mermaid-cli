@@ -33,12 +33,6 @@ const mermaidESMPath = path.resolve(
   path.dirname(url.fileURLToPath(resolve("mermaid", import.meta.url))),
   "mermaid.esm.mjs",
 );
-const elkESMPath = path.resolve(
-  path.dirname(
-    url.fileURLToPath(resolve("@mermaid-js/layout-elk", import.meta.url)),
-  ),
-  "mermaid-layout-elk.esm.mjs",
-);
 const zenumlESMPath = path.resolve(
   path.dirname(
     url.fileURLToPath(resolve("@mermaid-js/mermaid-zenuml", import.meta.url)),
@@ -169,14 +163,35 @@ function parseCommanderFloat(value, _unused) {
   return parsedValue;
 }
 
+/**
+ * List of themes.
+ *
+ * @see https://mermaid.js.org/config/schema-docs/config.html#theme
+ * @satisfies{Array<import('mermaid').MermaidConfig['theme']>}
+ */
+const themes = [
+  "base",
+  "dark",
+  "default",
+  "forest",
+  "neutral",
+  "neo",
+  "neo-dark",
+  "redux",
+  "redux-dark",
+  "redux-color",
+  "redux-dark-color",
+  "null",
+];
+
 async function cli() {
   const commander = new Command();
   commander
     .version(version)
     .addOption(
       new Option("-t, --theme [theme]", "Theme of the chart")
-        .choices(["default", "forest", "dark", "neutral"])
-        .default("default"),
+        .choices(themes)
+        .default(undefined, "Mermaid default (depends on diagram type)"),
     )
     .addOption(
       new Option("-w, --width [width]", "Width of the page")
@@ -448,9 +463,6 @@ async function renderMermaid(
     const mermaidUrl = await interceptor.fileUrlToInterceptUrl(
       url.pathToFileURL(mermaidESMPath),
     );
-    const elkUrl = await interceptor.fileUrlToInterceptUrl(
-      url.pathToFileURL(elkESMPath),
-    );
     const zenumlUrl = await interceptor.fileUrlToInterceptUrl(
       url.pathToFileURL(zenumlESMPath),
     );
@@ -489,15 +501,12 @@ async function renderMermaid(
           svgId,
           iconPacks,
           iconPacksNamesAndUrls,
-          elkUrl,
           mermaidUrl,
           zenumlUrl,
           tidyTreeESMUrl,
         },
       ) => {
         const { default: mermaid } = await import(mermaidUrl);
-        /** @type {typeof import('@mermaid-js/layout-elk')} */
-        const { default: elkLayouts } = await import(elkUrl);
         /** @type {typeof import('@mermaid-js/mermaid-zenuml')} */
         const { default: zenuml } = await import(zenumlUrl);
         // @ts-ignore -- @mermaid-js/layout-tidy-tree is an optionalDependency and might not be installed
@@ -508,7 +517,7 @@ async function renderMermaid(
         await Promise.all(Array.from(document.fonts, (font) => font.load()));
 
         await mermaid.registerExternalDiagrams([zenuml]);
-        mermaid.registerLayoutLoaders([...elkLayouts, ...(tidyTree ?? [])]);
+        mermaid.registerLayoutLoaders(tidyTree ?? []);
         // lazy load icon packs
 
         mermaid.registerIconPacks(
@@ -591,7 +600,6 @@ async function renderMermaid(
         svgId,
         iconPacks,
         iconPacksNamesAndUrls,
-        elkUrl,
         mermaidUrl,
         zenumlUrl,
         tidyTreeESMUrl,
