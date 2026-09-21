@@ -241,7 +241,10 @@ async function cli() {
       "-c, --configFile [configFile]",
       "JSON configuration file for mermaid.",
     )
-    .option("-C, --cssFile [cssFile]", "CSS file for the page.")
+    .option(
+      "-C, --cssFile [cssFile]",
+      "CSS file for the page, used as Mermaid's `themeCSS`",
+    )
     .option(
       "-I, --svgId [svgId]",
       "The id attribute for the SVG element to be rendered.",
@@ -378,12 +381,18 @@ async function cli() {
   }
 
   // check cssFile
-  let myCSS;
   if (cssFile) {
     if (!fs.existsSync(cssFile)) {
       error(`CSS file "${cssFile}" doesn't exist`);
     }
-    myCSS = fs.readFileSync(cssFile, "utf-8");
+    if (Object.hasOwn(mermaidConfig, "themeCSS")) {
+      warn(
+        `Overriding existing themeCSS in mermaidConfig with CSS from "${cssFile}"`,
+      );
+    }
+    mermaidConfig = Object.assign(mermaidConfig, {
+      themeCSS: fs.readFileSync(cssFile, "utf-8"),
+    });
   }
 
   await run(input, output, {
@@ -394,7 +403,6 @@ async function cli() {
     parseMMDOptions: {
       mermaidConfig,
       backgroundColor,
-      myCSS,
       pdfFit,
       viewport: { width, height, deviceScaleFactor: scale },
       svgId,
@@ -410,7 +418,6 @@ async function cli() {
  * @property {import("puppeteer").Viewport} [viewport] - Puppeteer viewport (e.g. `width`, `height`, `deviceScaleFactor`)
  * @property {string | "transparent"} [backgroundColor] - Background color.
  * @property {Parameters<import("mermaid")["default"]["initialize"]>[0]} [mermaidConfig] - Mermaid config.
- * @property {CSSStyleDeclaration["cssText"]} [myCSS] - Optional CSS text.
  * @property {boolean} [pdfFit] - If set, scale PDF to fit chart.
  * @property {string} [svgId] - The id attribute for the SVG element to be rendered.
  * @property {string[]} [iconPacks] - Icon packages to use.
@@ -434,7 +441,6 @@ async function renderMermaid(
     viewport,
     backgroundColor = "white",
     mermaidConfig = {},
-    myCSS,
     pdfFit,
     svgId,
     iconPacks = [],
@@ -496,7 +502,6 @@ async function renderMermaid(
         {
           definition,
           mermaidConfig,
-          myCSS,
           backgroundColor,
           svgId,
           iconPacks,
@@ -561,16 +566,6 @@ async function renderMermaid(
         } else {
           warn("svg not found. Not applying background color.");
         }
-        if (myCSS) {
-          // add CSS as a <svg>...<style>... element
-          // see https://developer.mozilla.org/en-US/docs/Web/API/SVGStyleElement
-          const style = document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            "style",
-          );
-          style.appendChild(document.createTextNode(myCSS));
-          svg.appendChild(style);
-        }
 
         // Finds SVG metadata for accessibility purposes
         /** SVG title */
@@ -595,7 +590,6 @@ async function renderMermaid(
       {
         definition,
         mermaidConfig,
-        myCSS,
         backgroundColor,
         svgId,
         iconPacks,

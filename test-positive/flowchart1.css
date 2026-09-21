@@ -1,14 +1,13 @@
+/*
+ * Mermaid has built-in font and edge-animation options, but this is just
+ * an example of how you can use custom CSS.
+ */
+
 .flowchart-link {
   animation: dash 30s linear infinite;
 }
 
 .label {
-  /*
-   * If you want to override mermaid's `themeCSS`, it's recommended to instead
-   * set `themeCSS` in your mermaid `configFile.json`
-   *
-   * However, sometimes `!important` can also be used to override `themeCSS`.
-   */
   font-family: "fantasy" !important;
 }
 
