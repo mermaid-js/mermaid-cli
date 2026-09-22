@@ -837,5 +837,37 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       },
       timeout,
     );
+
+    test("should embed fonts into SVG", async () => {
+      const mmdInput = String.raw`flowchart TD
+    FontAwesome([fa:fa-car fa:fa-plane fa:fa-bicycle])`;
+      const result = await renderMermaid(browser, mmdInput, "svg");
+      expectBytesAreFormat(result.data, "svg");
+      const decoder = new TextDecoder();
+      expect(decoder.decode(result.data)).toContain('url("data:font/woff2');
+    });
+
+    test("should embed base Font Awesome CSS for brand icons", async () => {
+      // Brand icon rules live in `brands.css`, but the `.fab { font-family }`
+      // and `::before { content }` rules live in `fontawesome.css`.
+      const mmdInput = String.raw`flowchart TD
+    FontAwesome([fab:fa-github])`;
+      const result = await renderMermaid(browser, mmdInput, "svg");
+      expectBytesAreFormat(result.data, "svg");
+      const svg = new TextDecoder().decode(result.data);
+      expect(svg).toContain('url("data:font/woff2');
+      expect(svg).toContain(".fa-html5");
+    });
+
+    test("should not embed fonts into SVG if fontEmbed: false", async () => {
+      const mmdInput = String.raw`flowchart TD
+    FontAwesome([fa:fa-car fa:fa-plane fa:fa-bicycle])`;
+      const result = await renderMermaid(browser, mmdInput, "svg", {
+        fontEmbed: false,
+      });
+      expectBytesAreFormat(result.data, "svg");
+      const decoder = new TextDecoder();
+      expect(decoder.decode(result.data)).not.toContain('url("data:font/woff2');
+    });
   });
 });
