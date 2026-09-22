@@ -39,6 +39,9 @@ const zenumlESMPath = path.resolve(
   ),
   "mermaid-zenuml.esm.mjs",
 );
+const browserUtilsPath = url.fileURLToPath(
+  resolve("./browser/fontEmbedder.js", import.meta.url),
+);
 
 /** @type {string | undefined} Path to `@mermaid-js/layout-tidy-tree`, if it is installed */
 let tidyTreeESMPath;
@@ -254,6 +257,10 @@ async function cli() {
         .argParser(parseCommanderFloat)
         .default(1),
     )
+    .option(
+      "--no-font-embed",
+      "Disable embedding fonts into the SVG. This cuts down on SVG size, but would result in missing fonts if they are not available on the system.",
+    )
     .option("-f, --pdfFit", "Scale PDF to fit chart")
     .option("-q, --quiet", "Suppress log output")
     .option(
@@ -287,6 +294,7 @@ async function cli() {
     svgId,
     puppeteerConfigFile,
     scale,
+    fontEmbed,
     pdfFit,
     quiet,
     iconPacks,
@@ -403,6 +411,7 @@ async function cli() {
     parseMMDOptions: {
       mermaidConfig,
       backgroundColor,
+      fontEmbed,
       pdfFit,
       viewport: { width, height, deviceScaleFactor: scale },
       svgId,
@@ -418,6 +427,7 @@ async function cli() {
  * @property {import("puppeteer").Viewport} [viewport] - Puppeteer viewport (e.g. `width`, `height`, `deviceScaleFactor`)
  * @property {string | "transparent"} [backgroundColor] - Background color.
  * @property {Parameters<import("mermaid")["default"]["initialize"]>[0]} [mermaidConfig] - Mermaid config.
+ * @property {boolean} [fontEmbed] - Whether to embed used fonts into the SVG.
  * @property {boolean} [pdfFit] - If set, scale PDF to fit chart.
  * @property {string} [svgId] - The id attribute for the SVG element to be rendered.
  * @property {string[]} [iconPacks] - Icon packages to use.
@@ -441,6 +451,7 @@ async function renderMermaid(
     viewport,
     backgroundColor = "white",
     mermaidConfig = {},
+    fontEmbed = true,
     pdfFit,
     svgId,
     iconPacks = [],
@@ -449,6 +460,11 @@ async function renderMermaid(
 ) {
   const page = await browser.newPage();
   page.on("console", (msg) => {
+    if (msg.location().url?.includes("LICENSE")) {
+      // These are normal HTTP 404 errors when we are searching for licenses
+      // for fonts/CSS embedding
+      return;
+    }
     console.warn(msg.text());
   });
   try {
@@ -477,6 +493,9 @@ async function renderMermaid(
           url.pathToFileURL(tidyTreeESMPath),
         )
       : undefined;
+    const browserUtilsUrl = await interceptor.fileUrlToInterceptUrl(
+      url.pathToFileURL(browserUtilsPath),
+    );
 
     page.on("request", interceptor.interceptRequestHandler);
     await page.setRequestInterception(true);
@@ -489,9 +508,27 @@ async function renderMermaid(
             allowParentDirectoryLevel: level,
           },
         );
-        await page.addStyleTag({
-          url: interceptUrl,
-        });
+        await page.evaluate(
+          ({ interceptUrl }) => {
+            const link = document.createElement("link");
+            link.setAttribute("crossorigin", "anonymous");
+            link.setAttribute("rel", "stylesheet");
+            link.setAttribute("href", interceptUrl);
+            link.setAttribute("class", "mermaid-cli-css");
+            const loaded = /** @type {Promise<void>} */ (
+              new Promise((resolve, reject) => {
+                link.onload = () => resolve();
+                link.onerror = () =>
+                  reject(
+                    new Error(`Failed to load stylesheet: ${interceptUrl}`),
+                  );
+              })
+            );
+            document.head.appendChild(link);
+            return loaded;
+          },
+          { interceptUrl },
+        );
       }),
     );
 
@@ -601,13 +638,38 @@ async function renderMermaid(
     );
 
     if (outputFormat === "svg") {
-      const svgXML = await page.$eval("svg", (svg) => {
-        // SVG might have HTML <foreignObject> that are not valid XML
-        // E.g. <br> must be replaced with <br/>
-        // Luckily the DOM Web API has the XMLSerializer for this
-        const xmlSerializer = new XMLSerializer();
-        return xmlSerializer.serializeToString(svg);
-      });
+      const evalParams = {
+        browserUtilsUrl,
+        fontEmbed,
+      };
+      const svgXML = await page.$eval(
+        "svg",
+        async (svg, { browserUtilsUrl, fontEmbed }) => {
+          if (fontEmbed) {
+            // For SVGs, we need embed external fonts into the SVG.
+            /** @type {typeof import('./browser/fontEmbedder.js')} */
+            const { fontEmbedder } = await import(browserUtilsUrl);
+            try {
+              await fontEmbedder({
+                document,
+                svg,
+              });
+            } catch (error) {
+              throw new Error(
+                "Failed to embed fonts into SVG. Please report this error to https://github.com/mermaid-js/mermaid-cli/issues, and/or run using `--no-font-embed` if you don't need font embedding.",
+                { cause: error },
+              );
+            }
+          }
+
+          // SVG might have HTML <foreignObject> that are not valid XML
+          // E.g. <br> must be replaced with <br/>
+          // Luckily the DOM Web API has the XMLSerializer for this
+          const xmlSerializer = new XMLSerializer();
+          return xmlSerializer.serializeToString(svg);
+        },
+        evalParams,
+      );
       return {
         ...metadata,
         data: new TextEncoder().encode(svgXML),
