@@ -15,17 +15,6 @@ import { Interceptor } from "./puppeteerIntercept.js";
 const __dirname = url.fileURLToPath(new url.URL(".", import.meta.url));
 
 /**
- * CSS paths to embed in the page.
- */
-const cssImports = /** @type {const} */ ({
-  "@fortawesome/fontawesome-free/css/brands.css": { level: 1 },
-  "@fortawesome/fontawesome-free/css/regular.css": { level: 1 },
-  "@fortawesome/fontawesome-free/css/solid.css": { level: 1 },
-  "@fortawesome/fontawesome-free/css/fontawesome.css": { level: 1 },
-  "katex/dist/katex.css": { level: 1 },
-});
-
-/**
  * ESM bundles. Our interceptor doesn't support loading ESM modules that load
  * other modules using relative paths, so these have to no `dependencies`.
  */
@@ -423,10 +412,23 @@ async function cli() {
 }
 
 /**
+ * @typedef {Object} CustomFontCSS Config for adding custom font CSS.
+ *
+ * If used, these will be embedded into the `.svg` if `fontEmbed` is enabled.
+ *
+ * If using a `.css` file `npm`, use {@link import.meta.resolve} to find the
+ * `file://` URI, then set `allowParentDirectoryLevel` to module root directory.
+ *
+ * @property {URL} cssUrl - URL to the custom font CSS file.
+ * @property {number} [allowParentDirectoryLevel=0] - For `file://` URIs, the number of `../` relative imports to allow.
+ */
+
+/**
  * @typedef {Object} ParseMDDOptions Options to pass to {@link parseMMD}
  * @property {import("puppeteer").Viewport} [viewport] - Puppeteer viewport (e.g. `width`, `height`, `deviceScaleFactor`)
  * @property {string | "transparent"} [backgroundColor] - Background color.
  * @property {Parameters<import("mermaid")["default"]["initialize"]>[0]} [mermaidConfig] - Mermaid config.
+ * @property {CustomFontCSS[]} [customFontCSS] - Custom CSS for embedding fonts. See {@link CustomFontCSS} for details.
  * @property {boolean} [fontEmbed] - Whether to embed used fonts into the SVG.
  * @property {boolean} [pdfFit] - If set, scale PDF to fit chart.
  * @property {string} [svgId] - The id attribute for the SVG element to be rendered.
@@ -451,6 +453,7 @@ async function renderMermaid(
     viewport,
     backgroundColor = "white",
     mermaidConfig = {},
+    customFontCSS = [],
     fontEmbed = true,
     pdfFit,
     svgId,
@@ -500,34 +503,54 @@ async function renderMermaid(
     page.on("request", interceptor.interceptRequestHandler);
     await page.setRequestInterception(true);
 
+    const cssImports = [
+      ...Object.entries({
+        "@fortawesome/fontawesome-free/css/brands.css": {
+          allowParentDirectoryLevel: 1,
+        },
+        "@fortawesome/fontawesome-free/css/regular.css": {
+          allowParentDirectoryLevel: 1,
+        },
+        "@fortawesome/fontawesome-free/css/solid.css": {
+          allowParentDirectoryLevel: 1,
+        },
+        "@fortawesome/fontawesome-free/css/fontawesome.css": {
+          allowParentDirectoryLevel: 1,
+        },
+        "katex/dist/katex.css": { allowParentDirectoryLevel: 1 },
+      }).map(([cssImport, { allowParentDirectoryLevel }]) => ({
+        cssUrl: new URL(resolve(cssImport, import.meta.url)),
+        allowParentDirectoryLevel,
+      })),
+      ...customFontCSS,
+    ];
+
     await Promise.all(
-      Object.entries(cssImports).map(async ([cssImport, { level }]) => {
-        const interceptUrl = await interceptor.fileUrlToInterceptUrl(
-          new URL(resolve(cssImport, import.meta.url)),
-          {
-            allowParentDirectoryLevel: level,
-          },
-        );
+      cssImports.map(async ({ cssUrl, allowParentDirectoryLevel }) => {
+        let href = cssUrl.href;
+        if (cssUrl.protocol === "file:") {
+          href = await interceptor.fileUrlToInterceptUrl(cssUrl, {
+            allowParentDirectoryLevel,
+          });
+        }
         await page.evaluate(
-          ({ interceptUrl }) => {
+          ({ href }) => {
             const link = document.createElement("link");
             link.setAttribute("crossorigin", "anonymous");
             link.setAttribute("rel", "stylesheet");
-            link.setAttribute("href", interceptUrl);
+            link.setAttribute("href", href);
             link.setAttribute("class", "mermaid-cli-css");
             const loaded = /** @type {Promise<void>} */ (
               new Promise((resolve, reject) => {
                 link.onload = () => resolve();
                 link.onerror = () =>
-                  reject(
-                    new Error(`Failed to load stylesheet: ${interceptUrl}`),
-                  );
+                  reject(new Error(`Failed to load stylesheet: ${href}`));
               })
             );
             document.head.appendChild(link);
             return loaded;
           },
-          { interceptUrl },
+          { href },
         );
       }),
     );
