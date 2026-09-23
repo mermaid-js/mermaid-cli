@@ -38,7 +38,7 @@
     "import-meta-resolve": "^4.1.0",
     "katex": "^0.16.25",
     "mermaid": "^12.0.0",
-    "p-limit": "^6.2.0"
+    "p-limit": "^7.0.0"
   },
   "optionalDependencies": {
     "@mermaid-js/layout-tidy-tree": "^1.0.1"
