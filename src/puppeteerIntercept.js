@@ -64,7 +64,7 @@ export class Interceptor {
    * @param {Object} [options] - Optional options.
    * @param {number} [options.allowParentDirectoryLevel] - Number of parent directory levels to allow access to.
    */
-  async fileUrlToInterceptUrl(fileUrl, { allowParentDirectoryLevel = 1 } = {}) {
+  async fileUrlToInterceptUrl(fileUrl, { allowParentDirectoryLevel = 0 } = {}) {
     fileUrl = new URL(fileUrl);
     if (fileUrl.protocol !== "file:") {
       throw new Error(`Invalid file URL: ${fileUrl}`);
