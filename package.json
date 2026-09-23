@@ -67,10 +67,5 @@
     "dist/",
     "dist-types/"
   ],
-  "jest": {
-    "moduleNameMapper": {
-      "#(.*)": "<rootDir>/node_modules/$1"
-    }
-  },
   "packageManager": "npm@10.8.1"
 }
