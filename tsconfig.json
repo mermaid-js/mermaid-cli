@@ -1,7 +1,7 @@
 {
   // our minimum supported Node version is Node v22.13
   "extends": "@tsconfig/node22/tsconfig.json",
-  "include": ["src/*"],
+  "include": ["src/*", "commander.d.ts"],
 
   "compilerOptions": {
     "strict": true,

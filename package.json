@@ -47,6 +47,7 @@
     "puppeteer": "^25.0.0"
   },
   "devDependencies": {
+    "@commander-js/extra-typings": "^15.0.0",
     "@eslint/js": "^9.0.0",
     "@tsconfig/node22": "^22.0.6",
     "@types/node": "~18.19.31",

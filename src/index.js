@@ -177,8 +177,7 @@ const themes = [
 ];
 
 async function cli() {
-  const commander = new Command();
-  commander
+  const commander = new Command()
     .version(version)
     .addOption(
       new Option("-t, --theme <theme>", "Theme of the chart")
@@ -199,9 +198,23 @@ async function cli() {
       "-i, --input <input>",
       "Input mermaid file. Files ending in .md will be treated as Markdown and all charts (e.g. ```mermaid (...)``` or :::mermaid (...):::) will be extracted and generated. Use `-` to read from stdin.",
     )
-    .option(
-      "-o, --output <output>",
-      'Output file. It should be either md, svg, png, pdf or use `-` to output to stdout. Optional. Default: input + ".svg"',
+    .addOption(
+      new Option(
+        "-o, --output <output>",
+        'Output file. It should be either md, svg, png, pdf or use `-` to output to stdout. Optional. Default: input + ".svg"',
+      ).argParser((value) => {
+        if (value === "-") {
+          return /** @type {const} */ ("/dev/stdout");
+        }
+        if (/\.(?:svg|png|pdf|md|markdown)$/.test(value)) {
+          return /** @type {`${string}.${"svg" | "png" | "pdf" | "md" | "markdown"}`} */ (
+            value
+          );
+        }
+        throw new InvalidArgumentError(
+          "Output file must be either md, svg, png, or pdf.",
+        );
+      }),
     )
     .option(
       "-a, --artefacts <artefacts>",
@@ -221,7 +234,7 @@ async function cli() {
         "Output format for the generated image.",
       )
         .choices(["svg", "png", "pdf"])
-        .default(null, "Loaded from the output file extension"),
+        .default(undefined, "Loaded from the output file extension"),
     )
     .addOption(
       new Option(
@@ -316,9 +329,7 @@ async function cli() {
     } else {
       output = input ? `${input}.svg` : "out.svg";
     }
-  } else if (output === "-") {
-    // `--output -` means write to stdout.
-    output = "/dev/stdout";
+  } else if (output === "/dev/stdout") {
     quiet = true;
 
     if (!outputFormat) {
@@ -329,10 +340,6 @@ async function cli() {
           "please use `-e <format>.` ",
       );
     }
-  } else if (!/\.(?:svg|png|pdf|md|markdown)$/.test(output)) {
-    error(
-      'Output file must end with ".md"/".markdown", ".svg", ".png" or ".pdf"',
-    );
   }
 
   if (artefacts) {
