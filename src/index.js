@@ -181,17 +181,17 @@ async function cli() {
   commander
     .version(version)
     .addOption(
-      new Option("-t, --theme [theme]", "Theme of the chart")
+      new Option("-t, --theme <theme>", "Theme of the chart")
         .choices(themes)
         .default(undefined, "Mermaid default (depends on diagram type)"),
     )
     .addOption(
-      new Option("-w, --width [width]", "Width of the page")
+      new Option("-w, --width <width>", "Width of the page")
         .argParser(parseCommanderInt)
         .default(800),
     )
     .addOption(
-      new Option("-H, --height [height]", "Height of the page")
+      new Option("-H, --height <height>", "Height of the page")
         .argParser(parseCommanderInt)
         .default(600),
     )
@@ -200,11 +200,11 @@ async function cli() {
       "Input mermaid file. Files ending in .md will be treated as Markdown and all charts (e.g. ```mermaid (...)``` or :::mermaid (...):::) will be extracted and generated. Use `-` to read from stdin.",
     )
     .option(
-      "-o, --output [output]",
+      "-o, --output <output>",
       'Output file. It should be either md, svg, png, pdf or use `-` to output to stdout. Optional. Default: input + ".svg"',
     )
     .option(
-      "-a, --artefacts [artefacts]",
+      "-a, --artefacts <artefacts>",
       "Output artefacts path. Only used with Markdown input file. Optional. Default: output directory",
     )
     .addOption(
@@ -217,7 +217,7 @@ async function cli() {
     )
     .addOption(
       new Option(
-        "-e, --outputFormat [format]",
+        "-e, --outputFormat <format>",
         "Output format for the generated image.",
       )
         .choices(["svg", "png", "pdf"])
@@ -225,24 +225,24 @@ async function cli() {
     )
     .addOption(
       new Option(
-        "-b, --backgroundColor [backgroundColor]",
+        "-b, --backgroundColor <backgroundColor>",
         "Background color for pngs/svgs (not pdfs). Example: transparent, red, '#F0F0F0'.",
       ).default("white"),
     )
     .option(
-      "-c, --configFile [configFile]",
+      "-c, --configFile <configFile>",
       "JSON configuration file for mermaid.",
     )
     .option(
-      "-C, --cssFile [cssFile]",
+      "-C, --cssFile <cssFile>",
       "CSS file for the page, used as Mermaid's `themeCSS`",
     )
     .option(
-      "-I, --svgId [svgId]",
+      "-I, --svgId <svgId>",
       "The id attribute for the SVG element to be rendered.",
     )
     .addOption(
-      new Option("-s, --scale [scale]", "Puppeteer scale factor")
+      new Option("-s, --scale <scale>", "Puppeteer scale factor")
         .argParser(parseCommanderFloat)
         .default(1),
     )
@@ -253,7 +253,7 @@ async function cli() {
     .option("-f, --pdfFit", "Scale PDF to fit chart")
     .option("-q, --quiet", "Suppress log output")
     .option(
-      "-p --puppeteerConfigFile [puppeteerConfigFile]",
+      "-p --puppeteerConfigFile <puppeteerConfigFile>",
       "JSON configuration file for puppeteer.",
     )
     .option(
