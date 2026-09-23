@@ -517,6 +517,15 @@ async function renderMermaid(
         "@fortawesome/fontawesome-free/css/fontawesome.css": {
           allowParentDirectoryLevel: 1,
         },
+        "@fontsource-variable/recursive/index.css": {
+          allowParentDirectoryLevel: 0,
+        },
+        "@fontsource/open-sans/400.css": {
+          allowParentDirectoryLevel: 0,
+        },
+        "@fontsource/open-sans/400-italic.css": {
+          allowParentDirectoryLevel: 0,
+        },
         "katex/dist/katex.css": { allowParentDirectoryLevel: 1 },
       }).map(([cssImport, { allowParentDirectoryLevel }]) => ({
         cssUrl: new URL(resolve(cssImport, import.meta.url)),

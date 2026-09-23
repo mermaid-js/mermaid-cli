@@ -843,8 +843,9 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
     FontAwesome([fa:fa-car fa:fa-plane fa:fa-bicycle])`;
       const result = await renderMermaid(browser, mmdInput, "svg");
       expectBytesAreFormat(result.data, "svg");
-      const decoder = new TextDecoder();
-      expect(decoder.decode(result.data)).toContain('url("data:font/woff2');
+      const svg = new TextDecoder().decode(result.data);
+      expect(svg).toContain('url("data:font/woff2');
+      expect(svg).toContain(".fa-car");
     });
 
     test("should embed base Font Awesome CSS for brand icons", async () => {
