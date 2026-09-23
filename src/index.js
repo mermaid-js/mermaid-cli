@@ -18,11 +18,11 @@ const __dirname = url.fileURLToPath(new url.URL(".", import.meta.url));
  * CSS paths to embed in the page.
  */
 const cssImports = /** @type {const} */ ({
-  "@fortawesome/fontawesome-free/css/brands.css": { level: 2 },
-  "@fortawesome/fontawesome-free/css/regular.css": { level: 2 },
-  "@fortawesome/fontawesome-free/css/solid.css": { level: 2 },
-  "@fortawesome/fontawesome-free/css/fontawesome.css": { level: 2 },
-  "katex/dist/katex.css": { level: 2 },
+  "@fortawesome/fontawesome-free/css/brands.css": { level: 1 },
+  "@fortawesome/fontawesome-free/css/regular.css": { level: 1 },
+  "@fortawesome/fontawesome-free/css/solid.css": { level: 1 },
+  "@fortawesome/fontawesome-free/css/fontawesome.css": { level: 1 },
+  "katex/dist/katex.css": { level: 1 },
 });
 
 /**
