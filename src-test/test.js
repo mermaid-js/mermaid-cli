@@ -554,6 +554,29 @@ describe("mermaid-cli", () => {
     },
     timeout,
   );
+
+  test.concurrent.each([1000, 2000, 4000])(
+    "should support the --size=%d option for diagrams",
+    async (size) => {
+      const outputFileName = `test-output/flowchart1-with-size-${size}.png`;
+      await promisify(execFile)("node", [
+        "src/cli.js",
+        "--input=test-positive/flowchart1.mmd",
+        "--output",
+        outputFileName,
+        "--size",
+        size,
+      ]);
+      const bytes = await fs.readFile(outputFileName);
+      expectBytesAreFormat(bytes, "png");
+      // PNG width is a 4-byte unsigned big-endian integer at byte offset 16
+      const width = bytes.readUInt32BE(16);
+      const height = bytes.readUInt32BE(20);
+      expect(height).toBe(size);
+      expect(width).toBeLessThanOrEqual(size);
+    },
+    timeout,
+  );
 });
 
 describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {

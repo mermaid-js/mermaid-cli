@@ -57,6 +57,26 @@ mmdc --input test-positive/flowchart1.mmd --cssFile test-positive/flowchart1.css
 
 </details>
 
+### Selecting the size of the created file
+
+The `--size` value can be used to attempt to create a PNG of the given size,
+by setting a `max-width` on the SVG.
+
+For narrow diagrams, this would decide set the max height,
+and for wide diagrams, this will set the max width.
+
+For example, the following command will create a PNG of height 4000px:
+
+```sh
+mmdc --input test-positive/flowchart1.mmd --size 4000 -o output.png
+```
+
+> ![Note]
+>
+> This may not work with all diagram types and/or may require
+> [`useMaxWidth: true`](https://mermaid.js.org/config/schema-docs/config.html#usemaxwidth-1)
+> to be set in the diagram's config.
+
 ### Transform a markdown file with mermaid diagrams
 
 ```sh
