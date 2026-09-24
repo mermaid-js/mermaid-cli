@@ -275,10 +275,34 @@ async function cli() {
       "Icon packs to use, e.g. @iconify-json/logos. These should be Iconify NPM packages that expose a icons.json file, see https://iconify.design/docs/icons/json.html. These will be downloaded from https://unkpg.com when needed.",
       [],
     )
-    .option(
-      "--iconPacksNamesAndUrls <prefix#iconsurl...>",
-      'Icon packs to use, e.g. azure#https://raw.githubusercontent.com/NakayamaKento/AzureIcons/refs/heads/main/icons.json where the name (prefix) of the icon pack is defined before the "#" and the url of the json definition after the "#". These should be Iconify json file formatted as IconifyJson, see https://iconify.design/docs/icons/json.html. These will be downloaded when needed.',
-      [],
+    .addOption(
+      new Option(
+        "--iconPacksNamesAndUrls <prefix#iconsurl...>",
+        [
+          'Icon packs to use, e.g. azure#file:///tmp/icons.json where the name (prefix) of the icon pack is defined before the "#" and the url of the json definition after the "#".',
+          "These should be Iconify json file formatted as IconifyJson, see https://iconify.design/docs/icons/json.html.",
+          "These will be downloaded when needed.",
+          "Use `file://` URIs to reference local files.",
+        ].join("\n"),
+      ).argParser(
+        /**
+         * @param {string} val - The value passed to the argument parser, in the format "prefix#iconsurl".
+         * @param {Record<string, URL>} previous - The previous parsed value.
+         */
+        (val, previous = {}) => {
+          const [iconName, ...iconPackHrefParts] = val.split("#");
+          let iconPackUrl;
+          try {
+            iconPackUrl = new URL(iconPackHrefParts.join("#"));
+          } catch {
+            throw new InvalidArgumentError(
+              "Failed to parse a valid URL. The format should be iconPackName#https://my-example-url.example",
+            );
+          }
+          // Don't use the previous object directly to avoid prototype pollution
+          return { ...previous, [iconName]: iconPackUrl };
+        },
+      ),
     )
     .parse(process.argv);
 
@@ -417,8 +441,17 @@ async function cli() {
         deviceScaleFactor: scale,
       },
       svgId,
-      iconPacks,
-      iconPacksNamesAndUrls,
+      iconPacks: {
+        ...Object.fromEntries(
+          iconPacks.map((iconPack) => {
+            return [
+              iconPack.split("/")[1],
+              new URL(`https://unpkg.com/${iconPack}/icons.json`),
+            ];
+          }),
+        ),
+        ...iconPacksNamesAndUrls,
+      },
     },
     artefacts,
   });
@@ -446,8 +479,7 @@ async function cli() {
  * @property {boolean} [fontEmbed] - Whether to embed used fonts into the SVG.
  * @property {boolean} [pdfFit] - If set, scale PDF to fit chart.
  * @property {string} [svgId] - The id attribute for the SVG element to be rendered.
- * @property {string[]} [iconPacks] - Icon packages to use.
- * @property {string[]} [iconPacksNamesAndUrls] - IconPack Json file name and url to use.
+ * @property {Record<string, URL>} [iconPacks] - Icon packages to use.
 
 /**
  * Render a mermaid diagram.
@@ -472,8 +504,7 @@ async function renderMermaid(
     fontEmbed = true,
     pdfFit,
     svgId,
-    iconPacks = [],
-    iconPacksNamesAndUrls = [],
+    iconPacks = {},
   } = {},
 ) {
   const page = await browser.newPage();
@@ -579,6 +610,21 @@ async function renderMermaid(
       }),
     );
 
+    const resolvedIconPacks = Object.fromEntries(
+      await Promise.all(
+        Object.entries(iconPacks).map(async ([name, url]) => {
+          if (url.protocol === "file:") {
+            url = new URL(
+              await interceptor.fileUrlToInterceptUrl(url, {
+                allowParentDirectoryLevel: 0,
+              }),
+            );
+          }
+          return /** @type {const} */ ([name, url.href]);
+        }),
+      ),
+    );
+
     const metadata = await page.$eval(
       "#container",
       async (
@@ -589,8 +635,7 @@ async function renderMermaid(
           size,
           backgroundColor,
           svgId,
-          iconPacks,
-          iconPacksNamesAndUrls,
+          resolvedIconPacks,
           mermaidUrl,
           zenumlUrl,
           tidyTreeESMUrl,
@@ -610,29 +655,15 @@ async function renderMermaid(
         await mermaid.registerExternalDiagrams([zenuml]);
         mermaid.registerLayoutLoaders(tidyTree ?? []);
         // lazy load icon packs
-
         mermaid.registerIconPacks(
-          iconPacks.map((icon) => ({
-            name: icon.split("/")[1],
-            loader: () =>
-              fetch(`https://unpkg.com/${icon}/icons.json`)
-                .then((res) => res.json())
-                .catch(() => error(`Failed to fetch icon: ${icon}`)),
-          })),
-        );
-
-        mermaid.registerIconPacks(
-          iconPacksNamesAndUrls.map((iconPackInfo) => {
-            const packName = iconPackInfo.split("#")[0];
-            const packUrl = iconPackInfo.split("#")[1];
-
+          Object.entries(resolvedIconPacks).map(([packName, packUrl]) => {
             return {
               name: packName,
               loader: () =>
                 fetch(packUrl)
                   .then((res) => res.json())
                   .catch(() => {
-                    error(`Failed to fetch icon: ${iconPackInfo}`);
+                    error(`Failed to fetch icon: ${packName}`);
                   }),
             };
           }),
@@ -687,8 +718,7 @@ async function renderMermaid(
         size,
         backgroundColor,
         svgId,
-        iconPacks,
-        iconPacksNamesAndUrls,
+        resolvedIconPacks,
         mermaidUrl,
         zenumlUrl,
         tidyTreeESMUrl,

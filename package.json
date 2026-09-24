@@ -49,6 +49,7 @@
   "devDependencies": {
     "@commander-js/extra-typings": "^15.0.0",
     "@eslint/js": "^9.0.0",
+    "@iconify-json/logos": "^1.2.14",
     "@tsconfig/node22": "^22.0.6",
     "@types/node": "~22.13.0",
     "cross-env": "^10.1.0",
