@@ -53,6 +53,11 @@ jobs:
           load: true
           tags: "${{env.IMAGETAG}}"
 
+      - name: Install `@iconify-json/icons
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+
       - name: Run e2e tests
         run: bash run-tests.sh ${{env.INPUT_DATA}} ${{env.IMAGETAG}}
         timeout-minutes: 5

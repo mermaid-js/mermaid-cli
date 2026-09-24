@@ -287,10 +287,60 @@ async function cli() {
       "-p --puppeteerConfigFile <puppeteerConfigFile>",
       "JSON configuration file for puppeteer.",
     )
-    .option(
-      "--iconPacks <icons...>",
-      "Icon packs to use, e.g. @iconify-json/logos. These should be Iconify NPM packages that expose a icons.json file, see https://iconify.design/docs/icons/json.html. These will be downloaded from https://unkpg.com when needed.",
-      [],
+    .addOption(
+      new Option(
+        "--iconPacks <icon-packages...>",
+        [
+          "Installed icon packs to use, e.g. @iconify-json/logos.",
+          "These should be Iconify NPM packages that expose a icons.json file, see https://iconify.design/docs/icons/json.html.",
+          "They can be installed via `npm install <icon-package-name>`.",
+        ].join("\n"),
+      ).argParser(
+        /**
+         * @param {string} val - The value passed to the argument parser.
+         * @param {Record<string, URL>} previous - The previous parsed value.
+         */
+        (val, previous = {}) => {
+          const iconPackModuleSpecifier = `${val}/icons.json`;
+          let iconPackUrl;
+          try {
+            iconPackUrl = new URL(import.meta.resolve(iconPackModuleSpecifier));
+          } catch {
+            throw new InvalidArgumentError(
+              `Could not find icon pack ${JSON.stringify(iconPackModuleSpecifier)}. Have you installed them with 'npm install ${val}'?`,
+            );
+          }
+          let iconPackContents;
+          try {
+            iconPackContents = fs.readFileSync(iconPackUrl, "utf-8");
+          } catch {
+            throw new InvalidArgumentError(
+              `Failed to read icon pack JSON from ${JSON.stringify(iconPackUrl)}.`,
+            );
+          }
+          /** @type {unknown} */
+          let iconPackJSON;
+          try {
+            iconPackJSON = JSON.parse(iconPackContents);
+          } catch {
+            throw new InvalidArgumentError(
+              `Failed to parse icon pack JSON from ${JSON.stringify(iconPackModuleSpecifier)}.`,
+            );
+          }
+          if (
+            !iconPackJSON ||
+            typeof iconPackJSON !== "object" ||
+            !("prefix" in iconPackJSON) ||
+            typeof iconPackJSON.prefix !== "string"
+          ) {
+            throw new InvalidArgumentError(
+              `Invalid icon pack JSON from ${JSON.stringify(iconPackUrl)}. Missing or invalid "prefix" property.`,
+            );
+          }
+          // Don't use the previous object directly to avoid prototype pollution
+          return { ...previous, [iconPackJSON.prefix]: iconPackUrl };
+        },
+      ),
     )
     .addOption(
       new Option(
@@ -459,14 +509,7 @@ async function cli() {
       },
       svgId,
       iconPacks: {
-        ...Object.fromEntries(
-          iconPacks.map((iconPack) => {
-            return [
-              iconPack.split("/")[1],
-              new URL(`https://unpkg.com/${iconPack}/icons.json`),
-            ];
-          }),
-        ),
+        ...iconPacks,
         ...iconPacksNamesAndUrls,
       },
     },
