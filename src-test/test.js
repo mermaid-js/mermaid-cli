@@ -795,9 +795,14 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
     test(
       "should show Iconify icon packs",
       async () => {
-        const mmdInput = "architecture-beta\n    group aws(logos:aws)[AWS]";
+        const mmdInput =
+          "architecture-beta\n    group aws(logos:mermaid)[Mermaid]";
         const result = await renderMermaid(browser, mmdInput, "svg", {
-          iconPacks: ["@iconify-json/logos"],
+          iconPacks: {
+            logos: new URL(
+              import.meta.resolve("@iconify-json/logos/icons.json"),
+            ),
+          },
         });
         expectBytesAreFormat(result.data, "svg");
         const decoder = new TextDecoder();
@@ -810,12 +815,16 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       "should show Iconify icon packs and named iconpacks",
       async () => {
         const mmdInput =
-          'flowchart TD\n    aws@{ icon: "logos:aws" } \n    resource-groups@{ icon: "azure:resource-groups", label: "resource-groups" }';
+          'flowchart TD\n    mermaid@{ icon: "logos:mermaid" } \n    resource-groups@{ icon: "azure:resource-groups", label: "resource-groups" }';
         const result = await renderMermaid(browser, mmdInput, "svg", {
-          iconPacks: ["@iconify-json/logos"],
-          iconPacksNamesAndUrls: [
-            "azure#https://raw.githubusercontent.com/NakayamaKento/AzureIcons/refs/heads/main/icons.json",
-          ],
+          iconPacks: {
+            azure: new URL(
+              "https://raw.githubusercontent.com/NakayamaKento/AzureIcons/refs/heads/main/icons.json",
+            ),
+            logos: new URL(
+              import.meta.resolve("@iconify-json/logos/icons.json"),
+            ),
+          },
         });
         expectBytesAreFormat(result.data, "svg");
         const decoder = new TextDecoder();

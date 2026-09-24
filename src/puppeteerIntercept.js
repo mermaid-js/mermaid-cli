@@ -23,6 +23,8 @@ function getContentTypeFromFileExtension(filePath) {
     case ".js":
     case ".mjs":
       return "application/javascript";
+    case ".json":
+      return "application/json";
     case ".woff2":
       return "font/woff2";
     case ".woff":
