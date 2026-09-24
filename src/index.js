@@ -751,6 +751,7 @@ async function renderMermaid(
           ...metadata,
           data: await page.pdf({
             omitBackground: backgroundColor === "transparent",
+            printBackground: true,
             width: Math.ceil(clip.width) + clip.x * 2 + "px",
             height: Math.ceil(clip.height) + clip.y * 2 + "px",
             pageRanges: "1-1",
@@ -761,6 +762,7 @@ async function renderMermaid(
           ...metadata,
           data: await page.pdf({
             omitBackground: backgroundColor === "transparent",
+            printBackground: true,
           }),
         };
       }
