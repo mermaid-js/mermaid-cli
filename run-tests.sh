@@ -67,9 +67,9 @@ docker run --rm -v $(pwd):/data $IMAGETAG \
   -o "$outputFileName"
 
 # Test if passing custom Iconify icons (from unpkg and other sources) work
-outputFileName="/data/$INPUT_DATA/flowchart1.png"
+outputFileName="/data/$INPUT_DATA/flowchart4.png"
 docker run --rm -v $(pwd):/data $IMAGETAG \
-  -i /data/$INPUT_DATA/flowchart1.mmd \
+  -i /data/$INPUT_DATA/flowchart4.mmd \
   --size 1024 \
   --iconPacks '@iconify-json/logos' \
   --iconPacksNamesAndUrls "azure#https://raw.githubusercontent.com/NakayamaKento/AzureIcons/refs/heads/main/icons.json" \
