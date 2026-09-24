@@ -24,10 +24,10 @@ fi
 config_noUseMaxWidth="$INPUT_DATA/config-noUseMaxWidth.json"
 
 # Test if the CLI actually works (PNG)
-for i in $(ls $INPUT_DATA/*.mmd); do docker run --rm -v $(pwd):/data $IMAGETAG -i /data/$i -o /data/$i.png -w 800; done
+for i in $(ls $INPUT_DATA/*.mmd); do docker run --rm -v $(pwd):/data $IMAGETAG -i /data/$i -o /data/$i.png --size 1024; done
 
 # Test if the CLI actually works (PNG) for md files
-for i in $(ls $INPUT_DATA/*.md); do docker run --rm -v $(pwd):/data $IMAGETAG -i /data/$i -o /data/$i.png  -w 800; done
+for i in $(ls $INPUT_DATA/*.md); do docker run --rm -v $(pwd):/data $IMAGETAG -i /data/$i -o /data/$i.png --size 1024; done
 
 # Test if the CLI actually works (PDF)
 for i in $(ls $INPUT_DATA/*.mmd); do docker run --rm -v $(pwd):/data $IMAGETAG -i /data/$i -o /data/$i.pdf; done
@@ -41,6 +41,7 @@ for format in "svg" "png"; do
     -i /data/$INPUT_DATA/flowchart1.mmd \
     --configFile "/data/$config_noUseMaxWidth" \
     --backgroundColor "red" \
+    --size 1024 \
     -o "$outputFileName"
 done
 
@@ -53,6 +54,7 @@ for format in "svg" "png"; do
     -i /data/$INPUT_DATA/flowchart1.mmd \
     --configFile "/data/$config_noUseMaxWidth" \
     --cssFile /data/$INPUT_DATA/flowchart1.css \
+    --size 1024 \
     -o "$outputFileName"
 done
 
@@ -61,18 +63,20 @@ outputFileName="/data/$INPUT_DATA/architecture-diagram-logos-with-icons.png"
 docker run --rm -v $(pwd):/data $IMAGETAG \
   -i /data/$INPUT_DATA/architecture-diagram-logos.mmd \
   --iconPacks '@iconify-json/logos' \
+  --size 1024 \
   -o "$outputFileName"
 
 # Test if passing custom Iconify icons (from unpkg and other sources) work
 outputFileName="/data/$INPUT_DATA/flowchart1.png"
 docker run --rm -v $(pwd):/data $IMAGETAG \
   -i /data/$INPUT_DATA/flowchart1.mmd \
+  --size 1024 \
   --iconPacks '@iconify-json/logos' \
   --iconPacksNamesAndUrls "azure#https://raw.githubusercontent.com/NakayamaKento/AzureIcons/refs/heads/main/icons.json" \
   -o "$outputFileName"
 
 # Test if a diagram from STDIN can be understood
-cat $INPUT_DATA/flowchart1.mmd | docker run --rm -i -v $(pwd):/data $IMAGETAG -o /data/$INPUT_DATA/flowchart1-stdin.png -w 800
+cat $INPUT_DATA/flowchart1.mmd | docker run --rm -i -v $(pwd):/data $IMAGETAG -o /data/$INPUT_DATA/flowchart1-stdin.png --size 1024
 
 # Test if mmdc crashes on Markdown files containing no mermaid charts
 OUTPUT=$(docker run --rm -v $(pwd):/data $IMAGETAG -i /data/test-positive/no-charts.md)
@@ -82,7 +86,7 @@ EXPECTED_OUTPUT="No mermaid charts found in Markdown input"
 # Test if mmdc does not replace <br> with <br/>
 docker run --rm -v $(pwd):/data $IMAGETAG \
   -i /data/test-positive/graph-with-br.mmd \
-  --width 800 \
+  --size 1024 \
   --configFile "/data/$config_noUseMaxWidth"
 if grep -q "<br>" "./test-positive/graph-with-br.mmd.svg"; then
   echo "<br> has not been replaced with <br/>";
@@ -94,6 +98,7 @@ mkdir ./test-output/
 # Run mmdc with --artefacts using existing test file
 docker run --rm -v $(pwd):/data $IMAGETAG \
   -i /data/test-positive/mermaid.md \
+  --size 1024 \
   -o /data/test-output/mermaid-artefacts.md \
   --artefacts /data/static-out/
 

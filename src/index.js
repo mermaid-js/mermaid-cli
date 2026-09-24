@@ -185,14 +185,15 @@ async function cli() {
         .default(undefined, "Mermaid default (depends on diagram type)"),
     )
     .addOption(
-      new Option("-w, --width <width>", "Width of the page")
-        .argParser(parseCommanderInt)
-        .default(800),
-    )
-    .addOption(
-      new Option("-H, --height <height>", "Height of the page")
-        .argParser(parseCommanderInt)
-        .default(600),
+      new Option(
+        "--size <size>",
+        [
+          "Size of the diagram.",
+          "This will attempt to create a PNG with a maximum height or width equal to the given size.",
+          "For `.svg`s, this will set the `max-width` attribute.",
+          "For `.pdf`s, this is in CSS px, which is 1/96 of an inch.",
+        ].join("\n"),
+      ).argParser(parseCommanderInt),
     )
     .option(
       "-i, --input <input>",
@@ -285,8 +286,7 @@ async function cli() {
 
   let {
     theme,
-    width,
-    height,
+    size,
     input,
     output,
     outputFormat,
@@ -409,7 +409,13 @@ async function cli() {
       backgroundColor,
       fontEmbed,
       pdfFit,
-      viewport: { width, height, deviceScaleFactor: scale },
+      size,
+      viewport: {
+        // Puppeteer has an 8px margin, so need to add those to get the correct size.
+        width: size ? size + 16 : 0,
+        height: size ? size + 16 : 0,
+        deviceScaleFactor: scale,
+      },
       svgId,
       iconPacks,
       iconPacksNamesAndUrls,
@@ -432,6 +438,7 @@ async function cli() {
 
 /**
  * @typedef {Object} ParseMDDOptions Options to pass to {@link parseMMD}
+ * @property {number} [size] - The desired size (max width or height, depending on aspect ratio) of the created PNG.
  * @property {import("puppeteer").Viewport} [viewport] - Puppeteer viewport (e.g. `width`, `height`, `deviceScaleFactor`)
  * @property {string | "transparent"} [backgroundColor] - Background color.
  * @property {Parameters<import("mermaid")["default"]["initialize"]>[0]} [mermaidConfig] - Mermaid config.
@@ -457,6 +464,7 @@ async function renderMermaid(
   definition,
   outputFormat,
   {
+    size,
     viewport,
     backgroundColor = "white",
     mermaidConfig = {},
@@ -578,6 +586,7 @@ async function renderMermaid(
         {
           definition,
           mermaidConfig,
+          size,
           backgroundColor,
           svgId,
           iconPacks,
@@ -587,6 +596,7 @@ async function renderMermaid(
           tidyTreeESMUrl,
         },
       ) => {
+        /** @type {typeof import('mermaid')} */
         const { default: mermaid } = await import(mermaidUrl);
         /** @type {typeof import('@mermaid-js/mermaid-zenuml')} */
         const { default: zenuml } = await import(zenumlUrl);
@@ -642,6 +652,14 @@ async function renderMermaid(
         } else {
           warn("svg not found. Not applying background color.");
         }
+        if (size) {
+          // If the SVG has a maxWidth, set it to 4K resolution
+          svg.style.maxWidth = `${size}px`;
+          svg.style.maxHeight = `${size}px`;
+          // in Mermaid v10.9.1, user journey diagrams have a fixed height (BUG??)
+          // see https://github.com/mermaid-js/mermaid/commit/f86bdd648a354062656bc0c6610424ea20dcd052
+          svg.removeAttribute("height");
+        }
 
         // Finds SVG metadata for accessibility purposes
         /** SVG title */
@@ -666,6 +684,7 @@ async function renderMermaid(
       {
         definition,
         mermaidConfig,
+        size,
         backgroundColor,
         svgId,
         iconPacks,
@@ -714,15 +733,27 @@ async function renderMermaid(
         data: new TextEncoder().encode(svgXML),
       };
     } else if (outputFormat === "png") {
-      const clip = await page.$eval("svg", (svg) => {
-        const react = svg.getBoundingClientRect();
-        return {
-          x: Math.floor(react.left),
-          y: Math.floor(react.top),
-          width: Math.ceil(react.width),
-          height: Math.ceil(react.height),
-        };
-      });
+      const clip = await page.$eval(
+        "svg",
+        (svg, { size }) => {
+          const aspectRatio =
+            svg.viewBox.baseVal.width / svg.viewBox.baseVal.height;
+          // Browsers always use 100% width by default, so we need to decrease
+          // the width if the height would be 100%.
+          if (size && aspectRatio < 1) {
+            svg.style.maxWidth = `${Math.round(size * aspectRatio)}px`;
+          }
+
+          const react = svg.getBoundingClientRect();
+          return {
+            x: Math.floor(react.left),
+            y: Math.floor(react.top),
+            width: Math.ceil(react.width),
+            height: Math.ceil(react.height),
+          };
+        },
+        { size },
+      );
       await page.setViewport({
         ...viewport,
         width: clip.x + clip.width,
