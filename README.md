@@ -38,6 +38,13 @@ mmdc -i input.mmd -o output.svg
 mmdc -i input.mmd -o output.png -t dark -b transparent
 ```
 
+### Adding custom icon packs to Mermaid
+
+`mermaid-cli` supports two different ways to add [custom icon packs to mermaid](https://mermaid.js.org/config/icons.html):
+
+- Icon packs installed via `npm install`, e.g. [@iconify-json/logos](https://www.npmjs.com/package/@iconify-json/logos). These can be used via the `--iconPacks @iconify-json/logos`.
+- Icon packs accessible via URI. These can either be URLs or local `file://` URIs to local files. For example, to download the above [@iconify-json/logos](https://www.npmjs.com/package/@iconify-json/logos) package from a CDN like [jsDelivr](https://www.jsdelivr.com/), you can do `--iconPacksAndUrls logos#https://cdn.jsdelivr.net/npm/@iconify-json/logos@1.2.14/icons.json`.
+
 ### Animating an SVG file with custom CSS
 
 The `--cssFile` option can be used to inline some custom CSS. It's passed to [Mermaid's `themeCSS` config option](https://mermaid.js.org/config/schema-docs/config.html#themecss).

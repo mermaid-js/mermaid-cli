@@ -485,6 +485,27 @@ describe("mermaid-cli", () => {
     timeout,
   );
 
+  test.only("should load icon pack from node_modules", async () => {
+    await promisify(execFile)("node", [
+      "src/cli.js",
+      "-i",
+      "test-positive/flowchart4.mmd",
+      "--iconPacks",
+      "@iconify-json/logos",
+      "--output",
+      "test-positive/flowchart4-with-logos.mmd.svg",
+    ]);
+    const output = await fs.readFile(
+      "test-positive/flowchart4-with-logos.mmd.svg",
+    );
+    expectBytesAreFormat(output, "svg");
+    const decoder = new TextDecoder();
+    const expectedIcon = (await import("@iconify-json/logos")).icons.icons[
+      "mermaid"
+    ].body;
+    expect(decoder.decode(output)).toContain(expectedIcon);
+  });
+
   test.concurrent.each(["svg", "png", "pdf"])(
     "should set red background to %s",
     async (format) => {

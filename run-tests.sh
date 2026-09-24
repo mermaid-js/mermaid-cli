@@ -1,6 +1,7 @@
 #!/bin/sh
 INPUT_DATA=$1
 IMAGETAG=$2
+NODE_MODULES="${3:-./node_modules}"
 
 set -e
 
@@ -60,7 +61,10 @@ done
 
 # Test if passing custom Iconify icons work
 outputFileName="/data/$INPUT_DATA/architecture-diagram-logos-with-icons.png"
-docker run --rm -v $(pwd):/data $IMAGETAG \
+docker run --rm \
+  -v "$(pwd):/data" \
+  -v "$(pwd)/node_modules/@iconify-json:/home/mermaidcli/node_modules/@iconify-json" \
+  $IMAGETAG \
   -i /data/$INPUT_DATA/architecture-diagram-logos.mmd \
   --iconPacks '@iconify-json/logos' \
   --size 1024 \
@@ -68,7 +72,10 @@ docker run --rm -v $(pwd):/data $IMAGETAG \
 
 # Test if passing custom Iconify icons (from unpkg and other sources) work
 outputFileName="/data/$INPUT_DATA/flowchart4.png"
-docker run --rm -v $(pwd):/data $IMAGETAG \
+docker run --rm \
+  -v "$(pwd):/data" \
+  -v "$(pwd)/node_modules/@iconify-json:/home/mermaidcli/node_modules/@iconify-json" \
+  $IMAGETAG \
   -i /data/$INPUT_DATA/flowchart4.mmd \
   --size 1024 \
   --iconPacks '@iconify-json/logos' \
