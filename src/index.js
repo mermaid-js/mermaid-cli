@@ -497,6 +497,7 @@ async function cli() {
  * @property {"Letter" | "Legal" | "Tabloid" | "Ledger" | "A0" | "A1" | "A2" | "A3" | "A4" | "A5" | "A6"} [pdfPaperFormat] - If set, make a PDF of the given size, instead of scaling it to the diagram.
  * @property {string} [svgId] - The id attribute for the SVG element to be rendered.
  * @property {Record<string, URL>} [iconPacks] - Icon packages to use.
+ */
 
 /**
  * Render a mermaid diagram.
