@@ -264,7 +264,24 @@ async function cli() {
       "--no-font-embed",
       "Disable embedding fonts into the SVG. This cuts down on SVG size, but would result in missing fonts if they are not available on the system.",
     )
-    .option("-f, --pdfFit", "Scale PDF to fit chart")
+    .addOption(
+      new Option(
+        "--pdf-paper-format <format>",
+        "If set, output a PDF with the given paper size, instead of fitting the diagram.",
+      ).choices([
+        "Letter",
+        "Legal",
+        "Tabloid",
+        "Ledger",
+        "A0",
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "A5",
+        "A6",
+      ]),
+    )
     .option("-q, --quiet", "Suppress log output")
     .option(
       "-p --puppeteerConfigFile <puppeteerConfigFile>",
@@ -297,7 +314,7 @@ async function cli() {
     puppeteerConfigFile,
     scale,
     fontEmbed,
-    pdfFit,
+    pdfPaperFormat,
     quiet,
     iconPacks,
     iconPacksNamesAndUrls,
@@ -408,7 +425,7 @@ async function cli() {
       mermaidConfig,
       backgroundColor,
       fontEmbed,
-      pdfFit,
+      pdfPaperFormat,
       size,
       viewport: {
         // Puppeteer has an 8px margin, so need to add those to get the correct size.
@@ -444,7 +461,7 @@ async function cli() {
  * @property {Parameters<import("mermaid")["default"]["initialize"]>[0]} [mermaidConfig] - Mermaid config.
  * @property {CustomFontCSS[]} [customFontCSS] - Custom CSS for embedding fonts. See {@link CustomFontCSS} for details.
  * @property {boolean} [fontEmbed] - Whether to embed used fonts into the SVG.
- * @property {boolean} [pdfFit] - If set, scale PDF to fit chart.
+ * @property {"Letter" | "Legal" | "Tabloid" | "Ledger" | "A0" | "A1" | "A2" | "A3" | "A4" | "A5" | "A6"} [pdfPaperFormat] - If set, make a PDF of the given size, instead of scaling it to the diagram.
  * @property {string} [svgId] - The id attribute for the SVG element to be rendered.
  * @property {string[]} [iconPacks] - Icon packages to use.
  * @property {string[]} [iconPacksNamesAndUrls] - IconPack Json file name and url to use.
@@ -470,7 +487,7 @@ async function renderMermaid(
     mermaidConfig = {},
     customFontCSS = [],
     fontEmbed = true,
-    pdfFit,
+    pdfPaperFormat,
     svgId,
     iconPacks = [],
     iconPacksNamesAndUrls = [],
@@ -768,7 +785,7 @@ async function renderMermaid(
       };
     } else {
       // pdf
-      if (pdfFit) {
+      if (!pdfPaperFormat) {
         const clip = await page.$eval("svg", (svg) => {
           const react = svg.getBoundingClientRect();
           return {
@@ -794,6 +811,7 @@ async function renderMermaid(
           data: await page.pdf({
             omitBackground: backgroundColor === "transparent",
             printBackground: true,
+            format: pdfPaperFormat,
           }),
         };
       }
