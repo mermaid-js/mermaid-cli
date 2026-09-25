@@ -179,6 +179,7 @@ const themes = [
 async function cli() {
   const commander = new Command()
     .version(version)
+    .description("Render a mermaid diagram definition into various formats")
     .addOption(
       new Option("-t, --theme <theme>", "Theme of the chart")
         .choices(themes)
