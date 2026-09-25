@@ -485,7 +485,7 @@ describe("mermaid-cli", () => {
     timeout,
   );
 
-  test.only("should load icon pack from node_modules", async () => {
+  test("should load icon pack from node_modules", async () => {
     await promisify(execFile)("node", [
       "src/cli.js",
       "-i",

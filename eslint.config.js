@@ -25,6 +25,14 @@ export default defineConfig([
         "error",
         { argsIgnorePattern: "^_" },
       ],
+      "no-restricted-properties": [
+        "error",
+        {
+          "object": "test",
+          "property": "only",
+          "message": "Skipping tests with test.only is not allowed"
+        }
+      ]
     },
   },
 ]);
