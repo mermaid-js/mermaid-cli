@@ -55,8 +55,6 @@ export class Interceptor {
    *
    * This is used to prevent arbitrary file access through the intercept mechanism.
    *
-   * Make sure to use `realpath` to resolve any symlinks.
-   *
    * @type {Set<string>}
    */
   #allowedDirs = new Set();
@@ -71,11 +69,16 @@ export class Interceptor {
     if (fileUrl.protocol !== "file:") {
       throw new Error(`Invalid file URL: ${fileUrl}`);
     }
-    let parentDirectory = await realpath(url.fileURLToPath(fileUrl));
-    while (allowParentDirectoryLevel-- >= 0) {
-      parentDirectory = path.dirname(parentDirectory);
+    for (let parentDirectory of [
+      url.fileURLToPath(fileUrl),
+      await realpath(url.fileURLToPath(fileUrl)),
+    ]) {
+      let directoryLevel = allowParentDirectoryLevel;
+      while (directoryLevel-- >= 0) {
+        parentDirectory = path.dirname(parentDirectory);
+      }
+      this.#allowedDirs.add(parentDirectory);
     }
-    this.#allowedDirs.add(parentDirectory);
     return `${this.#INTERCEPT_ORIGIN}${fileUrl.pathname}`;
   }
 
@@ -115,7 +118,12 @@ export class Interceptor {
   #isInAllowedDir(filePath) {
     return [...this.#allowedDirs].some((dir) => {
       const rel = path.relative(dir, filePath);
-      return rel !== "" && !path.isAbsolute(rel);
+      return (
+        rel !== "" &&
+        rel !== ".." &&
+        !rel.startsWith(`..${path.sep}`) &&
+        !path.isAbsolute(rel)
+      );
     });
   }
 
@@ -157,10 +165,12 @@ export class Interceptor {
           DEFAULT_INTERCEPT_RESOLUTION_PRIORITY,
         );
       }
-      console.error(
-        `Error handling intercept request for ${request.url()}:`,
-        error,
-      );
+      if (!request.url().match(/license/i)) {
+        console.error(
+          `Error handling intercept request for ${request.url()}:`,
+          error,
+        );
+      }
       return request.abort(undefined, DEFAULT_INTERCEPT_RESOLUTION_PRIORITY);
     }
     request.continue(undefined, DEFAULT_INTERCEPT_RESOLUTION_PRIORITY);
