@@ -44,8 +44,6 @@ export class Interceptor {
    *
    * This is used to prevent arbitrary file access through the intercept mechanism.
    *
-   * Make sure to use `realpath` to resolve any symlinks.
-   *
    * @type {Set<string>}
    */
   #allowedDirs = new Set();
@@ -60,11 +58,16 @@ export class Interceptor {
     if (fileUrl.protocol !== "file:") {
       throw new Error(`Invalid file URL: ${fileUrl}`);
     }
-    let parentDirectory = await realpath(url.fileURLToPath(fileUrl));
-    while (allowParentDirectoryLevel-- >= 0) {
-      parentDirectory = path.dirname(parentDirectory);
+    for (let parentDirectory of [
+      url.fileURLToPath(fileUrl),
+      await realpath(url.fileURLToPath(fileUrl)),
+    ]) {
+      let directoryLevel = allowParentDirectoryLevel;
+      while (directoryLevel-- >= 0) {
+        parentDirectory = path.dirname(parentDirectory);
+      }
+      this.#allowedDirs.add(parentDirectory);
     }
-    this.#allowedDirs.add(parentDirectory);
     return `${this.#INTERCEPT_ORIGIN}${fileUrl.pathname}`;
   }
 
@@ -82,17 +85,35 @@ export class Interceptor {
       interceptUrl.href.slice(this.#INTERCEPT_ORIGIN.length),
       "file://",
     );
-    const filePath = await realpath(url.fileURLToPath(fileUrl));
-    if (
-      ![...this.#allowedDirs].some((dir) =>
-        path.relative(filePath, dir).startsWith(".."),
-      )
-    ) {
+    const requestedPath = path.resolve(url.fileURLToPath(fileUrl));
+    if (!this.#isInAllowedDir(requestedPath)) {
       throw new Error(
         `Intercept URL is not in an allowed directory: ${interceptUrl}`,
       );
     }
-    return fileUrl;
+    const realPath = await realpath(requestedPath);
+    if (!this.#isInAllowedDir(realPath)) {
+      throw new Error(
+        `Intercept URL is not in an allowed directory: ${interceptUrl}`,
+      );
+    }
+
+    return url.pathToFileURL(realPath);
+  }
+
+  /**
+   * @param {string} filePath - Absolute and normalized path.
+   */
+  #isInAllowedDir(filePath) {
+    return [...this.#allowedDirs].some((dir) => {
+      const rel = path.relative(dir, filePath);
+      return (
+        rel !== "" &&
+        rel !== ".." &&
+        !rel.startsWith(`..${path.sep}`) &&
+        !path.isAbsolute(rel)
+      );
+    });
   }
 
   /**
@@ -117,10 +138,28 @@ export class Interceptor {
         );
       }
     } catch (error) {
-      console.error(
-        `Error handling intercept request for ${request.url()}:`,
-        error,
-      );
+      if (
+        // @ts-ignore -- `error instanceof Error` check doesn't work in Jest, due to https://github.com/jestjs/jest/issues/2549
+        error?.code === "ENOENT"
+      ) {
+        return request.respond(
+          {
+            status: 404,
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+            },
+            contentType: "text/plain;charset=UTF-8",
+            body: `File not found: ${request.url()}`,
+          },
+          DEFAULT_INTERCEPT_RESOLUTION_PRIORITY,
+        );
+      }
+      if (!request.url().match(/license/i)) {
+        console.error(
+          `Error handling intercept request for ${request.url()}:`,
+          error,
+        );
+      }
       return request.abort(undefined, DEFAULT_INTERCEPT_RESOLUTION_PRIORITY);
     }
     request.continue(undefined, DEFAULT_INTERCEPT_RESOLUTION_PRIORITY);
