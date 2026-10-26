@@ -17,7 +17,7 @@ jobs:
       matrix:
         node: [22.13]
         os:
-          - ubuntu-latest
+          - ubuntu-24.04
           - windows-latest
         dependencies:
           # default `package-lock.json` dependencies
@@ -25,7 +25,7 @@ jobs:
         include:
           # test with minimal dependencies (only puppeteer-core and its dependencies)
           - node: 22.13
-            os: ubuntu-latest
+            os: ubuntu-24.04
             dependencies: "minimal"
     runs-on: ${{ matrix.os }}
     steps:
