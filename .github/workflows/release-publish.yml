@@ -106,6 +106,8 @@ jobs:
           file: ${{env.DOCKERFILE}}
           platforms: linux/amd64,linux/arm64
           push: true
+          build-args: |
+            VERSION=${{env.RELEASE_VERSION}}
           tags: |
             ${{env.DOCKER_IO_REPOSITORY}}:latest
             ${{env.DOCKER_IO_REPOSITORY}}:${{env.RELEASE_VERSION}}
