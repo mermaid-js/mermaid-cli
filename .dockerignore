@@ -1,0 +1,12 @@
+# Files that `Dockerfile` doesn't need in its build context.
+# The build stage runs `npm install` and `npm pack` itself
+.git
+.github
+node_modules
+dist
+dist-types
+test-output
+static-out
+**/*.svg
+**/*.png
+**/*.pdf
