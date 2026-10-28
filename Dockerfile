@@ -14,6 +14,9 @@ RUN npm install \
 
 FROM node:22.23.2-alpine3.24 AS mermaid-cli-current
 
+ENV CHROME_BIN="/usr/bin/chromium-browser" \
+    PUPPETEER_SKIP_DOWNLOAD="true"
+
 WORKDIR /app
 
 COPY --from=build /app/*-mermaid-cli-*.tgz /install/
