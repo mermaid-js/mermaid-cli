@@ -16,7 +16,7 @@ trap cleanup EXIT
 if [ -z "$IMAGETAG" ]; then
   echo "No image tag provided, building Docker image..."
   IMAGETAG="mermaid-cli:test"
-  docker build -t $IMAGETAG -f DockerfileBuild .
+  docker build -t $IMAGETAG -f Dockerfile .
 fi
 
 # we must set `useMaxWidth: false` in config` to convert-svg-to-png for Percy CI
