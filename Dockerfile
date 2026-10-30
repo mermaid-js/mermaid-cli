@@ -3,8 +3,6 @@ FROM node:22.23.4-alpine3.24 AS build
 ENV CHROME_BIN="/usr/bin/chromium-browser" \
     PUPPETEER_SKIP_DOWNLOAD="true"
 
-RUN apk add chromium
-
 WORKDIR /app
 
 COPY . /app/
