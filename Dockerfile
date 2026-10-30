@@ -1,4 +1,4 @@
-FROM node:22.23.4-alpine3.24 AS build
+FROM --platform=$BUILDPLATFORM node:22.23.4-alpine3.24 AS build
 
 ENV CHROME_BIN="/usr/bin/chromium-browser" \
     PUPPETEER_SKIP_DOWNLOAD="true"
