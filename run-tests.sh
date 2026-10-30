@@ -15,10 +15,8 @@ trap cleanup EXIT
 # If no image tag is provided, build the Docker image
 if [ -z "$IMAGETAG" ]; then
   echo "No image tag provided, building Docker image..."
-  # Get the current package version from package.json
-  VERSION=$(node -p "require('./package.json').version")
   IMAGETAG="mermaid-cli:test"
-  docker build --build-arg VERSION=$VERSION -t $IMAGETAG -f DockerfileBuild .
+  docker build -t $IMAGETAG -f Dockerfile .
 fi
 
 # we must set `useMaxWidth: false` in config` to convert-svg-to-png for Percy CI
