@@ -10,7 +10,8 @@ WORKDIR /app
 COPY . /app/
 
 RUN npm install \
-    && npm pack
+    && npm pack \
+    && npm cache clean --force
 
 FROM node:22.23.2-alpine3.24 AS mermaid-cli-current
 
@@ -27,7 +28,8 @@ RUN chmod 755 install-dependencies.sh && /bin/sh install-dependencies.sh
 RUN adduser -D mermaidcli
 USER mermaidcli
 WORKDIR /home/mermaidcli
-RUN npm install $(ls -d /install/*.tgz)
+RUN npm install $(ls -d /install/*.tgz) \
+    && npm cache clean --force
 
 ENV PATH="$PATH:/home/mermaidcli/node_modules/.bin/"
 
