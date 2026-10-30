@@ -1,4 +1,4 @@
-FROM node:22.23.2-alpine3.24 AS build
+FROM node:22.23.4-alpine3.24 AS build
 
 ENV CHROME_BIN="/usr/bin/chromium-browser" \
     PUPPETEER_SKIP_DOWNLOAD="true"
@@ -13,7 +13,7 @@ RUN npm install \
     && npm pack \
     && npm cache clean --force
 
-FROM node:22.23.2-alpine3.24 AS mermaid-cli-current
+FROM node:22.23.4-alpine3.24 AS mermaid-cli-current
 
 ENV CHROME_BIN="/usr/bin/chromium-browser" \
     PUPPETEER_SKIP_DOWNLOAD="true"
