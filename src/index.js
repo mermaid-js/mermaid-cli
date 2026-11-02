@@ -731,9 +731,15 @@ async function renderMermaid(
           }),
         );
         mermaid.initialize({ startOnLoad: false, ...mermaidConfig });
+        // Ensure SVG ID is a valid CSS identifier (cannot start with a digit [0-9])
+        const validSvgId = svgId
+          ? /^[0-9]/.test(svgId)
+            ? `mermaid-${svgId}`
+            : svgId
+          : "my-svg";
         // should throw an error if mmd diagram is invalid
         const { svg: svgText } = await mermaid.render(
-          svgId || "my-svg",
+          validSvgId,
           definition,
           container,
         );
@@ -834,6 +840,14 @@ async function renderMermaid(
           // the width if the height would be 100%.
           if (size && aspectRatio < 1) {
             svg.style.maxWidth = `${Math.round(size * aspectRatio)}px`;
+          } else if (!size && svg.viewBox?.baseVal?.width > 0) {
+            // If diagram has intrinsic viewBox width exceeding viewport (e.g. Gantt with useWidth),
+            // unconstrain SVG so it is not clamped to default 800px viewport (Fixes #729)
+            const intrinsicWidth = svg.viewBox.baseVal.width;
+            if (intrinsicWidth > svg.getBoundingClientRect().width) {
+              svg.style.maxWidth = "none";
+              svg.style.width = `${intrinsicWidth}px`;
+            }
           }
 
           const react = svg.getBoundingClientRect();
@@ -862,6 +876,13 @@ async function renderMermaid(
       // pdf
       if (!pdfPaperFormat) {
         const clip = await page.$eval("svg", (svg) => {
+          if (svg.viewBox?.baseVal?.width > 0) {
+            const intrinsicWidth = svg.viewBox.baseVal.width;
+            if (intrinsicWidth > svg.getBoundingClientRect().width) {
+              svg.style.maxWidth = "none";
+              svg.style.width = `${intrinsicWidth}px`;
+            }
+          }
           const react = svg.getBoundingClientRect();
           return {
             x: react.left,

@@ -923,5 +923,34 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       const decoder = new TextDecoder();
       expect(decoder.decode(result.data)).not.toContain('url("data:font/woff2');
     });
+
+    test("should sanitize numeric svgId to prevent invalid CSS selectors", async () => {
+      const mmdInput = "erDiagram\n  A ||--o{ B : has\n";
+      const result = await renderMermaid(browser, mmdInput, "svg", {
+        svgId: "02_numeric_id",
+      });
+      expectBytesAreFormat(result.data, "svg");
+      const svg = new TextDecoder().decode(result.data);
+      expect(svg).toContain('id="mermaid-02_numeric_id"');
+      expect(svg).toContain("#mermaid-02_numeric_id");
+      expect(svg).not.toContain("#02_numeric_id");
+    });
+
+    test("should render Gantt chart at intrinsic width without clamping to 784px (Fixes #729)", async () => {
+      const mmdInput = `gantt
+    dateFormat YYYY-MM-DD
+    title Gantt Chart
+    section S1
+    Task 1 :2024-01-01, 30d
+    Task 2 :2024-02-01, 30d`;
+      const result = await renderMermaid(browser, mmdInput, "svg", {
+        mermaidConfig: {
+          gantt: { useWidth: 1400 },
+        },
+      });
+      expectBytesAreFormat(result.data, "svg");
+      const svg = new TextDecoder().decode(result.data);
+      expect(svg).toContain('viewBox="0 0 1400');
+    });
   });
 });
