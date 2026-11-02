@@ -84,6 +84,26 @@ mmdc --input test-positive/flowchart1.mmd --size 4000 -o output.png
 > [`useMaxWidth: true`](https://mermaid.js.org/config/schema-docs/config.html#usemaxwidth-1)
 > to be set in the diagram's config.
 
+### Rendering at natural unconstrained dimensions (Auto-sizing)
+
+For large or complex diagrams (such as wide flowcharts, class diagrams, or Entity-Relationship diagrams with many entities), Mermaid's default `useMaxWidth: true` squeezes the diagram into the default container width, resulting in tiny or microscopic text.
+
+You can use `--auto-size` (or `--no-use-max-width`) to render the diagram at its natural unconstrained dimensions:
+
+```sh
+mmdc --input large-diagram.mmd --auto-size -o output.png
+```
+
+This automatically configures `useMaxWidth: false` across Mermaid diagram types and removes SVG max-width constraints, capturing the diagram at its native resolution without needing manual pixel guesswork.
+
+> ![Tip]
+>
+> You can combine `--auto-size` with `-s` (`--scale`) to render high-DPI unconstrained images, for example:
+>
+> ```sh
+> mmdc -i diagram.mmd --auto-size -s 2 -o diagram@2x.png
+> ```
+
 ### Transform a markdown file with mermaid diagrams
 
 ```sh

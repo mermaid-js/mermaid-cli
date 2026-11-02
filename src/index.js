@@ -176,6 +176,32 @@ const themes = [
   "null",
 ];
 
+/**
+ * Diagram types that Mermaid supports with `useMaxWidth` configuration.
+ */
+const DIAGRAM_TYPES_WITH_MAX_WIDTH = [
+  "flowchart",
+  "sequence",
+  "gantt",
+  "journey",
+  "class",
+  "state",
+  "er",
+  "pie",
+  "requirement",
+  "sankey",
+  "gitGraph",
+  "c4",
+  "mindmap",
+  "timeline",
+  "quadrantChart",
+  "xyChart",
+  "block",
+  "packet",
+  "kanban",
+  "architecture",
+];
+
 async function cli() {
   const commander = new Command()
     .version(version)
@@ -195,6 +221,18 @@ async function cli() {
           "For `.pdf`s, this is in CSS px, which is 1/96 of an inch.",
         ].join("\n"),
       ).argParser(parseCommanderInt),
+    )
+    .addOption(
+      new Option(
+        "--auto-size",
+        "Render diagram at natural unconstrained dimensions by setting `useMaxWidth: false` across diagram types.",
+      ).conflicts("size"),
+    )
+    .addOption(
+      new Option(
+        "--no-use-max-width",
+        "Disable `useMaxWidth` constraints in Mermaid config and SVG styles, allowing diagrams to expand to their natural unconstrained dimensions.",
+      ).conflicts("size"),
     )
     .option(
       "-i, --input <input>",
@@ -379,6 +417,8 @@ async function cli() {
   let {
     theme,
     size,
+    autoSize,
+    useMaxWidth,
     input,
     output,
     outputFormat,
@@ -396,6 +436,8 @@ async function cli() {
     artefacts,
     jobs,
   } = options;
+
+  const isAutoSize = Boolean(autoSize || useMaxWidth === false);
 
   // check input file
   if (!input) {
@@ -451,6 +493,7 @@ async function cli() {
   }
 
   // check config files
+  /** @type {Record<string, any>} */
   let mermaidConfig = { theme };
   if (configFile) {
     checkConfigFile(configFile);
@@ -458,6 +501,15 @@ async function cli() {
       mermaidConfig,
       JSON.parse(fs.readFileSync(configFile, "utf-8")),
     );
+  }
+
+  if (isAutoSize) {
+    for (const type of DIAGRAM_TYPES_WITH_MAX_WIDTH) {
+      mermaidConfig[type] = {
+        useMaxWidth: false,
+        ...mermaidConfig[type],
+      };
+    }
   }
 
   let puppeteerConfig = /** @type {import('puppeteer').LaunchOptions} */ ({
@@ -502,6 +554,7 @@ async function cli() {
       fontEmbed,
       pdfPaperFormat,
       size,
+      autoSize: isAutoSize,
       viewport: {
         // Puppeteer has an 8px margin, so need to add those to get the correct size.
         width: size ? size + 16 : 0,
@@ -533,6 +586,7 @@ async function cli() {
 /**
  * @typedef {Object} ParseMDDOptions Options to pass to {@link parseMMD}
  * @property {number} [size] - The desired size (max width or height, depending on aspect ratio) of the created PNG.
+ * @property {boolean} [autoSize] - If true, render diagram at its natural unconstrained dimensions by setting useMaxWidth: false across diagram types.
  * @property {import("puppeteer").Viewport} [viewport] - Puppeteer viewport (e.g. `width`, `height`, `deviceScaleFactor`)
  * @property {string | "transparent"} [backgroundColor] - Background color.
  * @property {Parameters<import("mermaid")["default"]["initialize"]>[0]} [mermaidConfig] - Mermaid config.
@@ -559,6 +613,7 @@ async function renderMermaid(
   outputFormat,
   {
     size,
+    autoSize,
     viewport,
     backgroundColor = "white",
     mermaidConfig = {},
@@ -569,6 +624,16 @@ async function renderMermaid(
     iconPacks = {},
   } = {},
 ) {
+  if (autoSize) {
+    const config = /** @type {Record<string, any>} */ ({ ...mermaidConfig });
+    for (const type of DIAGRAM_TYPES_WITH_MAX_WIDTH) {
+      config[type] = {
+        useMaxWidth: false,
+        ...config[type],
+      };
+    }
+    mermaidConfig = config;
+  }
   const page = await browser.newPage();
   page.on("console", (msg) => {
     if (msg.location().url?.includes("LICENSE")) {
@@ -695,6 +760,7 @@ async function renderMermaid(
           definition,
           mermaidConfig,
           size,
+          autoSize,
           backgroundColor,
           svgId,
           resolvedIconPacks,
@@ -752,6 +818,9 @@ async function renderMermaid(
           // in Mermaid v10.9.1, user journey diagrams have a fixed height (BUG??)
           // see https://github.com/mermaid-js/mermaid/commit/f86bdd648a354062656bc0c6610424ea20dcd052
           svg.removeAttribute("height");
+        } else if (autoSize) {
+          svg.style.maxWidth = "none";
+          svg.style.maxHeight = "none";
         }
 
         // Finds SVG metadata for accessibility purposes
@@ -778,6 +847,7 @@ async function renderMermaid(
         definition,
         mermaidConfig,
         size,
+        autoSize,
         backgroundColor,
         svgId,
         resolvedIconPacks,
@@ -827,12 +897,14 @@ async function renderMermaid(
     } else if (outputFormat === "png") {
       const clip = await page.$eval(
         "svg",
-        (svg, { size }) => {
+        (svg, { size, autoSize }) => {
           const aspectRatio =
-            svg.viewBox.baseVal.width / svg.viewBox.baseVal.height;
+            svg.viewBox?.baseVal?.width && svg.viewBox?.baseVal?.height
+              ? svg.viewBox.baseVal.width / svg.viewBox.baseVal.height
+              : 1;
           // Browsers always use 100% width by default, so we need to decrease
           // the width if the height would be 100%.
-          if (size && aspectRatio < 1) {
+          if (!autoSize && size && aspectRatio < 1) {
             svg.style.maxWidth = `${Math.round(size * aspectRatio)}px`;
           }
 
@@ -844,7 +916,7 @@ async function renderMermaid(
             height: Math.ceil(react.height),
           };
         },
-        { size },
+        { size, autoSize },
       );
       await page.setViewport({
         ...viewport,
