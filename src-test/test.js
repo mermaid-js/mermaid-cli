@@ -913,6 +913,41 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       expect(svg).toContain(".fa-html5");
     });
 
+    test.each([
+      // Recursive, the default font, is split into subsets like Latin and Latin Extended
+      ["Latin text", "A[Start] --> B[End]", 1],
+      ["Latin Extended text", "A[Start] --> B[Łódź]", 2],
+      // Recursive has no Hangul, but browsers still take its line metrics
+      // from its Latin subset, the one that covers spaces
+      ["Hangul text", "A[시작] --> B[끝]", 1],
+      // Accessible titles aren't drawn
+      ["a Vietnamese title", "accTitle: Tiếng Việt\nA[Start] --> B[End]", 1],
+    ])(
+      "should only embed the font subsets needed by %s",
+      async (_description, flowchart, fontFaceCount) => {
+        const mmdInput = `flowchart TD\n${flowchart}`;
+        const result = await renderMermaid(browser, mmdInput, "svg");
+        const svg = new TextDecoder().decode(result.data);
+        expect(svg.match(/@font-face/g) ?? []).toHaveLength(fontFaceCount);
+      },
+      timeout,
+    );
+
+    test(
+      "should not embed fonts that no text is drawn in",
+      async () => {
+        const mmdInput = "flowchart TD\nA[Start] --> B[End]";
+        const result = await renderMermaid(browser, mmdInput, "svg", {
+          mermaidConfig: {
+            themeCSS: '.label { font-family: "fantasy" !important; }',
+          },
+        });
+        const svg = new TextDecoder().decode(result.data);
+        expect(svg).not.toContain("@font-face");
+      },
+      timeout,
+    );
+
     test("should not embed fonts into SVG if fontEmbed: false", async () => {
       const mmdInput = String.raw`flowchart TD
     FontAwesome([fa:fa-car fa:fa-plane fa:fa-bicycle])`;

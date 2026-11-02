@@ -1,5 +1,6 @@
 import {
   parseFontFamily,
+  parseUnicodeRange,
   stringifyCSSSrc,
   tokenizeCSSSrc,
 } from "./tokenizeCSS.js";
@@ -65,6 +66,11 @@ const fontAwesomeFontClasses = /** @type {const} */ ([
  * If so, it replaces the font `url()` with a base64-encoded data URL,
  * and adds the CSS as a `<style>` element in the `<svg>`.
  *
+ * Fonts are often split into subsets for different scripts (e.g. Latin, Cyrillic, Vietnamese),
+ * so an `@font-face` rule with a `unicode-range` is only embedded if the range covers
+ * a character that the SVG draws in that font family, or a space, which browsers
+ * take the font's metrics from.
+ *
  * Fails if it can't find licensing information to embed into the CSS.
  *
  * @param {Object} params - Params
@@ -74,17 +80,62 @@ const fontAwesomeFontClasses = /** @type {const} */ ([
 export async function fontEmbedder({ document, svg }) {
   /** @type {Set<string>} */
   const usedFontFamilies = new Set();
+  /** @type {Map<string, Set<number>>} Code points of the text drawn in each font family */
+  const drawnCodePoints = new Map();
+  /** @type {Set<string>} Font families of icons, which draw characters from CSS `content` */
+  const iconFontFamilies = new Set();
   svg.querySelectorAll("*").forEach((el) => {
-    if (
-      [...el.childNodes].some((n) => n.nodeType === Node.TEXT_NODE) ||
-      fontAwesomeFontClasses.some((cls) => el.classList.contains(cls))
-    ) {
-      const [firstFontFamily] = parseFontFamily(
-        window.getComputedStyle(el).fontFamily,
-      );
-      usedFontFamilies.add(firstFontFamily);
+    const textNodes = [...el.childNodes].filter(
+      (n) => n.nodeType === Node.TEXT_NODE,
+    );
+    const isIcon = fontAwesomeFontClasses.some((cls) =>
+      el.classList.contains(cls),
+    );
+    if (textNodes.length === 0 && !isIcon) {
+      return;
     }
+    const [firstFontFamily] = parseFontFamily(
+      window.getComputedStyle(el).fontFamily,
+    );
+    usedFontFamilies.add(firstFontFamily);
+    if (isIcon) {
+      iconFontFamilies.add(firstFontFamily);
+    }
+    // The text of these elements isn't drawn
+    if (el.closest("style, title, desc")) {
+      return;
+    }
+    // Browsers take a font's metrics, like its line height, from the face that
+    // covers a space (U+0020), so any text needs it, even without spaces.
+    // See https://drafts.csswg.org/css-fonts-4/#first-available-font
+    const codePoints = drawnCodePoints.get(firstFontFamily) ?? new Set([0x20]);
+    for (const textNode of textNodes) {
+      for (const char of textNode.textContent ?? "") {
+        codePoints.add(/** @type {number} */ (char.codePointAt(0)));
+      }
+    }
+    drawnCodePoints.set(firstFontFamily, codePoints);
   });
+
+  /**
+   * Check whether an `@font-face` rule is needed to draw any text in the SVG.
+   *
+   * @param {CSSFontFaceRule} rule
+   */
+  function fontFaceIsUsed(rule) {
+    const [fontFamily] = parseFontFamily(rule.style.fontFamily);
+    if (!usedFontFamilies.has(fontFamily)) {
+      return false;
+    }
+    const unicodeRange = rule.style.getPropertyValue("unicode-range");
+    if (!unicodeRange || iconFontFamilies.has(fontFamily)) {
+      return true;
+    }
+    const ranges = parseUnicodeRange(unicodeRange);
+    return [...(drawnCodePoints.get(fontFamily) ?? [])].some((codePoint) =>
+      ranges.some(([first, last]) => first <= codePoint && codePoint <= last),
+    );
+  }
 
   /**
    * Check whether a CSS style rule applies to any element inside the SVG.
@@ -122,8 +173,7 @@ export async function fontEmbedder({ document, svg }) {
     const cssRulesText = [];
     for (const rule of cssStyleSheet.cssRules) {
       if (rule instanceof CSSFontFaceRule) {
-        const [fontFamily] = parseFontFamily(rule.style.fontFamily);
-        if (!usedFontFamilies.has(fontFamily)) {
+        if (!fontFaceIsUsed(rule)) {
           continue;
         }
         if ("src" in rule.style && typeof rule.style.src === "string") {

@@ -86,6 +86,45 @@ export function parseFontFamily(string) {
 }
 
 /**
+ * Parses a CSS `unicode-range` descriptor into the code points that it covers.
+ *
+ * @param {string} string - The `unicode-range` value to parse.
+ * @returns {[number, number][]} - Inclusive `[first, last]` code point ranges.
+ * @see https://drafts.csswg.org/css-fonts-4/#unicode-range-desc
+ * @see https://drafts.csswg.org/css-syntax-3/#urange-syntax
+ * @example
+ * parseUnicodeRange("U+0-FF, U+4??, u+2122");
+ * // Returns: [[0x0, 0xff], [0x400, 0x4ff], [0x2122, 0x2122]]
+ */
+export function parseUnicodeRange(string) {
+  /** @type {[number, number][]} */
+  const ranges = [];
+  for (const urange of string.split(",")) {
+    // A code point (U+26), an interval (U+0-7F), or a wildcard range (U+4??)
+    const match = /^u\+([0-9a-f]*)(\?*)(?:-([0-9a-f]{1,6}))?$/i.exec(
+      urange.trim(),
+    );
+    const [, digits = "", wildcards = "", last] = match ?? [];
+    const length = digits.length + wildcards.length;
+    if (!match || length === 0 || length > 6 || (wildcards && last)) {
+      throw new Error("Failed to parse unicode-range: " + urange);
+    }
+    const start = parseInt(digits + "0".repeat(wildcards.length), 16);
+    let end = start;
+    if (wildcards) {
+      end = parseInt(digits + "F".repeat(wildcards.length), 16);
+    } else if (last) {
+      end = parseInt(last, 16);
+    }
+    if (start > end || end > 0x10ffff) {
+      throw new Error("Invalid unicode-range: " + urange);
+    }
+    ranges.push([start, end]);
+  }
+  return ranges;
+}
+
+/**
  * @param {string} string - Parse the given CSS `src` attribute value.
  */
 export function tokenizeCSSSrc(string) {
