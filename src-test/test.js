@@ -598,6 +598,48 @@ describe("mermaid-cli", () => {
     },
     timeout,
   );
+
+  test(
+    "should support the --auto-size option for diagrams",
+    async () => {
+      const outputFileName = "test-output/flowchart1-with-auto-size.png";
+      await promisify(execFile)("node", [
+        "src/cli.js",
+        "--input=test-positive/flowchart1.mmd",
+        "--output",
+        outputFileName,
+        "--auto-size",
+      ]);
+      const bytes = await fs.readFile(outputFileName);
+      expectBytesAreFormat(bytes, "png");
+      const width = bytes.readUInt32BE(16);
+      const height = bytes.readUInt32BE(20);
+      expect(width).toBeGreaterThan(0);
+      expect(height).toBeGreaterThan(0);
+    },
+    timeout,
+  );
+
+  test(
+    "should support the --no-use-max-width option as alias for --auto-size",
+    async () => {
+      const outputFileName = "test-output/flowchart1-with-no-use-max-width.png";
+      await promisify(execFile)("node", [
+        "src/cli.js",
+        "--input=test-positive/flowchart1.mmd",
+        "--output",
+        outputFileName,
+        "--no-use-max-width",
+      ]);
+      const bytes = await fs.readFile(outputFileName);
+      expectBytesAreFormat(bytes, "png");
+      const width = bytes.readUInt32BE(16);
+      const height = bytes.readUInt32BE(20);
+      expect(width).toBeGreaterThan(0);
+      expect(height).toBeGreaterThan(0);
+    },
+    timeout,
+  );
 });
 
 describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
@@ -922,6 +964,14 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
       expectBytesAreFormat(result.data, "svg");
       const decoder = new TextDecoder();
       expect(decoder.decode(result.data)).not.toContain('url("data:font/woff2');
+    });
+
+    test("should support autoSize option in renderMermaid()", async () => {
+      const mmdInput = "erDiagram\n    CUSTOMER ||--o{ ORDER : places\n";
+      const result = await renderMermaid(browser, mmdInput, "png", {
+        autoSize: true,
+      });
+      expectBytesAreFormat(result.data, "png");
     });
   });
 });
