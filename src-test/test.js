@@ -616,6 +616,10 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
     ])(
       "should rewrite markdown fences and generate an svg from %s",
       async (file) => {
+        if (file.startsWith("mermaid-fence-")) {
+          const input = await fs.readFile(join("test-positive", file), "utf8");
+          expect(input).toMatch(/^[`:]{3}[ \t]+mermaid/m);
+        }
         const outputName = file.replace(/\.(md|markdown)$/, "-fence-test");
         const expectedOutputMd = join(out, `${outputName}.md`);
         const expectedOutputSvg = join(out, `${outputName}-1.svg`);
