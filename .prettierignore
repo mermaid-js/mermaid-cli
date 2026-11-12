@@ -1,5 +1,9 @@
 # Should purposely have CRLF line endings
 /test-positive/crlf-detect.md
+# Should preserve whitespace between the fence and language name
+/test-positive/mermaid-fence-space.md
+/test-positive/mermaid-fence-spaces.md
+/test-positive/mermaid-fence-tab.md
 # Test for trailing newlines
 /test-positive/mermaid.md
 

@@ -606,6 +606,43 @@ describe("NodeJS API (import ... from '@mermaid-js/mermaid-cli')", () => {
   });
 
   describe("run()", () => {
+    test.each([
+      "mermaid-fence-space.md",
+      "mermaid-fence-spaces.md",
+      "mermaid-fence-tab.md",
+      "mermaid-fence-colons.md",
+      "erDiagram.markdown",
+      "crlf-detect.md",
+    ])(
+      "should rewrite markdown fences and generate an svg from %s",
+      async (file) => {
+        if (file.startsWith("mermaid-fence-")) {
+          const input = await fs.readFile(join("test-positive", file), "utf8");
+          expect(input).toMatch(/^[`:]{3}[ \t]+mermaid/m);
+        }
+        const outputName = file.replace(/\.(md|markdown)$/, "-fence-test");
+        const expectedOutputMd = join(out, `${outputName}.md`);
+        const expectedOutputSvg = join(out, `${outputName}-1.svg`);
+        await Promise.all(
+          [expectedOutputMd, expectedOutputSvg].map((output) =>
+            fs.rm(output, { force: true }),
+          ),
+        );
+
+        await run(join("test-positive", file), expectedOutputMd, {
+          browser,
+          limiter,
+          quiet: true,
+          outputFormat: "svg",
+        });
+
+        const markdownFile = await fs.readFile(expectedOutputMd, "utf8");
+        expect(markdownFile).toContain(`](./${outputName}-1.svg`);
+        expectBytesAreFormat(await fs.readFile(expectedOutputSvg), "svg");
+      },
+      timeout,
+    );
+
     test.each([true, false])(
       "should write markdown output with svg images - custom artefact path [%s]",
       async (artefact) => {

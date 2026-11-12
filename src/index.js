@@ -973,7 +973,7 @@ async function run(
 
   // TODO: should we use a Markdown parser like remark instead of rolling our own parser?
   const mermaidChartsInMarkdown =
-    /^[^\S\n]*[`:]{3}(?:mermaid)([^\S\n]*\r?\n([\s\S]*?))[`:]{3}[^\S\n]*$/;
+    /^[^\S\n]*[`:]{3}[ \t]*(?:mermaid)([^\S\n]*\r?\n([\s\S]*?))[`:]{3}[^\S\n]*$/;
   const mermaidChartsInMarkdownRegexGlobal = new RegExp(
     mermaidChartsInMarkdown,
     "gm",
